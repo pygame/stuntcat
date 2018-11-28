@@ -6,6 +6,7 @@ pytest-mock
 pytest-mccabe
 pytest-pep8
 pytest-pylint
+tox
 twine
 wheel
 -r requirements.txt
