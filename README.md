@@ -72,3 +72,11 @@ For now compiling pygame 2 from source is needed (hopefully not by the end of th
 - [Mac](https://www.pygame.org/wiki/MacCompile#pygame%20with%20sdl2)
 - [Windows](https://www.pygame.org/wiki/CompileWindows) (incomplete instructions)
 
+
+## Licenses
+
+License for code will be the same as the pygame license (LGPL, but you can keep your parts of course!) 
+Art assets license will be some form of permissive Creative Commons.
+
+So technically anyone should be able to distribute the game following those licenses (and even sell it).
+
