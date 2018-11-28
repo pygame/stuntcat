@@ -2,7 +2,7 @@ import time
 
 import pygame
 
-from scenes import LoadingScene
+from stuntcat.scenes import LoadingScene
 
 
 class Game:
