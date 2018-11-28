@@ -74,9 +74,9 @@ def checkdependencies():
     if not os.path.isdir('data'):
         msgs.append('Cannot locate stuntcat data files')
 
-    #first, we need python >= 2.1
-    if int(sys.version[0]) < 3:
-        errorbox('Requires Python-3.6 or Greater')
+    #first, we need python >= 2.7
+    if sys.hexversion < 0x2070000:
+        errorbox('Requires Python-2.7 or Greater')
 
     #is correct pg found?
     try:

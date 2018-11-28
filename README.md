@@ -80,3 +80,20 @@ For now compiling pygame 2 from source is needed (hopefully not by the end of th
 - [Mac](https://www.pygame.org/wiki/MacCompile#pygame%20with%20sdl2)
 - [Windows](https://www.pygame.org/wiki/CompileWindows) (incomplete instructions)
 
+
+### Running tests.
+
+Tests can be found in the tests/ folder.
+
+Type `pytest`.
+Or run `python -m tox`
+
+Tests are run on mac, linux, windows when there is a pull request made.
+
+### releasing
+
+
+```
+python setup.py sdist bdist_wheel
+twine upload dist/*
+```
