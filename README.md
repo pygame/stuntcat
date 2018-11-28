@@ -56,7 +56,7 @@ Apart from pygame 2 we are going to try using some awesome libraries.
 * [pytmx](https://github.com/bitcraft/pytmx) - tilemap
 * [thorpy](http://www.thorpy.org/) - gui
 * [pymunk](http://www.pymunk.org/en/latest/) - physics
-* snäke (ask Bottersnike for info) - cleaner api
+* [snäke](https://pypi.org/project/pygame.snake/) - cleaner api
 * [pyinstaller](https://www.pyinstaller.org/)
 * [pytest](https://docs.pytest.org/en/latest/) - our game will have some tests.
 * ... other?
@@ -77,7 +77,7 @@ For now compiling pygame 2 from source is needed (hopefully not by the end of th
 
 ## Licenses
 
-License for code will be the same as the pygame license (LGPL, but you can keep your parts of course!) 
+License for code will be the same as the pygame license (LGPL, but you can keep your parts of course!)
 Art assets license will be some form of permissive Creative Commons.
 
 So technically anyone should be able to distribute the game following those licenses (and even sell it).
