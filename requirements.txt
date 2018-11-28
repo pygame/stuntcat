@@ -1,6 +1,4 @@
 pygame
-pylint
-black
 pyscroll
 pytmx
 thorpy
