@@ -1,4 +1,9 @@
 from setuptools import setup, find_packages
+from os import path
+here = path.abspath(path.dirname(__file__))
+
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name='stuntcat',
@@ -18,7 +23,8 @@ setup(
     maintainer_email='stuntcat@pygame.org',
     description='Stuntcat is the first pygame 2 community game.',
     include_package_data=True,
-    long_description='stuntcat is the first pygame 2 community game.',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     package_dir={'stuntcat': 'stuntcat'},
     packages=find_packages(),
     # package_data={'stuntcat': []},
