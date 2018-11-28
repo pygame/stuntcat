@@ -11,5 +11,5 @@ class Scene:
     def tick(self, dt):
         pass
 
-    def events(self):
+    def event(self, event):
         pass
