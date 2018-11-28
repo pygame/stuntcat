@@ -1,3 +1,5 @@
+""" Command line interface.
+"""
 import sys, os
 
 #these directories will be used if stuntcat cannot find
