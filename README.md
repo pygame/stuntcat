@@ -31,6 +31,8 @@ Twitch/IRC integration, leaderboards, Discord...""
 
 * claudeb - "My first cat was named Speedy. Because when he went into one of those crazy dashes across the house"
 
+* dirk0 - "Unfortunately I am terribly busy right now, but I could contribute music and Mac OSX compilation/testing, if needed."
+
 * illume - fixes to pygame 2, any general thing that needs doing.
 
 * Kuba | ThePolish - "pm me if you need sfx and/or music"
