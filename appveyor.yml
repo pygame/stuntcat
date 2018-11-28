@@ -14,10 +14,12 @@ environment:
 
 init:
   - "ECHO %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%"
+  - "%PYTHON%\\python.exe --version"
 
-install:
-  # We need wheel installed to build wheels
-  - "%PYTHON%\\python.exe -m pip install -r requirements.dev.txt"
+# tox installs stuff itself.
+# install:
+#   # We need wheel installed to build wheels
+#   - "%PYTHON%\\python.exe -m pip install -r requirements.dev.txt"
 
 test_script:
   - "%PYTHON%\\python.exe -m tox"
