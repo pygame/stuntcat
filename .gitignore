@@ -129,4 +129,8 @@ dmypy.json
 pyvenv.cfg
 pip-selfcheck.json
 
-
+__pycache__/*
+.idea/*
+*.pyc
+*.pyd
+*.pyo

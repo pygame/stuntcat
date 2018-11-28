@@ -39,6 +39,8 @@ Twitch/IRC integration, leaderboards, Discord...""
 
 * claudeb - "My first cat was named Speedy. Because when he went into one of those crazy dashes across the house"
 
+* dirk0 - "Unfortunately I am terribly busy right now, but I could contribute music and Mac OSX compilation/testing, if needed."
+
 * illume - fixes to pygame 2, any general thing that needs doing.
 
 * Kuba | ThePolish - "pm me if you need sfx and/or music"
@@ -62,7 +64,7 @@ Apart from pygame 2 we are going to try using some awesome libraries.
 * [pytmx](https://github.com/bitcraft/pytmx) - tilemap
 * [thorpy](http://www.thorpy.org/) - gui
 * [pymunk](http://www.pymunk.org/en/latest/) - physics
-* snäke (ask Bottersnike for info) - cleaner api
+* [snäke](https://pypi.org/project/pygame.snake/) - cleaner api
 * [pyinstaller](https://www.pyinstaller.org/)
 * [pytest](https://docs.pytest.org/en/latest/) - our game will have some tests.
 * ... other?
@@ -92,8 +94,16 @@ Tests are run on mac, linux, windows when there is a pull request made.
 
 ### releasing
 
-
+To the python package index (pypi).
 ```
+rm -rf dist/*
 python setup.py sdist bdist_wheel
 twine upload dist/*
 ```
+
+## Licenses
+
+License for code will be the same as the pygame license (LGPL, but you can keep your parts of course!)
+Art assets license will be some form of permissive Creative Commons.
+
+So technically anyone should be able to distribute the game following those licenses (and even sell it).
