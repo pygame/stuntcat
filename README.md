@@ -18,6 +18,14 @@ The whole pygame community is invited to take part. In making this one game. In 
 
 
 
+## Get started.
+
+```
+python3 -m venv venv
+. ./venv/bin/activate
+pip install -r requirements.dev.txt
+python run_game.py
+```
 
 
 ## The team.
@@ -75,10 +83,27 @@ For now compiling pygame 2 from source is needed (hopefully not by the end of th
 - [Windows](https://www.pygame.org/wiki/CompileWindows) (incomplete instructions)
 
 
+### Running tests.
+
+Tests can be found in the tests/ folder.
+
+Type `pytest`.
+Or run `python -m tox`
+
+Tests are run on mac, linux, windows when there is a pull request made.
+
+### releasing
+
+To the python package index (pypi).
+```
+rm -rf dist/*
+python setup.py sdist bdist_wheel
+twine upload dist/*
+```
+
 ## Licenses
 
 License for code will be the same as the pygame license (LGPL, but you can keep your parts of course!)
 Art assets license will be some form of permissive Creative Commons.
 
 So technically anyone should be able to distribute the game following those licenses (and even sell it).
-
