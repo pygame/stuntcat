@@ -20,5 +20,4 @@ install:
   - "%PYTHON%\\python.exe -m pip install -r requirements.dev.txt"
 
 test_script:
-  - "build.cmd %PYTHON%\\python.exe -m tox"
-
+  - "%PYTHON%\\python.exe -m tox"
