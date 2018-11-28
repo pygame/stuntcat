@@ -16,11 +16,8 @@ matrix:
       python: 3.7
       env: TOXENV=py37
     - os: osx
-      python: 2.7
+      language: generic
       env: TOXENV=py27
-    - os: windows
-      python: 3.7
-      env: TOXENV=py37
 
 install: pip install tox
 
