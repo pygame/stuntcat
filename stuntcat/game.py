@@ -13,6 +13,7 @@ class Game:
     FPS = 32
 
     def __init__(self):
+        pygame.init()
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), self.FLAGS)
         self.clock = pygame.time.Clock()
 
