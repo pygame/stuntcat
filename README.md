@@ -18,6 +18,14 @@ The whole pygame community is invited to take part. In making this one game. In 
 
 
 
+## Get started.
+
+```
+python3 -m venv venv
+. ./venv/bin/activate
+pip install -r requirements.dev.txt
+python run_game.py
+```
 
 
 ## The team.
