@@ -1,8 +1,9 @@
+from __future__ import absolute_import
 import time
 
 import pygame
 
-from stuntcat.scenes import LoadingScene
+from .scenes import LoadingScene
 
 
 class Game:
