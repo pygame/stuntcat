@@ -2,7 +2,5 @@ pygame
 pylint
 black
 pyscroll
-pytest
 pytmx
 thorpy
-
