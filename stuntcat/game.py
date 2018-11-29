@@ -3,22 +3,25 @@ import time
 import pygame
 
 from stuntcat.scenes import LoadingScene
+from stuntcat.scenes import CatUniScene
 
 
 class Game:
     FLAGS = 0
-    WIDTH = 1280
-    HEIGHT = 720
-
-    FPS = 32
+    WIDTH = 1000
+    HEIGHT = 600
+    FPS = 60
 
     def __init__(self):
+        pygame.init()
+        pygame.font.init()
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), self.FLAGS)
         self.clock = pygame.time.Clock()
 
         self.running = True
         self.scenes = [
-            LoadingScene(self)
+            # LoadingScene(self),
+            CatUniScene(self),
         ]
 
     def tick(self, dt):
