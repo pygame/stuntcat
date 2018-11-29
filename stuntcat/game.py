@@ -21,7 +21,7 @@ class Game:
         self.running = True
         self.scenes = [
             # LoadingScene(self),
-            CatUniScene(self),
+            CatUniScene(self)
         ]
 
     def tick(self, dt):
