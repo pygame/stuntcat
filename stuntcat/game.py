@@ -8,9 +8,9 @@ from stuntcat.scenes import CatUniScene
 
 class Game:
     FLAGS = 0
-    WIDTH = 1000
-    HEIGHT = 600
-    FPS = 60
+    WIDTH = 1024
+    HEIGHT = 768
+    FPS = 30
 
     def __init__(self):
         pygame.init()
