@@ -33,6 +33,8 @@ class CatUniScene(Scene):
         self.right_pressed = False
         self.score = 0
 
+        self.dt_scaled = 0
+
         # lists of things to catch by [posx, posy, velx, vely]
         self.fish = [[0, height / 2, 10, -5]]
         self.not_fish = [[width, height / 2, -5, -2]]
@@ -89,31 +91,32 @@ class CatUniScene(Scene):
         # time_elapsed = clock.tick(60)
 
     def tick(self, dt):
-        time_elapsed = dt
+        dt_scaled = dt/17
+        self.dt_scaled = dt_scaled
         width, height = self.width, self.height
 
         ##cat physics
-        self.cat_angular_vel *= 0.9
+        self.cat_angular_vel *= 0.9**dt_scaled #max(0.9/(max(0.1,dt_scaled)),0.999)
 
         # add gravity
-        self.cat_speed[1] = min(self.cat_speed[1] + 1, self.cat_fall_speed_max)
+        self.cat_speed[1] = min(self.cat_speed[1] + (1 * dt_scaled), self.cat_fall_speed_max)
 
         # accelerate the cat left or right
         if self.right_pressed:
             self.cat_speed[0] = min(
-                self.cat_speed[0] + 0.3 * time_elapsed / 17, self.cat_speed_max
+                self.cat_speed[0] + 0.3 * dt_scaled, self.cat_speed_max
             )
-            self.cat_angle -= 0.01 * time_elapsed / 17
+            self.cat_angle -= 0.01 * dt_scaled
 
         if self.left_pressed:
             self.cat_speed[0] = max(
-                self.cat_speed[0] - 0.3 * time_elapsed / 17, -self.cat_speed_max
+                self.cat_speed[0] - 0.3 * dt_scaled, -self.cat_speed_max
             )
-            self.cat_angle += 0.01 * time_elapsed / 17
+            self.cat_angle += 0.01 * dt_scaled
 
         # make the cat fall
-        self.cat_angular_vel += 0.001 * self.cat_angle * time_elapsed / 17
-        self.cat_angle += self.cat_angular_vel * time_elapsed / 17
+        self.cat_angular_vel += 0.001 * self.cat_angle * dt_scaled
+        self.cat_angle += self.cat_angular_vel * dt_scaled
         if self.cat_angle > math.pi / 2 or self.cat_angle < -math.pi / 2:
             self.cat_location = [width / 2, height - 100]
             self.cat_speed = [0, 0]
@@ -122,8 +125,8 @@ class CatUniScene(Scene):
             self.score = 0
 
         # move cat
-        self.cat_location[0] += self.cat_speed[0] * time_elapsed / 17
-        self.cat_location[1] += self.cat_speed[1] * time_elapsed / 17
+        self.cat_location[0] += self.cat_speed[0] * dt_scaled
+        self.cat_location[1] += self.cat_speed[1] * dt_scaled
         if self.cat_location[1] > height - 100:
             self.cat_location[1] = height - 100
             self.cat_speed[1] = 0
@@ -144,16 +147,16 @@ class CatUniScene(Scene):
 
         # move fish and not fish
         for f in reversed(self.fish):
-            f[0] += f[2] * time_elapsed / 17  # speed of the throw
-            f[3] += 0.2 * time_elapsed / 17  # gravity
-            f[1] += f[3] * time_elapsed / 17  # y velocity
+            f[0] += f[2] * dt_scaled  # speed of the throw
+            f[3] += 0.2 * dt_scaled  # gravity
+            f[1] += f[3] * dt_scaled # y velocity
             # check out of bounds
             if f[1] > height:
                 self.fish.remove(f)
         for f in reversed(self.not_fish):
-            f[0] += f[2] * time_elapsed / 17  # speed of the throw
-            f[3] += 0.2 * time_elapsed / 17  # gravity
-            f[1] += f[3] * time_elapsed / 17  # y velocity
+            f[0] += f[2] * dt_scaled # speed of the throw
+            f[3] += 0.2 * dt_scaled  # gravity
+            f[1] += f[3] * dt_scaled  # y velocity
             # check out of bounds
             if f[1] > height:
                 self.not_fish.remove(f)

@@ -10,7 +10,7 @@ class Game:
     FLAGS = 0
     WIDTH = 1000
     HEIGHT = 600
-    FPS = 60
+    FPS = 1000
 
     def __init__(self):
         pygame.init()
