@@ -9,6 +9,153 @@ from .scene import Scene
 def distance(a, b):
     return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
 
+class elephant:
+    def __init__(self):
+        self.state = 0 #0 = offscreen, 1 = poise left, 2 = stomp left, 3 = offscreen, 4 = poise right, 5 = stomp right  
+        self.time_between_stomps = 5000 #ms
+        self.time_of_poise = 1500 #ms
+        self.time_of_stomp = 500 #ms
+        self.last_animation = 0 #ms
+
+    def animate(self, total_time):
+        if self.state == 0 or self.state == 3:
+            if total_time > self.last_animation + self.time_between_stomps:
+                self.state += 1
+                self.last_animation = total_time
+        if self.state == 1 or self.state == 4:
+            if total_time > self.last_animation + self.time_of_poise:
+                self.state += 1
+                self.last_animation = total_time
+        if self.state == 2 or self.state == 5:
+            if total_time > self.last_animation + self.time_of_stomp:
+                self.state += 1 
+                if self.state == 6:
+                    self.state = 0
+                self.last_animation = total_time
+
+
+
+    def render(self, screen, width, height):
+        if self.state == 1: #poise left
+            pygame.draw.polygon(
+                screen,
+                [255, 0, 0],
+                [
+                    [0.1 * width, 0],
+                    [0.5 * width, 0],
+                    [0.5 * width, 100],
+                    [0.1 * width, 100],
+                ],
+            )
+        if self.state == 2: #stomp left
+            pygame.draw.polygon(
+                screen,
+                [255, 0, 0],
+                [
+                    [0.1 * width, 0],
+                    [0.5 * width, 0],
+                    [0.5 * width, height - 100],
+                    [0.1 * width, height - 100],
+                ],
+            )
+        if self.state == 4: #poise right
+            pygame.draw.polygon(
+                screen,
+                [255, 0, 0],
+                [
+                    [0.5 * width, 0],
+                    [0.9 * width, 0],
+                    [0.9 * width, 100],
+                    [0.5 * width, 100],
+                ],
+            )
+        if self.state == 5: #stomp right
+            pygame.draw.polygon(
+                screen,
+                [255, 0, 0],
+                [
+                    [0.5 * width, 0],
+                    [0.9 * width, 0],
+                    [0.9 * width, height - 100],
+                    [0.5 * width, height - 100],
+                ],
+            )
+
+
+    def collide(self, scene, width, height, cat_head_location):
+        if self.state == 2:
+            if cat_head_location[0] < width/2:
+                scene.reset_on_death()
+        if self.state == 5:
+            if cat_head_location[0] > width/2:
+                scene.reset_on_death()
+
+class shark:
+    def __init__(self):
+        self.state = 0 #0 = offscreen, 1 = poise, 2 = fire laser 
+        self.time_between_appearances = 7000 #ms
+        self.time_of_poise = 1500 #ms
+        self.time_of_laser = 100 #ms
+        self.last_animation = 0 #ms
+
+    def animate(self, total_time):
+        if self.state == 0:
+            if total_time > self.last_animation + self.time_between_appearances:
+                self.state += 1
+                self.last_animation = total_time
+        if self.state == 1:
+            if total_time > self.last_animation + self.time_of_poise:
+                self.state += 1
+                self.last_animation = total_time
+        if self.state == 2:
+            if total_time > self.last_animation + self.time_of_laser:
+                self.state += 1 
+                if self.state == 3:
+                    self.state = 0
+                self.last_animation = total_time
+
+
+
+    def render(self, screen, width, height):
+        if self.state == 1: #poise 
+            pygame.draw.polygon(
+                screen,
+                [255, 255, 0],
+                [
+                    [0, height - 130],
+                    [0.2 * width, height - 130],
+                    [0.2 * width, height],
+                    [0, height],
+                ],
+            )
+        if self.state == 2: #fire laser
+            pygame.draw.polygon(
+                screen,
+                [255, 255, 0],
+                [
+                    [0, height - 130],
+                    [0.2 * width, height - 130],
+                    [0.2 * width, height],
+                    [0, height],
+                ],
+            )
+            pygame.draw.polygon(
+                screen,
+                [255, 0, 0],
+                [
+                    [0.2 * width, height - 130],
+                    [width, height - 130],
+                    [width, height - 100],
+                    [0.2 * width, height - 100],
+                ],
+            )
+
+
+    def collide(self, scene, width, height, cat_location):
+        
+        if self.state == 2:
+            if cat_location[1] > height - 130:
+                scene.reset_on_death()
 
 class CatUniScene(Scene):
     def __init__(self, *args, **kwargs):
@@ -19,25 +166,59 @@ class CatUniScene(Scene):
 
         self.myfont = pygame.font.SysFont("monospace", 20)
 
-        (width, height) = (1000, 600)
+        (width, height) = (1024, 768)
         self.width, self.height = width, height
 
+        #cat variables
         self.cat_location = [width / 2, height - 100]
         self.cat_speed = [0, 0]
         self.cat_speed_max = 8
         self.cat_fall_speed_max = 16
         self.cat_angle = 0
         self.cat_angular_vel = 0
-        self.time_elapsed = 0
         self.left_pressed = False
         self.right_pressed = False
         self.score = 0
 
+        #timing
         self.dt_scaled = 0
+        self.total_time = 0
 
         # lists of things to catch by [posx, posy, velx, vely]
         self.fish = [[0, height / 2, 10, -5]]
-        self.not_fish = [[width, height / 2, -5, -2]]
+        self.not_fish = []
+
+        #difficulty varibles
+        self.number_of_not_fish = 0
+
+        #elephant and shark classes
+        self.elephant = elephant()
+        self.shark = shark()
+
+    #what to do when you die, reset the level
+    def reset_on_death(self):
+        self.cat_location = [self.width / 2, self.height - 100]
+        self.cat_speed = [0, 0]
+        self.cat_angle = 0
+        self.cat_angular_vel = 0
+        self.score = 0
+        self.total_time = 0
+        self.elephant.last_animation = 0
+        self.elephant.state = 0
+        self.shark.last_animation = 0
+        self.shark.state = 0
+
+    #periodically increase the difficulty
+    def increase_difficulty(self):
+        if self.score > 6:
+            self.number_of_not_fish = 1
+        if self.score > 30:
+            self.number_of_not_fish = 2
+        if self.score > 60:
+            self.number_of_not_fish = 3
+        if self.score > 100:
+            self.number_of_not_fish = int(self.score/30)
+
 
     def render(self):
         screen = self.screen
@@ -45,6 +226,9 @@ class CatUniScene(Scene):
 
         background_colour = (0, 0, 0)
         screen.fill(background_colour)
+
+        self.elephant.render(screen, width, height)
+        self.shark.render(screen, width, height)
 
         # draw cat
         pygame.draw.line(
@@ -91,7 +275,10 @@ class CatUniScene(Scene):
         # time_elapsed = clock.tick(60)
 
     def tick(self, dt):
-        dt_scaled = dt/17
+        self.increase_difficulty()
+
+        self.total_time += dt #keep track of the total number of ms passed during the game
+        dt_scaled = dt/17 
         self.dt_scaled = dt_scaled
         width, height = self.width, self.height
 
@@ -118,11 +305,7 @@ class CatUniScene(Scene):
         self.cat_angular_vel += 0.001 * self.cat_angle * dt_scaled
         self.cat_angle += self.cat_angular_vel * dt_scaled
         if self.cat_angle > math.pi / 2 or self.cat_angle < -math.pi / 2:
-            self.cat_location = [width / 2, height - 100]
-            self.cat_speed = [0, 0]
-            self.cat_angle = 0
-            self.cat_angular_vel = 0
-            self.score = 0
+            self.reset_on_death()
 
         # move cat
         self.cat_location[0] += self.cat_speed[0] * dt_scaled
@@ -137,11 +320,13 @@ class CatUniScene(Scene):
 
         # check for out of bounds
         if self.cat_location[0] > 0.9 * width or self.cat_location[0] < 0.1 * width:
-            self.cat_location = [width / 2, height - 100]
-            self.cat_speed = [0, 0]
-            self.cat_angle = 0
-            self.cat_angular_vel = 0
-            self.score = 0
+            self.reset_on_death()
+
+        #check for collision with the elephant stomp
+        self.elephant.animate(self.total_time)
+        self.elephant.collide(self, width, height, self.cat_head_location)
+        self.shark.animate(self.total_time)
+        self.shark.collide(self, width, height, self.cat_location)
 
         ##object physics
 
@@ -200,7 +385,7 @@ class CatUniScene(Scene):
                         -random.randint(3, 10),
                     ]
                 )
-        while len(self.not_fish) < 1:
+        while len(self.not_fish) < self.number_of_not_fish:
             # choose a side of the screen
             if random.choice([0, 1]) == 0:
                 self.not_fish.append(
