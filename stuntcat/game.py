@@ -8,8 +8,8 @@ from stuntcat.scenes import CatUniScene
 
 class Game:
     FLAGS = 0
-    WIDTH = 1024
-    HEIGHT = 768
+    WIDTH = 960
+    HEIGHT = 540
     FPS = 30
 
     def __init__(self):
