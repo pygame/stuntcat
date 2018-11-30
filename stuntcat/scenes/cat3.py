@@ -4,7 +4,7 @@ import random
 from pygame.locals import *
 
 from .scene import Scene
-
+from .. resources import gfx
 
 def distance(a, b):
     return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
@@ -160,14 +160,21 @@ class shark:
 class CatUniScene(Scene):
     def __init__(self, *args, **kwargs):
         Scene.__init__(self, *args, **kwargs)
+        (width, height) = (1920//2, 1080//2)
+        self.width, self.height = width, height
 
         # Loading screen should always be a fallback active scene
         self.active = True
 
         self.myfont = pygame.font.SysFont("monospace", 20)
 
-        (width, height) = (1920//2, 1080//2)
-        self.width, self.height = width, height
+        self.background = gfx('background.png').convert()
+        self.cat_unicycle = gfx('cat_unicycle.png').convert_alpha()
+        self.fish = gfx('fish.png').convert_alpha()
+        self.foot = gfx('foot.png').convert_alpha()
+        self.foot_part = gfx('foot_part.png').convert_alpha()
+        self.shark = gfx('shark.png').convert_alpha()
+
 
         #cat variables
         self.cat_location = [width / 2, height - 100]
@@ -226,6 +233,7 @@ class CatUniScene(Scene):
 
         background_colour = (0, 0, 0)
         screen.fill(background_colour)
+        screen.blit(self.background, (0, 0))
 
         self.elephant.render(screen, width, height)
         self.shark.render(screen, width, height)
