@@ -4,14 +4,14 @@ import random
 from pygame.locals import *
 
 from .scene import Scene
-
+from .. resources import gfx
 
 def distance(a, b):
     return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
 
 class elephant:
     def __init__(self):
-        self.state = 0 #0 = offscreen, 1 = poise left, 2 = stomp left, 3 = offscreen, 4 = poise right, 5 = stomp right  
+        self.state = 0 #0 = offscreen, 1 = poise left, 2 = stomp left, 3 = offscreen, 4 = poise right, 5 = stomp right
         self.time_between_stomps = 5000 #ms
         self.time_of_poise = 1500 #ms
         self.time_of_stomp = 500 #ms
@@ -28,7 +28,7 @@ class elephant:
                 self.last_animation = total_time
         if self.state == 2 or self.state == 5:
             if total_time > self.last_animation + self.time_of_stomp:
-                self.state += 1 
+                self.state += 1
                 if self.state == 6:
                     self.state = 0
                 self.last_animation = total_time
@@ -92,7 +92,7 @@ class elephant:
 
 class shark:
     def __init__(self):
-        self.state = 0 #0 = offscreen, 1 = poise, 2 = fire laser 
+        self.state = 0 #0 = offscreen, 1 = poise, 2 = fire laser
         self.time_between_appearances = 7000 #ms
         self.time_of_poise = 1500 #ms
         self.time_of_laser = 100 #ms
@@ -109,7 +109,7 @@ class shark:
                 self.last_animation = total_time
         if self.state == 2:
             if total_time > self.last_animation + self.time_of_laser:
-                self.state += 1 
+                self.state += 1
                 if self.state == 3:
                     self.state = 0
                 self.last_animation = total_time
@@ -117,7 +117,7 @@ class shark:
 
 
     def render(self, screen, width, height):
-        if self.state == 1: #poise 
+        if self.state == 1: #poise
             pygame.draw.polygon(
                 screen,
                 [255, 255, 0],
@@ -152,7 +152,7 @@ class shark:
 
 
     def collide(self, scene, width, height, cat_location):
-        
+
         if self.state == 2:
             if cat_location[1] > height - 130:
                 scene.reset_on_death()
@@ -160,14 +160,21 @@ class shark:
 class CatUniScene(Scene):
     def __init__(self, *args, **kwargs):
         Scene.__init__(self, *args, **kwargs)
+        (width, height) = (1920//2, 1080//2)
+        self.width, self.height = width, height
 
         # Loading screen should always be a fallback active scene
         self.active = True
 
         self.myfont = pygame.font.SysFont("monospace", 20)
 
-        (width, height) = (1024, 768)
-        self.width, self.height = width, height
+        self.background = gfx('background.png').convert()
+        self.cat_unicycle = gfx('cat_unicycle.png').convert_alpha()
+        self.fish = gfx('fish.png').convert_alpha()
+        self.foot = gfx('foot.png').convert_alpha()
+        self.foot_part = gfx('foot_part.png').convert_alpha()
+        self.shark = gfx('shark.png').convert_alpha()
+
 
         #cat variables
         self.cat_location = [width / 2, height - 100]
@@ -226,6 +233,7 @@ class CatUniScene(Scene):
 
         background_colour = (0, 0, 0)
         screen.fill(background_colour)
+        screen.blit(self.background, (0, 0))
 
         self.elephant.render(screen, width, height)
         self.shark.render(screen, width, height)
@@ -278,7 +286,7 @@ class CatUniScene(Scene):
         self.increase_difficulty()
 
         self.total_time += dt #keep track of the total number of ms passed during the game
-        dt_scaled = dt/17 
+        dt_scaled = dt/17
         self.dt_scaled = dt_scaled
         width, height = self.width, self.height
 
