@@ -12,6 +12,17 @@ from pygame.sprite import DirtySprite, LayeredDirty
 def distance(a, b):
     return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
 
+
+class LayeredDirtyAppend(LayeredDirty):
+    """ Like a group, except it has append and extend methods like a list.
+    """
+    def append(self, x):
+        self.add(x)
+    def extend(self, alist):
+        for x in alist:
+            self.add(x)
+
+
 class Elephant(DirtySprite):
     def __init__(self):
         DirtySprite.__init__(self)
@@ -216,15 +227,14 @@ class Cat(DirtySprite):
 
 
 class Fish(DirtySprite):
-    def __init__(self):
+    def __init__(self, x, y, vx, vy):
         DirtySprite.__init__(self)
         self.image = gfx('fish.png').convert_alpha()
         self.rect = self.image.get_rect()
 
-        height = 1080//2
-        self.rect.x = 0
-        self.rect.y = height / 2
-        self.velocity = pygame.math.Vector2(10, -5)
+        self.rect.x = x
+        self.rect.y = y
+        self.velocity = pygame.math.Vector2(vx, vy)
 
     def update(self):
         pass
@@ -297,10 +307,11 @@ class CatUniScene(Scene):
         self.total_time = 0
 
         # lists of things to catch by [posx, posy, velx, vely]
-        self.fish = [[0, height / 2, 10, -5]]
-        # self.fish = [Fish()]
+        # self.fish = [[0, height / 2, 10, -5]]
+        self.fish = LayeredDirtyAppend()
+        self.fish.extend([Fish(0, height / 2, 10, -5)])
 
-        self.not_fish = []
+        self.not_fish = LayeredDirtyAppend()
 
         #difficulty varibles
         self.number_of_not_fish = 0
@@ -321,7 +332,7 @@ class CatUniScene(Scene):
             self.shark,
             self.elephant,
             self.cat,
-            Fish(),
+            Fish(0, 100, 10, -5),
             self.score_text
         ]
         self.allsprites = LayeredDirty(
@@ -376,7 +387,7 @@ class CatUniScene(Scene):
 
     def render(self):
         #TODO: use the render_sprites version.
-        return self.render_sprites()
+        # return self.render_sprites()
 
         screen = self.screen
         width, height = self.width, self.height
@@ -419,15 +430,15 @@ class CatUniScene(Scene):
 
         # draw fish and not fish
         for f in self.fish:
-            pygame.draw.circle(screen, [0, 255, 0], [int(f[0]), int(f[1])], 10)
+            pygame.draw.circle(screen, [0, 255, 0], [int(f.rect[0]), int(f.rect[1])], 10)
         for f in self.not_fish:
-            pygame.draw.circle(screen, [255, 0, 0], [int(f[0]), int(f[1])], 10)
+            pygame.draw.circle(screen, [255, 0, 0], [int(f.rect[0]), int(f.rect[1])], 10)
 
-        # # draw score
-        # textsurface = self.myfont.render(
-        #     "score : " + str(self.score), True, [255, 255, 255]
-        # )
-        # screen.blit(textsurface, (100, 100))
+        # draw score
+        textsurface = self.myfont.render(
+            "score : " + str(self.score), True, [255, 255, 255]
+        )
+        screen.blit(textsurface, (100, 100))
         return [screen.get_rect()]
 
     def tick(self, dt):
@@ -490,33 +501,33 @@ class CatUniScene(Scene):
         ##object physics
 
         # move fish and not fish
-        for f in reversed(self.fish):
-            f[0] += f[2] * dt_scaled  # speed of the throw
-            f[3] += 0.2 * dt_scaled  # gravity
-            f[1] += f[3] * dt_scaled # y velocity
+        for f in reversed(self.fish.sprites()):
+            f.rect[0] += f.velocity[0] * dt_scaled  # speed of the throw
+            f.velocity[1] += 0.2 * dt_scaled  # gravity
+            f.rect[1] += f.velocity[1] * dt_scaled # y velocity
             # check out of bounds
-            if f[1] > height:
+            if f.rect[1] > height:
                 self.fish.remove(f)
-        for f in reversed(self.not_fish):
-            f[0] += f[2] * dt_scaled # speed of the throw
-            f[3] += 0.2 * dt_scaled  # gravity
-            f[1] += f[3] * dt_scaled  # y velocity
+        for f in reversed(self.not_fish.sprites()):
+            f.rect[0] += f[2] * dt_scaled # speed of the throw
+            f.velocity[1] += 0.2 * dt_scaled  # gravity
+            f.rect[1] += f.velocity[1] * dt_scaled  # y velocity
             # check out of bounds
             if f[1] > height:
                 self.not_fish.remove(f)
 
         # check collision with the cat
-        for f in reversed(self.fish):
-            if distance([f[0], f[1]], self.cat_head_location) < 100:
+        for f in reversed(self.fish.sprites()):
+            if distance([f.rect[0], f.rect[1]], self.cat_head_location) < 100:
                 self.score += 1
                 self.fish.remove(f)
-        for f in reversed(self.not_fish):
-            if distance([f[0], f[1]], self.cat_head_location) < 50:
+        for f in reversed(self.not_fish.sprites()):
+            if distance([f.rect[0], f.rect[1]], self.cat_head_location) < 50:
                 self.not_fish.remove(f)
                 self.angle_to_not_fish = (
                     math.atan2(
-                        self.cat_head_location[1] - f[1],
-                        self.cat_head_location[0] - f[0],
+                        self.cat_head_location[1] - f.rect[1],
+                        self.cat_head_location[0] - f.rect[0],
                     )
                     - math.pi / 2
                 )
@@ -528,41 +539,41 @@ class CatUniScene(Scene):
             # choose a side of the screen
             if random.choice([0, 1]) == 0:
                 self.fish.append(
-                    [
+                    Fish(
                         0,
                         height/2,#random.randint(0, height / 2),
                         random.randint(3, 7),
                         -random.randint(5, 12),
-                    ]
+                    )
                 )
             else:
                 self.fish.append(
-                    [
+                    Fish(
                         width,
                         height/2,#random.randint(0, height / 2),
                         -random.randint(3, 7),
                         -random.randint(5, 12),
-                    ]
+                    )
                 )
         while len(self.not_fish) < self.number_of_not_fish:
             # choose a side of the screen
             if random.choice([0, 1]) == 0:
                 self.not_fish.append(
-                    [
+                    Fish(
                         0,
                         height/2,#random.randint(0, height / 2),
                         random.randint(3, 7),
                         -random.randint(5, 12),
-                    ]
+                    )
                 )
             else:
                 self.not_fish.append(
-                    [
+                    Fish(
                         width,
                         height/2,#random.randint(0, height / 2),
                         -random.randint(3, 7),
                         -random.randint(5, 12),
-                    ]
+                    )
                 )
 
     def event(self, event):
