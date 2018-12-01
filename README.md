@@ -101,6 +101,19 @@ python setup.py sdist bdist_wheel
 twine upload dist/*
 ```
 
+On windows:
+```
+python setup.py bdist_msi
+dir build/*.msi
+```
+
+On mac:
+```
+python setup.py bdist_dmg
+ls build/*.dmg
+```
+
+
 ## Licenses
 
 License for code will be the same as the pygame license (LGPL, but you can keep your parts of course!)

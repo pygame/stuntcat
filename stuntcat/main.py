@@ -10,5 +10,5 @@ def main(args):
 
 def gamemain(args):
 
-    from game import Game
+    from .game import Game
     Game().mainloop()
