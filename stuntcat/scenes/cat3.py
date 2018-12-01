@@ -4,7 +4,7 @@ import random
 from pygame.locals import *
 
 from .scene import Scene
-from .. resources import gfx
+from .. resources import gfx, sfx
 
 def distance(a, b):
     return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
@@ -98,6 +98,16 @@ class shark:
         self.time_of_laser = 100 #ms
         self.last_animation = 0 #ms
 
+        sfx('default_shark.ogg')
+        sfx('shark_appear.ogg')
+        sfx('shark_gone.ogg')
+        sfx('shark_lazer.ogg')
+
+        # sfx('default_shark.ogg').play()
+        # sfx('shark_appear.ogg').play()
+        # sfx('shark_gone.ogg').play()
+        # sfx('jump.ogg').play()
+
     def animate(self, total_time):
         if self.state == 0:
             if total_time > self.last_animation + self.time_between_appearances:
@@ -175,6 +185,7 @@ class CatUniScene(Scene):
         self.foot_part = gfx('foot_part.png').convert_alpha()
         self.shark = gfx('shark.png').convert_alpha()
 
+        sfx('cat_jump.ogg')
 
         #cat variables
         self.cat_location = [width / 2, height - 100]
@@ -240,7 +251,7 @@ class CatUniScene(Scene):
             self.shark_active = True
         if self.score >= 25:
             self.elephant_active = True
-           
+
 
 
     def render(self):
