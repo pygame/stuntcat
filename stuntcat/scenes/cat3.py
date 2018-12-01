@@ -6,16 +6,25 @@ from pygame.locals import *
 from .scene import Scene
 from .. resources import gfx, sfx
 
+
+from pygame.sprite import DirtySprite, LayeredDirty
+
 def distance(a, b):
     return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
 
-class elephant:
+class Elephant(DirtySprite):
     def __init__(self):
+        DirtySprite.__init__(self)
         self.state = 0 #0 = offscreen, 1 = poise left, 2 = stomp left, 3 = offscreen, 4 = poise right, 5 = stomp right
         self.time_between_stomps = 5000 #ms
         self.time_of_poise = 1500 #ms
         self.time_of_stomp = 500 #ms
         self.last_animation = 0 #ms
+
+        self.image = gfx('foot.png').convert_alpha()
+        # gfx('foot_part.png').convert_alpha()
+        self.rect = self.image.get_rect()
+
 
     def animate(self, total_time):
         if self.state == 0 or self.state == 3:
@@ -90,8 +99,9 @@ class elephant:
             if cat_head_location[0] > width/2:
                 scene.reset_on_death()
 
-class shark:
+class Shark(DirtySprite):
     def __init__(self):
+        DirtySprite.__init__(self)
         self.state = 0 #0 = offscreen, 1 = poise, 2 = fire laser
         self.time_between_appearances = 7000 #ms
         self.time_of_poise = 1500 #ms
@@ -103,10 +113,18 @@ class shark:
         sfx('shark_gone.ogg')
         sfx('shark_lazer.ogg')
 
+        self.image = gfx('shark.png').convert_alpha()
+        # gfx('foot_part.png').convert_alpha()
+        self.rect = self.image.get_rect()
+
         # sfx('default_shark.ogg').play()
         # sfx('shark_appear.ogg').play()
         # sfx('shark_gone.ogg').play()
         # sfx('jump.ogg').play()
+
+    def update(self):
+        pass
+
 
     def animate(self, total_time):
         if self.state == 0:
@@ -167,6 +185,27 @@ class shark:
             if cat_location[1] > height - 130:
                 scene.reset_on_death()
 
+
+class Cat(DirtySprite):
+    def __init__(self):
+        DirtySprite.__init__(self)
+        self.image = gfx('cat_unicycle.png').convert_alpha()
+        self.rect = self.image.get_rect()
+        sfx('cat_jump.ogg')
+
+    def update(self):
+        pass
+
+class Fish(DirtySprite):
+    def __init__(self):
+        DirtySprite.__init__(self)
+        self.image = gfx('fish.png').convert_alpha()
+        self.rect = self.image.get_rect()
+
+    def update(self):
+        pass
+
+
 class CatUniScene(Scene):
     def __init__(self, *args, **kwargs):
         Scene.__init__(self, *args, **kwargs)
@@ -179,11 +218,11 @@ class CatUniScene(Scene):
         self.myfont = pygame.font.SysFont("monospace", 20)
 
         self.background = gfx('background.png').convert()
-        self.cat_unicycle = gfx('cat_unicycle.png').convert_alpha()
-        self.fish = gfx('fish.png').convert_alpha()
-        self.foot = gfx('foot.png').convert_alpha()
-        self.foot_part = gfx('foot_part.png').convert_alpha()
-        self.shark = gfx('shark.png').convert_alpha()
+        # self.cat_unicycle = gfx('cat_unicycle.png').convert_alpha()
+        # self.fish = gfx('fish.png').convert_alpha()
+        # self.foot = gfx('foot.png').convert_alpha()
+        # self.foot_part = gfx('foot_part.png').convert_alpha()
+        # self.shark = gfx('shark.png').convert_alpha()
 
         sfx('cat_jump.ogg')
 
@@ -210,10 +249,12 @@ class CatUniScene(Scene):
         self.number_of_not_fish = 0
 
         #elephant and shark classes
-        self.elephant = elephant()
-        self.shark = shark()
+        self.elephant = Elephant()
+        self.shark = Shark()
         self.shark_active = False #is the shark enabled yet
         self.elephant_active = False
+        self.cat = Cat()
+        self.init_sprites()
 
     #what to do when you die, reset the level
     def reset_on_death(self):
@@ -253,8 +294,26 @@ class CatUniScene(Scene):
             self.elephant_active = True
 
 
+    def init_sprites(self):
+        """temp, this will go in the init.
+        """
+        sprite_list = [self.shark, self.elephant, self.cat, Fish()]
+        self.allsprites = LayeredDirty(
+            sprite_list,
+            _time_threshold=1000/10.0
+        )
+        self.allsprites.clear(self.screen, self.background)
+
+    def render_sprites(self):
+        rects = []
+        self.allsprites.update()
+        rects.extend(self.allsprites.draw(self.screen))
+        return rects
 
     def render(self):
+        #TODO: use the render_sprites version.
+        return self.render_sprites()
+
         screen = self.screen
         width, height = self.width, self.height
 
@@ -305,9 +364,7 @@ class CatUniScene(Scene):
             "score : " + str(self.score), True, [255, 255, 255]
         )
         screen.blit(textsurface, (100, 100))
-
-        # pygame.display.flip()
-        # time_elapsed = clock.tick(60)
+        return [screen.get_rect()]
 
     def tick(self, dt):
         self.increase_difficulty()
