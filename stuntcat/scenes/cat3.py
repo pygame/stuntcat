@@ -32,7 +32,7 @@ class Elephant(DirtySprite):
         self.time_of_stomp = 500 #ms
         self.last_animation = 0 #ms
 
-        self.image = gfx('foot.png').convert_alpha()
+        self.image = gfx('foot.png', convert_alpha=True)
         # gfx('foot_part.png').convert_alpha()
         self.rect = self.image.get_rect()
 
@@ -124,7 +124,7 @@ class Shark(DirtySprite):
         sfx('shark_gone.ogg')
         sfx('shark_lazer.ogg')
 
-        self.image = gfx('shark.png').convert_alpha()
+        self.image = gfx('shark.png', convert_alpha=True)
         # gfx('foot_part.png').convert_alpha()
         self.rect = self.image.get_rect()
 
@@ -134,7 +134,10 @@ class Shark(DirtySprite):
         # sfx('jump.ogg').play()
 
     def update(self):
-        pass
+        if self.state == 1: #poise
+            pass
+        if self.state == 2: #fire laser
+            sfx('shark_lazer.ogg').play()
 
 
     def animate(self, total_time):
@@ -201,19 +204,31 @@ class Cat(DirtySprite):
     def __init__(self, cat_holder):
         DirtySprite.__init__(self)
         self.cat_holder = cat_holder
-        self.image = gfx('cat_unicycle.png').convert_alpha()
+        self.image = gfx('cat_unicycle.png', convert_alpha=True)
         self.rect = self.image.get_rect()
         sfx('cat_jump.ogg')
+        self.image_direction = [
+            pygame.transform.flip(self.image, 1, 0),
+            self.image,
+        ]
 
         self.last_location = [0, 0]
+        self.last_direction = True #right is true
 
     def update(self):
-        if self.last_location != self.cat_holder.cat_location:
+        direction = self.cat_holder.cat_speed[0] > 0
+        # location = self.cat_holder.cat_location
+        location = self.cat_holder.cat_head_location
+        if self.last_location != location:
             self.dirty = True
-            self.rect.x = int(self.cat_holder.cat_location[0])
-            self.rect.y = int(self.cat_holder.cat_location[1])
-        self.last_location == self.cat_holder.cat_location[:]
+            self.rect.x = int(location[0])
+            self.rect.y = int(location[1])
+        if self.last_direction != direction:
+            self.dirty = True
+            self.image = self.image_direction[int(direction)]
 
+        self.last_location == location[:]
+        self.last_direction = direction
 
         # draw cat
         # pygame.draw.line(
@@ -229,7 +244,7 @@ class Cat(DirtySprite):
 class Fish(DirtySprite):
     def __init__(self, group, x, y, vx, vy):
         DirtySprite.__init__(self, group)
-        self.image = gfx('fish.png').convert_alpha()
+        self.image = gfx('fish.png', convert_alpha=True)
         self.rect = self.image.get_rect()
 
         self.rect.x = x
@@ -433,14 +448,18 @@ class CatUniScene(Scene):
 
     def render(self):
         #TODO: use the render_sprites version.
-        return self.render_sprites()
+        # return self.render_sprites()
+
+        # we draw the sprites, and then the lines over the top.
+        self.render_sprites()
 
         screen = self.screen
         width, height = self.width, self.height
 
-        background_colour = (0, 0, 0)
-        screen.fill(background_colour)
-        screen.blit(self.background, (0, 0))
+        if 0:
+            background_colour = (0, 0, 0)
+            screen.fill(background_colour)
+            screen.blit(self.background, (0, 0))
 
         self.elephant.render(screen, width, height)
         self.shark.render(screen, width, height)
