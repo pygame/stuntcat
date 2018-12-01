@@ -32,7 +32,7 @@ class Elephant(DirtySprite):
         self.time_of_stomp = 500 #ms
         self.last_animation = 0 #ms
 
-        self.image = gfx('foot.png').convert_alpha()
+        self.image = gfx('foot.png', convert_alpha=True)
         # gfx('foot_part.png').convert_alpha()
         self.rect = self.image.get_rect()
 
@@ -113,10 +113,25 @@ class Elephant(DirtySprite):
 class Shark(DirtySprite):
     def __init__(self):
         DirtySprite.__init__(self)
-        self.state = 0 #0 = offscreen, 1 = poise, 2 = fire laser
+        self.state = 0 #
+        self.states = {
+            0: 'offscreen',
+            1: 'about_to_appear',
+            2: 'poise',
+            3: 'fire laser',
+            4: 'leaving',
+        }
+        self.last_state = 0
+        self.just_happened = 'offscreen'
+
+        #TODO: to make it easier to test the shark
+        # self.time_between_appearances = 1000 #ms
         self.time_between_appearances = 7000 #ms
-        self.time_of_poise = 1500 #ms
+
+        self.time_of_about_to_appear = 3000
+        self.time_of_poise = 3000 #ms
         self.time_of_laser = 100 #ms
+        self.time_of_leaving = 3000 #ms
         self.last_animation = 0 #ms
 
         sfx('default_shark.ogg')
@@ -124,7 +139,7 @@ class Shark(DirtySprite):
         sfx('shark_gone.ogg')
         sfx('shark_lazer.ogg')
 
-        self.image = gfx('shark.png').convert_alpha()
+        self.image = gfx('shark.png', convert_alpha=True)
         # gfx('foot_part.png').convert_alpha()
         self.rect = self.image.get_rect()
 
@@ -138,25 +153,76 @@ class Shark(DirtySprite):
 
 
     def animate(self, total_time):
-        if self.state == 0:
+        # print('update', self.states[self.state], self.states[self.last_state])
+        state = self.states[self.state]
+        start_state = self.state
+
+        if state == 'offscreen':
+            just_happened = self.state != self.last_state
+            if just_happened:
+                self.just_happened = state
+                sfx('shark_gone.ogg', stop=1)
+
             if total_time > self.last_animation + self.time_between_appearances:
                 self.state += 1
                 self.last_animation = total_time
-        if self.state == 1:
+
+        elif state == 'about_to_appear':
+            just_happened = self.state != self.last_state
+            if just_happened:
+                self.just_happened = state
+                sfx('shark_appear.ogg', play=1)
+
+            if total_time > self.last_animation + self.time_of_about_to_appear:
+                self.state += 1
+                self.last_animation = total_time
+
+
+        elif state == 'poise':
+            just_happened = self.state != self.last_state
+            if just_happened:
+                self.just_happened = state
+                sfx('shark_appear.ogg', stop=1)
+                sfx('shark_attacks.ogg', play=1)
+
             if total_time > self.last_animation + self.time_of_poise:
                 self.state += 1
                 self.last_animation = total_time
-        if self.state == 2:
+
+
+
+        elif state == 'fire laser':
+            just_happened = self.state != self.last_state
+            if just_happened:
+                self.just_happened = state
+                sfx('shark_lazer.ogg', play=1)
+
             if total_time > self.last_animation + self.time_of_laser:
                 self.state += 1
-                if self.state == 3:
+                self.last_animation = total_time
+
+
+        elif state == 'leaving':
+            just_happened = self.state != self.last_state
+            if just_happened:
+                self.just_happened = state
+                sfx('shark_attacks.ogg', stop=1)
+                sfx('shark_gone.ogg', play=1)
+
+            if total_time > self.last_animation + self.time_of_leaving:
+                self.state += 1
+                if self.state == max(self.states.keys()) + 1:
                     self.state = 0
                 self.last_animation = total_time
 
 
 
+        self.last_state = start_state
+
     def render(self, screen, width, height):
-        if self.state == 1: #poise
+        state = self.states[self.state]
+
+        if state == 'poise':
             pygame.draw.polygon(
                 screen,
                 [255, 255, 0],
@@ -167,7 +233,7 @@ class Shark(DirtySprite):
                     [0, height],
                 ],
             )
-        if self.state == 2: #fire laser
+        if state == 'fire laser':
             pygame.draw.polygon(
                 screen,
                 [255, 255, 0],
@@ -191,29 +257,43 @@ class Shark(DirtySprite):
 
 
     def collide(self, scene, width, height, cat_location):
-
-        if self.state == 2:
-            if cat_location[1] > height - 130:
-                scene.reset_on_death()
+        pass
+        #TODO: this doesn't work. It means the laser never fires.
+        # if self.state == 2:
+        #     if cat_location[1] > height - 130:
+        #         print('shark collide')
+        #         scene.reset_on_death()
 
 
 class Cat(DirtySprite):
     def __init__(self, cat_holder):
         DirtySprite.__init__(self)
         self.cat_holder = cat_holder
-        self.image = gfx('cat_unicycle.png').convert_alpha()
+        self.image = gfx('cat_unicycle.png', convert_alpha=True)
         self.rect = self.image.get_rect()
         sfx('cat_jump.ogg')
+        self.image_direction = [
+            pygame.transform.flip(self.image, 1, 0),
+            self.image,
+        ]
 
         self.last_location = [0, 0]
+        self.last_direction = True #right is true
 
     def update(self):
-        if self.last_location != self.cat_holder.cat_location:
+        direction = self.cat_holder.cat_speed[0] > 0
+        # location = self.cat_holder.cat_location
+        location = self.cat_holder.cat_head_location
+        if self.last_location != location:
             self.dirty = True
-            self.rect.x = int(self.cat_holder.cat_location[0])
-            self.rect.y = int(self.cat_holder.cat_location[1])
-        self.last_location == self.cat_holder.cat_location[:]
+            self.rect.x = int(location[0])
+            self.rect.y = int(location[1])
+        if self.last_direction != direction:
+            self.dirty = True
+            self.image = self.image_direction[int(direction)]
 
+        self.last_location == location[:]
+        self.last_direction = direction
 
         # draw cat
         # pygame.draw.line(
@@ -229,7 +309,7 @@ class Cat(DirtySprite):
 class Fish(DirtySprite):
     def __init__(self, group, x, y, vx, vy):
         DirtySprite.__init__(self, group)
-        self.image = gfx('fish.png').convert_alpha()
+        self.image = gfx('fish.png', convert_alpha=True)
         self.rect = self.image.get_rect()
 
         self.rect.x = x
@@ -420,8 +500,13 @@ class CatUniScene(Scene):
             self.number_of_not_fish = 2
         if self.score >= 50:
             self.number_of_not_fish = int((self.score - 20)/10)
-        if self.score >= 15:
+
+        #TODO: to make it easier to test.
+        # if self.score >= 15:
+        #     self.shark_active = True
+        if self.score >= 0:
             self.shark_active = True
+
         if self.score >= 25:
             self.elephant_active = True
 
@@ -435,12 +520,16 @@ class CatUniScene(Scene):
         #TODO: use the render_sprites version.
         return self.render_sprites()
 
+        # we draw the sprites, and then the lines over the top.
+        self.render_sprites()
+
         screen = self.screen
         width, height = self.width, self.height
 
-        background_colour = (0, 0, 0)
-        screen.fill(background_colour)
-        screen.blit(self.background, (0, 0))
+        if 0:
+            background_colour = (0, 0, 0)
+            screen.fill(background_colour)
+            screen.blit(self.background, (0, 0))
 
         self.elephant.render(screen, width, height)
         self.shark.render(screen, width, height)

@@ -5,6 +5,7 @@ import pygame
 from stuntcat.scenes import LoadingScene
 from stuntcat.scenes import CatUniScene
 
+from stuntcat.gifmaker import GifMaker
 
 class Game:
     FLAGS = 0
@@ -13,6 +14,7 @@ class Game:
     FPS = 30
 
     def __init__(self):
+        pygame.mixer.pre_init(44100,-16,2, 512)
         pygame.init()
         pygame.font.init()
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), self.FLAGS)
@@ -24,6 +26,9 @@ class Game:
             # LoadingScene(self),
             CatUniScene(self)
         ]
+
+        self.gifmaker = None
+        # self.gifmaker = GifMaker()
 
     def tick(self, dt):
         """
@@ -58,15 +63,15 @@ class Game:
                     all_rects.extend(rects)
                 if not getattr(ascene, 'propagate_render', False):
                     break
-        print(all_rects)
+        # print(all_rects)
         pygame.display.update(all_rects)
 
-    def events(self):
+    def events(self, events):
         """
         Standard event loop. Will propagate events to scenes
         following the same rules as tick and render.
         """
-        for event in pygame.event.get():
+        for event in events:
             if event.type == pygame.QUIT:
                 self.running = False
 
@@ -86,7 +91,10 @@ class Game:
             fs = time.time()
             self.tick(dt)
             self.render()
-            self.events()
+            events = pygame.event.get()
+            self.events(events)
             dt = (time.time() - fs) * 1000
+            if self.gifmaker is not None:
+                self.gifmaker.update(events, self.screen)
 
         pygame.quit()
