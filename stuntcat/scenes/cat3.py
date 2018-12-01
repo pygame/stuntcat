@@ -246,6 +246,8 @@ class Shark(DirtySprite):
         sfx('shark_gone.ogg')
         sfx('shark_lazer.ogg')
         sfx('zirkus.ogg')
+        sfx('cat_laser_2.ogg')
+        sfx('cat_laser_3.ogg')
 
 
         self.image = gfx('shark.png', convert_alpha=True)
@@ -284,8 +286,12 @@ class Shark(DirtySprite):
             self.lazer = Lazer(self.container, self.width, self.height)
 
             if self.scene.cat_location[1] > self.height - 130:
-                sfx('shark_lazer.ogg', play=1)
+                # sfx('shark_lazer.ogg', play=1)
                 print('shark collide')
+
+                sfx('cat_laser_2.ogg', play=1)
+                # sfx('cat_laser_3.ogg', play=1)
+
                 self.lazered = True
             else:
                 self.lazered = False
