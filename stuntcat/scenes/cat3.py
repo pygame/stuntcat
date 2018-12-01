@@ -201,6 +201,8 @@ class CatUniScene(Scene):
         #elephant and shark classes
         self.elephant = elephant()
         self.shark = shark()
+        self.shark_active = False #is the shark enabled yet
+        self.elephant_active = False
 
     #what to do when you die, reset the level
     def reset_on_death(self):
@@ -214,17 +216,17 @@ class CatUniScene(Scene):
         self.elephant.state = 0
         self.shark.last_animation = 0
         self.shark.state = 0
+        self.shark_active = False
+        self.elephant_active = False
 
     #periodically increase the difficulty
     def increase_difficulty(self):
-        if self.score > 6:
-            self.number_of_not_fish = 1
-        if self.score > 30:
-            self.number_of_not_fish = 2
-        if self.score > 60:
-            self.number_of_not_fish = 3
-        if self.score > 100:
-            self.number_of_not_fish = int(self.score/30)
+        self.number_of_not_fish = int(self.score/10)
+        if self.score >= 15:
+            self.shark_active = True
+        if self.score >= 25:
+            self.elephant_active = True
+           
 
 
     def render(self):
@@ -301,18 +303,19 @@ class CatUniScene(Scene):
             self.cat_speed[0] = min(
                 self.cat_speed[0] + 0.3 * dt_scaled, self.cat_speed_max
             )
-            self.cat_angle -= 0.01 * dt_scaled
+            self.cat_angle -= 0.003 * dt_scaled
 
         if self.left_pressed:
             self.cat_speed[0] = max(
                 self.cat_speed[0] - 0.3 * dt_scaled, -self.cat_speed_max
             )
-            self.cat_angle += 0.01 * dt_scaled
+            self.cat_angle += 0.003 * dt_scaled
 
         # make the cat fall
-        self.cat_angular_vel += 0.001 * self.cat_angle * dt_scaled
+        angle_sign = 1 if self.cat_angle > 0 else -1
+        self.cat_angular_vel += 0.0002 * angle_sign * dt_scaled
         self.cat_angle += self.cat_angular_vel * dt_scaled
-        if self.cat_angle > math.pi / 2 or self.cat_angle < -math.pi / 2:
+        if (self.cat_angle > math.pi / 2 or self.cat_angle < -math.pi / 2) and self.cat_location[1] > height - 160:
             self.reset_on_death()
 
         # move cat
@@ -327,14 +330,16 @@ class CatUniScene(Scene):
         ]
 
         # check for out of bounds
-        if self.cat_location[0] > 0.9 * width or self.cat_location[0] < 0.1 * width:
+        if (self.cat_location[0] > 0.9 * width or self.cat_location[0] < 0.1 * width) and self.cat_location[1] > height - 110:
             self.reset_on_death()
 
         #check for collision with the elephant stomp
-        self.elephant.animate(self.total_time)
-        self.elephant.collide(self, width, height, self.cat_head_location)
-        self.shark.animate(self.total_time)
-        self.shark.collide(self, width, height, self.cat_location)
+        if self.elephant_active:
+            self.elephant.animate(self.total_time)
+            self.elephant.collide(self, width, height, self.cat_head_location)
+        if self.shark_active:
+            self.shark.animate(self.total_time)
+            self.shark.collide(self, width, height, self.cat_location)
 
         ##object physics
 
@@ -379,18 +384,18 @@ class CatUniScene(Scene):
                 self.fish.append(
                     [
                         0,
-                        random.randint(0, height / 2),
-                        random.randint(2, 5),
-                        -random.randint(3, 10),
+                        height/2,#random.randint(0, height / 2),
+                        random.randint(3, 7),
+                        -random.randint(5, 12),
                     ]
                 )
             else:
                 self.fish.append(
                     [
                         width,
-                        random.randint(0, height / 2),
-                        -random.randint(2, 5),
-                        -random.randint(3, 10),
+                        height/2,#random.randint(0, height / 2),
+                        -random.randint(3, 7),
+                        -random.randint(5, 12),
                     ]
                 )
         while len(self.not_fish) < self.number_of_not_fish:
@@ -399,18 +404,18 @@ class CatUniScene(Scene):
                 self.not_fish.append(
                     [
                         0,
-                        random.randint(0, height / 2),
-                        random.randint(2, 5),
-                        -random.randint(3, 10),
+                        height/2,#random.randint(0, height / 2),
+                        random.randint(3, 7),
+                        -random.randint(5, 12),
                     ]
                 )
             else:
                 self.not_fish.append(
                     [
                         width,
-                        random.randint(0, height / 2),
-                        -random.randint(2, 5),
-                        -random.randint(3, 10),
+                        height/2,#random.randint(0, height / 2),
+                        -random.randint(3, 7),
+                        -random.randint(5, 12),
                     ]
                 )
 
