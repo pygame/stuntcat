@@ -227,7 +227,7 @@ class Shark(DirtySprite):
             4: 'leaving',
         }
         self.last_state = 0
-        self.just_happened = 'offscreen'
+        self.just_happened = None
         self.lazered = False # was the cat hit?
 
 
@@ -256,7 +256,7 @@ class Shark(DirtySprite):
 
 
     def update(self):
-        debug = False
+        debug = True
         if self.just_happened == 'offscreen':
             if debug:print(self.just_happened)
             sfx('shark_gone.ogg', stop=1)
@@ -446,6 +446,9 @@ class Cat(DirtySprite):
         if self.last_direction != direction:
             self.dirty = True
             self.image = self.image_direction[int(direction)]
+            if random.random() < 0.1:
+                sfx('cat_wheel.ogg', play=1)
+
         if self.last_rotation != rotation or self.last_location != location:
             self.image = pygame.transform.rotate(self.image_direction[int(direction)], -self.cat_holder.cat_angle*180/math.pi)
             size = self.image.get_rect().size
@@ -664,17 +667,22 @@ class CatUniScene(Scene):
         self.cat_angular_vel = 0
         self.score = 0
         self.total_time = 0
+
         self.elephant.last_animation = 0
         self.elephant.state = 0
         self.elephant.just_happened = None
+        self.elephant.dirty = 1
+        self.elephant_active = False
+
         self.shark.last_animation = 0
         self.shark.state = 0
         self.shark_active = False
         self.shark.just_happened = None
+        self.shark.dirty = 1
+
         if hasattr(self.shark, 'lazer'):
             self.shark.lazer.kill()
 
-        self.elephant_active = False
 
     #periodically increase the difficulty
     def increase_difficulty(self):
@@ -697,11 +705,11 @@ class CatUniScene(Scene):
         #TODO: to make it easier to test.
         # if self.score >= 15:
         #     self.shark_active = True
-        if self.score >= 10:
+        if self.score >= 3:
             self.shark_active = True
 
         #TODO: to make it easier to test.
-        if self.score >= 25:
+        if self.score >= 8:
             self.elephant_active = True
 
     def render_sprites(self):
