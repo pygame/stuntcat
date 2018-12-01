@@ -14,13 +14,13 @@ freeze_cmds = ["bdist_dmg", "bdist_msi", 'build_exe', 'bdist_mac']
 if any(x in sys.argv for x in freeze_cmds):
     # https://cx-freeze.readthedocs.io/en/latest/distutils.html
     # Note: we needed to use git cx_freeze because it does not work on mac py3.7.
-    #
     #     git+https://github.com/anthony-tuininga/cx_Freeze.git
+    #
     from cx_Freeze import setup, Executable
 
     # Dependencies are automatically detected, but it might need fine tuning.
     build_exe_options = {
-        "packages": ["os", "pygame", "sys", "random", "pyscroll", "pytmx", "thorpy"],
+        "packages": ["os", "pygame", "sys", "random"],
         "excludes": ["tkinter"],
     }
     # GUI applications require a different base on Windows (the default is for a
@@ -65,15 +65,15 @@ setup(
     long_description_content_type='text/markdown',
     options=options,
     executables=executables,
-    package_dir={name: name},
+    package_dir={'stuntcat': 'stuntcat'},
     packages=find_packages(),
     # package_data={'stuntcat': []},
     url='https://github.com/pygame/stuntcat',
-    install_requires=['pygame', "pyscroll", "pytmx", "thorpy"],
-    version='0.0.6',
+    install_requires=['pygame'],
+    version='0.0.7',
     entry_points={
         'console_scripts': [
-            '%s=%s.cli:main' % (name, name),
+            'stuntcat=stuntcat.cli:main',
         ],
     },
 )
