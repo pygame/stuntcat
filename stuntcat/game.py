@@ -17,6 +17,7 @@ class Game:
         pygame.font.init()
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), self.FLAGS)
         self.clock = pygame.time.Clock()
+        pygame.display.set_caption("a + d keys: lean left/right. Arrow left/right move left/right. Catch fish. Avoid shark lazers elephant stomps.")
 
         self.running = True
         self.scenes = [
