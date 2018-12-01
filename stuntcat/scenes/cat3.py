@@ -123,9 +123,10 @@ class Lazer(DirtySprite):
 
 
 class Shark(DirtySprite):
-    def __init__(self, container, width, height):
+    def __init__(self, container, scene, width, height):
         DirtySprite.__init__(self, container)
         self.container = container
+        self.scene = scene
         self.width, self.height = width, height
 
         self.state = 0 #
@@ -138,6 +139,7 @@ class Shark(DirtySprite):
         }
         self.last_state = 0
         self.just_happened = 'offscreen'
+        self.lazered = False # was the cat hit?
 
 
         #TODO: to make it easier to test the shark
@@ -190,12 +192,16 @@ class Shark(DirtySprite):
 
         elif self.just_happened == 'fire laser':
             if debug:print(self.just_happened)
-            sfx('shark_lazer.ogg', play=1)
             self.lazer = Lazer(self.container, self.width, self.height)
 
-            # if cat_location[1] > height - 130:
-            #     print('shark collide')
-            #     scene.reset_on_death()
+            if self.scene.cat_location[1] > self.height - 130:
+                sfx('shark_lazer.ogg', play=1)
+                print('shark collide')
+                self.lazered = True
+            else:
+                self.lazered = False
+                sfx('shark_lazer.ogg', play=1)
+
 
         elif self.just_happened == 'leaving':
             if debug:print(self.just_happened)
@@ -203,6 +209,9 @@ class Shark(DirtySprite):
             sfx('shark_gone.ogg', play=1)
             self.rect.x = 0
             self.dirty = True
+            if self.lazered:
+                self.scene.reset_on_death()
+                self.lazered = False
             self.lazer.kill()
 
 
@@ -553,7 +562,8 @@ class CatUniScene(Scene):
             sprite_list,
             _time_threshold=1000/10.0
         )
-        self.shark = Shark(self.allsprites, self.width, self.height)
+        scene = self
+        self.shark = Shark(self.allsprites, scene, self.width, self.height)
         self.allsprites.add(self.shark)
         self.allsprites.clear(self.screen, self.background)
 
