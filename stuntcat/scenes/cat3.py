@@ -589,6 +589,7 @@ class CatUniScene(Scene):
         # self.shark = gfx('shark.png').convert_alpha()
 
         sfx('cat_jump.ogg')
+        sfx('eatfish.ogg')
 
         #cat variables
         self.cat_location = [width / 2, height - 100]
@@ -872,6 +873,7 @@ class CatUniScene(Scene):
             if distance([f.rect[0], f.rect[1]], self.cat_head_location) < 100:
                 self.score += 1
                 self.fish.remove(f)
+                sfx('eatfish.ogg', play=1)
                 f.kill()
         for f in reversed(self.not_fish.sprites()):
             if distance([f.rect[0], f.rect[1]], self.cat_head_location) < 50:
@@ -947,6 +949,8 @@ class CatUniScene(Scene):
             elif event.key == K_UP:
                 if self.cat_location[1] == height - 100:
                     self.cat_speed[1] -= 25
+                    sfx('cat_jump.ogg', play=1)
+
         elif event.type == KEYUP:
             if event.key == K_UP:
                 if self.cat_speed[1] < 0:
