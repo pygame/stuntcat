@@ -113,6 +113,15 @@ python setup.py bdist_dmg
 ls build/*.dmg
 ```
 
+### Making gif.
+
+Uncomment the game.py line. Then press g to start recording, g to stop.
+```python
+        # self.gifmaker = GifMaker()
+```
+
+Requires imagemagic tested on OSX, probably works on linux.
+
 
 ## Licenses
 
