@@ -1,6 +1,7 @@
 """ For loading resources.
 """
 import os
+import time
 import pygame
 _sfx_cache = {}
 _gfx_cache = {}
@@ -26,12 +27,19 @@ def gfx(image, convert=False, convert_alpha=False):
     _gfx_cache[gfx_key] = asurf
     return asurf
 
-def sfx(snd):
+def sfx(snd, play=False, stop=False):
     global _sfx_cache
-    if snd in _sfx_cache:
-        return _sfx_cache[snd]
+    snd_key = snd
+    if snd_key in _sfx_cache:
+        asound = _sfx_cache[snd_key]
+    else:
+        path = os.path.join(data_path(), 'sounds', snd)
+        asound = pygame.mixer.Sound(path)
+        _sfx_cache[snd_key] = asound
 
-    path = os.path.join(data_path(), 'sounds', snd)
-    asound = pygame.mixer.Sound(path)
-    _sfx_cache[snd] = asound
+    # print(snd_key, play, stop, time.time())
+    if play:
+        asound.play()
+    if stop:
+        asound.stop()
     return asound

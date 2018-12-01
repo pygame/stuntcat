@@ -14,6 +14,7 @@ class Game:
     FPS = 30
 
     def __init__(self):
+        pygame.mixer.pre_init(44100,-16,2, 512)
         pygame.init()
         pygame.font.init()
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), self.FLAGS)
