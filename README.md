@@ -125,7 +125,18 @@ Requires imagemagic tested on OSX, probably works on linux.
 
 ## Licenses
 
+#### Code license
+
 License for code will be the same as the pygame license (LGPL, but you can keep your parts of course!)
-Art assets license will be some form of permissive Creative Commons.
+
+
+#### Art assets
+
+https://creativecommons.org/licenses/by-sa/4.0/
+https://creativecommons.org/2015/10/08/cc-by-sa-4-0-now-one-way-compatible-with-gplv3/
+
+- @AokiAhishatsu stuntcat/data/images/
+- @dirkk0 stuntcat/data/sounds/ict_0026.ogg
+- M. other stuntcat/data/sounds/
 
 So technically anyone should be able to distribute the game following those licenses (and even sell it).
