@@ -656,7 +656,7 @@ class CatUniScene(Scene):
                 self.fish.remove(f)
                 f.kill()
         for f in reversed(self.not_fish.sprites()):
-            f.rect[0] += f.velocity[1] * dt_scaled # speed of the throw
+            f.rect[0] += f.velocity[0] * dt_scaled # speed of the throw
             f.velocity[1] += 0.2 * dt_scaled  # gravity
             f.rect[1] += f.velocity[1] * dt_scaled  # y velocity
             # check out of bounds
