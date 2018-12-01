@@ -20,7 +20,7 @@ if any(x in sys.argv for x in freeze_cmds):
 
     # Dependencies are automatically detected, but it might need fine tuning.
     build_exe_options = {
-        "packages": ["os", "pygame", "sys", "random"],
+        "packages": ["os", "pygame", "sys", "random", "pyscroll", "pytmx", "thorpy"],
         "excludes": ["tkinter"],
     }
     # GUI applications require a different base on Windows (the default is for a
@@ -69,8 +69,8 @@ setup(
     packages=find_packages(),
     # package_data={'stuntcat': []},
     url='https://github.com/pygame/stuntcat',
-    install_requires=['pygame'],
-    version='0.0.5',
+    install_requires=['pygame', "pyscroll", "pytmx", "thorpy"],
+    version='0.0.6',
     entry_points={
         'console_scripts': [
             '%s=%s.cli:main' % (name, name),
