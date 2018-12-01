@@ -585,7 +585,7 @@ class CatUniScene(Scene):
 
     #periodically increase the difficulty
     def increase_difficulty(self):
-        self.number_of_not_fish = 1
+        self.number_of_not_fish = 0
         if self.score > 6:
             self.number_of_not_fish = 1
         if self.score > 13:

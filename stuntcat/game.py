@@ -23,7 +23,7 @@ class Game:
 
         self.running = True
         self.scenes = [
-            # LoadingScene(self),
+            LoadingScene(self),
             CatUniScene(self)
         ]
 
