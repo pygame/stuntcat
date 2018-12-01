@@ -322,17 +322,40 @@ class Fish(DirtySprite):
         DirtySprite.__init__(self, group)
         self.image = gfx('fish.png', convert_alpha=True)
         self.rect = self.image.get_rect()
-
+        size = self.rect.size
         self.rect.x = x
         self.rect.y = y
         self.velocity = pygame.math.Vector2(vx, vy)
 
         self.last_pos = [x, y]
+        self.pos = [x,y]
 
     def update(self):
-        if self.last_pos != self.rect[:2]:
+        if self.last_pos != self.pos[:2]:
             self.dirty = True
-        self.last_pos = self.rect[:2]
+            self.rect.x = self.pos[0] - 25
+            self.rect.y = self.pos[1] - 25
+        self.last_pos = self.pos[:2]
+
+class NotFish(DirtySprite):
+    def __init__(self, group, x, y, vx, vy):
+        DirtySprite.__init__(self, group)
+        self.image = gfx('ring.png', convert_alpha=True)
+        self.rect = self.image.get_rect()
+        size = self.rect.size
+        self.rect.x = x
+        self.rect.y = y
+        self.velocity = pygame.math.Vector2(vx, vy)
+
+        self.last_pos = [x, y]
+        self.pos = [x,y]
+
+    def update(self):
+        if self.last_pos != self.pos[:2]:
+            self.dirty = True
+            self.rect.x = self.pos[0] - 25
+            self.rect.y = self.pos[1] - 25
+        self.last_pos = self.pos[:2]
 
 
 class Score(DirtySprite):
@@ -496,7 +519,7 @@ class CatUniScene(Scene):
 
     #periodically increase the difficulty
     def increase_difficulty(self):
-        self.number_of_not_fish = 0
+        self.number_of_not_fish = 1
         if self.score > 6:
             self.number_of_not_fish = 1
         if self.score > 13:
@@ -529,7 +552,7 @@ class CatUniScene(Scene):
 
     def render(self):
         #TODO: use the render_sprites version.
-        self.render_sprites()
+        return self.render_sprites()
 
         # we draw the sprites, and then the lines over the top.
         self.render_sprites()
@@ -576,9 +599,9 @@ class CatUniScene(Scene):
 
         # draw fish and not fish
         for f in self.fish:
-            pygame.draw.circle(screen, [0, 255, 0], [int(f.rect[0]), int(f.rect[1])], 10)
+            pygame.draw.circle(screen, [0, 255, 0], [int(f.pos[0]), int(f.pos[1])], 10)
         for f in self.not_fish:
-            pygame.draw.circle(screen, [255, 0, 0], [int(f.rect[0]), int(f.rect[1])], 10)
+            pygame.draw.circle(screen, [255, 0, 0], [int(f.pos[0]), int(f.pos[1])], 10)
 
         # draw score
         textsurface = self.myfont.render(
@@ -648,19 +671,19 @@ class CatUniScene(Scene):
 
         # move fish and not fish
         for f in reversed(self.fish.sprites()):
-            f.rect[0] += f.velocity[0] * dt_scaled  # speed of the throw
+            f.pos[0] += f.velocity[0] * dt_scaled  # speed of the throw
             f.velocity[1] += 0.2 * dt_scaled  # gravity
-            f.rect[1] += f.velocity[1] * dt_scaled # y velocity
+            f.pos[1] += f.velocity[1] * dt_scaled # y velocity
             # check out of bounds
-            if f.rect[1] > height:
+            if f.pos[1] > height:
                 self.fish.remove(f)
                 f.kill()
         for f in reversed(self.not_fish.sprites()):
-            f.rect[0] += f.velocity[0] * dt_scaled # speed of the throw
+            f.pos[0] += f.velocity[0] * dt_scaled # speed of the throw
             f.velocity[1] += 0.2 * dt_scaled  # gravity
-            f.rect[1] += f.velocity[1] * dt_scaled  # y velocity
+            f.pos[1] += f.velocity[1] * dt_scaled  # y velocity
             # check out of bounds
-            if f.rect[1] > height:
+            if f.pos[1] > height:
                 self.not_fish.remove(f)
                 f.kill()
 
@@ -709,7 +732,7 @@ class CatUniScene(Scene):
             # choose a side of the screen
             if random.choice([0, 1]) == 0:
                 self.not_fish.append(
-                    Fish(self.allsprites,
+                    NotFish(self.allsprites,
                         0,
                         height/2,#random.randint(0, height / 2),
                         random.randint(3, 7),
@@ -718,7 +741,7 @@ class CatUniScene(Scene):
                 )
             else:
                 self.not_fish.append(
-                    Fish(self.allsprites,
+                    NotFish(self.allsprites,
                         width,
                         height/2,#random.randint(0, height / 2),
                         -random.randint(3, 7),
