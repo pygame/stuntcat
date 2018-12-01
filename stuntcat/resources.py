@@ -15,9 +15,16 @@ def data_path():
         )
     return path
 
-def gfx(image):
+def gfx(image, convert=False, convert_alpha=False):
+    global _gfx_cache
+    gfx_key = (image, convert, convert_alpha)
+    if gfx_key in _gfx_cache:
+        return _gfx_cache[gfx_key]
+
     path = os.path.join(data_path(), 'images', image)
-    return pygame.image.load(path)
+    asurf = pygame.image.load(path)
+    _gfx_cache[gfx_key] = asurf
+    return asurf
 
 def sfx(snd):
     global _sfx_cache
