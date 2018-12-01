@@ -62,7 +62,7 @@ class Game:
                     all_rects.extend(rects)
                 if not getattr(ascene, 'propagate_render', False):
                     break
-        print(all_rects)
+        # print(all_rects)
         pygame.display.update(all_rects)
 
     def events(self, events):
