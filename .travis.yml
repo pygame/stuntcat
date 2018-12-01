@@ -13,7 +13,7 @@ matrix:
     env: TOXENV=py37
   - os: osx
     language: generic
-    env: TOXENV=py27
+    env: TOXENV=py37
 install: pip install tox
 script: tox
 # deploy:
