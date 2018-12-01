@@ -24,35 +24,120 @@ class LayeredDirtyAppend(LayeredDirty):
 
 
 class Elephant(DirtySprite):
-    def __init__(self):
+    def __init__(self, scene):
         DirtySprite.__init__(self)
-        self.state = 0 #0 = offscreen, 1 = poise left, 2 = stomp left, 3 = offscreen, 4 = poise right, 5 = stomp right
+        self.scene = scene
+        self.width = scene.width
+        self.height = scene.height
+        self.state = 0
+        self.states = {
+            0: 'offscreen',
+            1: 'poise left',
+            2: 'stomp left',
+            3: 'offscreen',
+            4: 'poise right',
+            5: 'stomp right',
+        }
+        self.last_state = 0
+        self.just_happened = None
+
+
         self.time_between_stomps = 5000 #ms
+        # self.time_between_stomps = 1000 #ms
         self.time_of_poise = 1500 #ms
         self.time_of_stomp = 500 #ms
         self.last_animation = 0 #ms
 
+        # stamp.
+        sfx('foot_elephant.ogg')
+
         self.image = gfx('foot.png', convert_alpha=True)
         # gfx('foot_part.png').convert_alpha()
         self.rect = self.image.get_rect()
+        self.rect.x = -1000
+        self.rect.y = -1000
+
+
+    def update(self):
+        # if self.just_happened is not None:
+        #     print(self.just_happened)
+
+        from_edge = 400
+        from_top = 0
+
+        if self.just_happened == 'offscreen':
+            self.dirty = True
+            self.rect.x = -1000
+            self.rect.y = -1000
+            sfx('foot_elephant.ogg', stop=1)
+        elif self.just_happened == 'poise left':
+            self.rect.x = from_edge
+            self.rect.y = from_top
+            self.dirty = True
+        elif self.just_happened == 'stomp left':
+            self.rect.y = (self.height - self.image.get_height()) - 10
+            self.rect.x = from_edge
+            self.dirty = True
+
+            sfx('foot_elephant.ogg', play=1)
+            if pygame.sprite.collide_rect(self, self.scene.cat):
+                print('stop_right collide')
+                self.scene.reset_on_death()
+                self.dirty = True
+
+        elif self.just_happened == 'poise right':
+            self.rect.x = self.width - from_edge
+            self.rect.y = from_top
+            self.dirty = True
+        elif self.just_happened == 'stomp right':
+            self.rect.x = self.width - from_edge
+            self.rect.y = (self.height - self.image.get_height()) - 10
+            self.dirty = True
+            sfx('foot_elephant.ogg', play=1)
+            if pygame.sprite.collide_rect(self, self.scene.cat):
+                print('stop_right collide')
+                self.scene.reset_on_death()
+                self.dirty = True
 
 
     def animate(self, total_time):
-        if self.state == 0 or self.state == 3:
+        state = self.states[self.state]
+        start_state = self.state
+        if state == 'offscreen':
+            just_happened = self.state != self.last_state
+            if just_happened:
+                self.just_happened = state
+            else:
+                self.just_happened = None
             if total_time > self.last_animation + self.time_between_stomps:
                 self.state += 1
                 self.last_animation = total_time
-        if self.state == 1 or self.state == 4:
+        elif state == 'poise left' or state == 'poise right':
+            just_happened = self.state != self.last_state
+            if just_happened:
+                self.just_happened = state
+            else:
+                self.just_happened = None
+
             if total_time > self.last_animation + self.time_of_poise:
                 self.state += 1
                 self.last_animation = total_time
-        if self.state == 2 or self.state == 5:
+        elif state == 'stomp left' or self.state == 'stomp right':
+            just_happened = self.state != self.last_state
+            if just_happened:
+                self.just_happened = state
+            else:
+                self.just_happened = None
+
             if total_time > self.last_animation + self.time_of_stomp:
                 self.state += 1
-                if self.state == 6:
+
+                if self.state == max(self.states.keys()) + 1:
+                    self.state = 0
                     self.state = 0
                 self.last_animation = total_time
 
+        self.last_state = start_state
 
 
     def render(self, screen, width, height):
@@ -103,12 +188,16 @@ class Elephant(DirtySprite):
 
 
     def collide(self, scene, width, height, cat_head_location):
-        if self.state == 2:
-            if cat_head_location[0] < width/2:
-                scene.reset_on_death()
-        if self.state == 5:
-            if cat_head_location[0] > width/2:
-                scene.reset_on_death()
+        pass
+        # state = self.states[self.state]
+        # if state == 'stomp left':
+        #     if self.scene.cat_head_location[0] < width/2:
+        #         self.scene.reset_on_death()
+        #         self.dirty = True
+        # if state == 'stomp right':
+        #     if self.scene.cat_head_location[0] > width/2:
+        #         self.scene.reset_on_death()
+        #         self.dirty = True
 
 
 class Lazer(DirtySprite):
@@ -138,7 +227,7 @@ class Shark(DirtySprite):
             4: 'leaving',
         }
         self.last_state = 0
-        self.just_happened = 'offscreen'
+        self.just_happened = None
         self.lazered = False # was the cat hit?
 
 
@@ -167,7 +256,7 @@ class Shark(DirtySprite):
 
 
     def update(self):
-        debug = False
+        debug = True
         if self.just_happened == 'offscreen':
             if debug:print(self.just_happened)
             sfx('shark_gone.ogg', stop=1)
@@ -201,7 +290,6 @@ class Shark(DirtySprite):
             else:
                 self.lazered = False
                 sfx('shark_lazer.ogg', play=1)
-
 
         elif self.just_happened == 'leaving':
             if debug:print(self.just_happened)
@@ -358,6 +446,9 @@ class Cat(DirtySprite):
         if self.last_direction != direction:
             self.dirty = True
             self.image = self.image_direction[int(direction)]
+            if random.random() < 0.1:
+                sfx('cat_wheel.ogg', play=1)
+
         if self.last_rotation != rotation or self.last_location != location:
             self.image = pygame.transform.rotate(self.image_direction[int(direction)], -self.cat_holder.cat_angle*180/math.pi)
             size = self.image.get_rect().size
@@ -510,7 +601,7 @@ class CatUniScene(Scene):
 
 
         #elephant and shark classes
-        self.elephant = Elephant()
+        self.elephant = Elephant(self)
         self.shark_active = False #is the shark enabled yet
         self.elephant_active = False
         self.cat = Cat(self)
@@ -578,12 +669,22 @@ class CatUniScene(Scene):
         self.cat_angular_vel = 0
         self.score = 0
         self.total_time = 0
+
         self.elephant.last_animation = 0
         self.elephant.state = 0
+        self.elephant.just_happened = None
+        self.elephant.dirty = 1
+        self.elephant_active = False
+
         self.shark.last_animation = 0
         self.shark.state = 0
         self.shark_active = False
-        self.elephant_active = False
+        self.shark.just_happened = None
+        self.shark.dirty = 1
+
+        if hasattr(self.shark, 'lazer'):
+            self.shark.lazer.kill()
+
 
     #periodically increase the difficulty
     def increase_difficulty(self):
@@ -606,10 +707,11 @@ class CatUniScene(Scene):
         #TODO: to make it easier to test.
         # if self.score >= 15:
         #     self.shark_active = True
-        if self.score >= 0:
+        if self.score >= 3:
             self.shark_active = True
 
-        if self.score >= 25:
+        #TODO: to make it easier to test.
+        if self.score >= 8:
             self.elephant_active = True
 
     def render_sprites(self):
