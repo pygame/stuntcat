@@ -39,17 +39,27 @@ class Game:
         self.clock.tick(self.FPS)
 
     def render(self):
-        """
-        Propagate a render to the highest active scene.
-        If a scene responds with a truthy value, the render will
-        continue to be propagated.
-        """
-        for i in self.scenes[::-1]:
-            if i.active:
-                if not i.render():
-                    break
+        """ Propagate a render to the highest active scene.
 
-        pygame.display.flip()
+        If ascene.propagate_render is True, the render will
+            continue to be propagated.
+        """
+        # for i in self.scenes[::-1]:
+        #     if i.active:
+        #         if not i.render():
+        #             break
+        # pygame.display.flip()
+
+        all_rects = []
+        for ascene in self.scenes[::-1]:
+            if ascene.active:
+                rects = ascene.render()
+                if rects is not None:
+                    all_rects.extend(rects)
+                if not getattr(ascene, 'propagate_render', False):
+                    break
+        # print(all_rects)
+        pygame.display.update(all_rects)
 
     def events(self):
         """
