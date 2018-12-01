@@ -26,7 +26,7 @@ class GifMaker:
         print("saving gifs")
         image_paths = []
         for frame_idx, surf in enumerate(self.surfs):
-            image_path = f"{self.path}/bla_%05d.png" % frame_idx
+            image_path = "%s/bla_%05d.png" % (self.path, frame_idx)
             image_paths.append(image_path)
             pg.image.save(surf, image_path)
 
@@ -34,12 +34,12 @@ class GifMaker:
         cmd = [
             convertpath,
             "-delay",
-            f"{1000 // self.fps},1000",
+            "%s,1000" % (1000 // self.fps),
             "-size",
-            f"{self.surfs[0].get_width()}x{self.surfs[0].get_height()}",
+            "%sx%s" % (self.surfs[0].get_width(), self.surfs[0].get_height()),
         ]
         cmd += image_paths
-        cmd += [f"{self.path}/anim.gif"]
+        cmd += ["%s/anim.gif" % self.path]
         print(cmd)
         subprocess.call(cmd)
 
