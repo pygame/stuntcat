@@ -197,6 +197,7 @@ class CatUniScene(Scene):
         self.left_pressed = False
         self.right_pressed = False
         self.score = 0
+        self.cat_jump_grace = 0
 
         #timing
         self.dt_scaled = 0
@@ -319,6 +320,7 @@ class CatUniScene(Scene):
 
         ##cat physics
         self.cat_angular_vel *= 0.9**dt_scaled #max(0.9/(max(0.1,dt_scaled)),0.999)
+        self.cat_speed[0] *= 0.98**dt_scaled
 
         # add gravity
         self.cat_speed[1] = min(self.cat_speed[1] + (1 * dt_scaled), self.cat_fall_speed_max)
@@ -326,13 +328,13 @@ class CatUniScene(Scene):
         # accelerate the cat left or right
         if self.right_pressed:
             self.cat_speed[0] = min(
-                self.cat_speed[0] + 0.3 * dt_scaled, self.cat_speed_max
+                self.cat_speed[0] + 0.35 * dt_scaled, self.cat_speed_max
             )
             self.cat_angle -= 0.003 * dt_scaled
 
         if self.left_pressed:
             self.cat_speed[0] = max(
-                self.cat_speed[0] - 0.3 * dt_scaled, -self.cat_speed_max
+                self.cat_speed[0] - 0.35 * dt_scaled, -self.cat_speed_max
             )
             self.cat_angle += 0.003 * dt_scaled
 
@@ -355,8 +357,18 @@ class CatUniScene(Scene):
         ]
 
         # check for out of bounds
-        if (self.cat_location[0] > 0.9 * width or self.cat_location[0] < 0.1 * width) and self.cat_location[1] > height - 110:
-            self.reset_on_death()
+        if self.cat_location[0] > 0.9 * width  and self.cat_location[1] > height - 110:
+            self.cat_speed[0] = - self.cat_speed_max
+            self.cat_speed[1] = -20
+            self.cat_jump_grace = 15
+            self.cat_angular_vel -= 0.05
+        if self.cat_location[0] < 0.1 * width  and self.cat_location[1] > height - 110:
+            self.cat_speed[0] = self.cat_speed_max
+            self.cat_angular_vel += 0.05
+            self.cat_speed[1] = -20
+            self.cat_jump_grace = 15
+        self.cat_jump_grace = max(0, self.cat_jump_grace - 1)
+            
 
         #check for collision with the elephant stomp
         if self.elephant_active:
@@ -464,7 +476,7 @@ class CatUniScene(Scene):
                     self.cat_speed[1] -= 25
         elif event.type == KEYUP:
             if event.key == K_UP:
-                if self.cat_speed[1] < 0:
+                if self.cat_speed[1] < 0 and self.cat_jump_grace == 0:
                     self.cat_speed[1] = 0
             elif event.key == K_RIGHT:
                 self.right_pressed = False
