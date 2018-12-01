@@ -5,7 +5,7 @@ import pygame
 from stuntcat.scenes import LoadingScene
 from stuntcat.scenes import CatUniScene
 
-from gifmaker import GifMaker
+from stuntcat.gifmaker import GifMaker
 
 class Game:
     FLAGS = 0
