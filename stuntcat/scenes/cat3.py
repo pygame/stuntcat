@@ -206,6 +206,32 @@ class Fish(DirtySprite):
         pass
 
 
+class Score(DirtySprite):
+    def __init__(self, score_holder):
+        """
+        score_holder has a 'score' attrib.
+        """
+        DirtySprite.__init__(self)
+        self.score_holder = score_holder
+        self.myfont = pygame.font.SysFont("monospace", 20)
+        self.image = self.myfont.render(
+            "score : " + str(self.score_holder.score), True, [255, 255, 255]
+        )
+        self.rect = self.image.get_rect()
+        self.rect.x = 100
+        self.rect.y = 100
+
+        self.last_score = self.score_holder.score
+
+    def update(self):
+        if self.last_score != self.score_holder.score:
+            self.dirty = True
+            self.image = self.myfont.render(
+                "score : " + str(self.score_holder.score), True, [255, 255, 255]
+            )
+        self.last_score = self.score_holder.score
+
+
 class CatUniScene(Scene):
     def __init__(self, *args, **kwargs):
         Scene.__init__(self, *args, **kwargs)
@@ -254,7 +280,25 @@ class CatUniScene(Scene):
         self.shark_active = False #is the shark enabled yet
         self.elephant_active = False
         self.cat = Cat()
+        self.score_text = Score(self)
         self.init_sprites()
+
+    def init_sprites(self):
+        """temp, this will go in the init.
+        """
+        sprite_list = [
+            self.shark,
+            self.elephant,
+            self.cat,
+            Fish(),
+            self.score_text
+        ]
+        self.allsprites = LayeredDirty(
+            sprite_list,
+            _time_threshold=1000/10.0
+        )
+        self.allsprites.clear(self.screen, self.background)
+
 
     #what to do when you die, reset the level
     def reset_on_death(self):
@@ -292,17 +336,6 @@ class CatUniScene(Scene):
             self.shark_active = True
         if self.score >= 25:
             self.elephant_active = True
-
-
-    def init_sprites(self):
-        """temp, this will go in the init.
-        """
-        sprite_list = [self.shark, self.elephant, self.cat, Fish()]
-        self.allsprites = LayeredDirty(
-            sprite_list,
-            _time_threshold=1000/10.0
-        )
-        self.allsprites.clear(self.screen, self.background)
 
     def render_sprites(self):
         rects = []
