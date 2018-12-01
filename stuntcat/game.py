@@ -14,6 +14,7 @@ class Game:
     FPS = 30
 
     def __init__(self):
+        pygame.mixer.pre_init(44100,-16,2, 512)
         pygame.init()
         pygame.font.init()
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), self.FLAGS)
@@ -62,7 +63,7 @@ class Game:
                     all_rects.extend(rects)
                 if not getattr(ascene, 'propagate_render', False):
                     break
-        print(all_rects)
+        # print(all_rects)
         pygame.display.update(all_rects)
 
     def events(self, events):
