@@ -16,6 +16,10 @@ def data_path():
         )
     return path
 
+def music_path(amusic):
+    path = os.path.join(data_path(), 'sounds', amusic)
+    return path
+
 def gfx(image, convert=False, convert_alpha=False):
     global _gfx_cache
     gfx_key = (image, convert, convert_alpha)

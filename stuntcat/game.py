@@ -22,13 +22,21 @@ class Game:
         pygame.display.set_caption("a + d keys: lean left/right. Arrow left/right move left/right. Catch fish. Avoid shark lazers elephant stomps.")
 
         self.running = True
+
+
         self.scenes = [
-            # LoadingScene(self),
-            CatUniScene(self)
+            LoadingScene(self),
         ]
+
+        # self.add_cat_scene()
 
         self.gifmaker = None
         # self.gifmaker = GifMaker()
+
+    def add_cat_scene(self):
+        self.cat_scene = CatUniScene(self)
+        self.cat_scene.active = True
+        self.scenes.append(self.cat_scene)
 
     def tick(self, dt):
         """
