@@ -227,8 +227,8 @@ class Cat(DirtySprite):
 
 
 class Fish(DirtySprite):
-    def __init__(self, x, y, vx, vy):
-        DirtySprite.__init__(self)
+    def __init__(self, group, x, y, vx, vy):
+        DirtySprite.__init__(self, group)
         self.image = gfx('fish.png').convert_alpha()
         self.rect = self.image.get_rect()
 
@@ -236,8 +236,12 @@ class Fish(DirtySprite):
         self.rect.y = y
         self.velocity = pygame.math.Vector2(vx, vy)
 
+        self.last_pos = [x, y]
+
     def update(self):
-        pass
+        if self.last_pos != self.rect[:2]:
+            self.dirty = True
+        self.last_pos = self.rect[:2]
 
 
 class Score(DirtySprite):
@@ -267,7 +271,25 @@ class Score(DirtySprite):
 
 
 
+class DeadZone(DirtySprite):
+    def __init__(self, points):
+        """
+        score_holder has a 'score' attrib.
+        """
+        DirtySprite.__init__(self)
+        color = [255, 0, 0]
 
+        # draw dead zones
+        surf = pygame.display.get_surface()
+        rect = pygame.draw.polygon(
+            surf,
+            color,
+            points
+        )
+        self.image = surf.subsurface(rect.clip(surf.get_rect())).copy()
+        self.rect = self.image.get_rect()
+        self.rect.x = rect.x
+        self.rect.y = rect.y
 
 
 
@@ -306,15 +328,6 @@ class CatUniScene(Scene):
         self.dt_scaled = 0
         self.total_time = 0
 
-        # lists of things to catch by [posx, posy, velx, vely]
-        # self.fish = [[0, height / 2, 10, -5]]
-        self.fish = LayeredDirtyAppend()
-        self.fish.extend([Fish(0, height / 2, 10, -5)])
-
-        self.not_fish = LayeredDirtyAppend()
-
-        #difficulty varibles
-        self.number_of_not_fish = 0
 
         #elephant and shark classes
         self.elephant = Elephant()
@@ -323,7 +336,40 @@ class CatUniScene(Scene):
         self.elephant_active = False
         self.cat = Cat(self)
         self.score_text = Score(self)
+
+
+        self.deadzones = [
+            DeadZone(
+                [
+                    [0, height - 100],
+                    [0.1 * width, height - 100],
+                    [0.1 * width, height],
+                    [0, height],
+                ],
+            ),
+            DeadZone(
+                [
+                    [0.9 * width, height - 100],
+                    [width, height - 100],
+                    [width, height],
+                    [0.9 * width, height],
+                ],
+            ),
+        ]
+
         self.init_sprites()
+
+        # lists of things to catch by [posx, posy, velx, vely]
+        # self.fish = [[0, height / 2, 10, -5]]
+        self.fish = LayeredDirtyAppend()
+        self.fish.extend([Fish(self.allsprites, 0, height / 2, 10, -5)])
+
+        self.not_fish = LayeredDirtyAppend()
+
+        #difficulty varibles
+        self.number_of_not_fish = 0
+
+
 
     def init_sprites(self):
         """temp, this will go in the init.
@@ -332,9 +378,9 @@ class CatUniScene(Scene):
             self.shark,
             self.elephant,
             self.cat,
-            Fish(0, 100, 10, -5),
             self.score_text
         ]
+        sprite_list += self.deadzones
         self.allsprites = LayeredDirty(
             sprite_list,
             _time_threshold=1000/10.0
@@ -387,7 +433,7 @@ class CatUniScene(Scene):
 
     def render(self):
         #TODO: use the render_sprites version.
-        # return self.render_sprites()
+        return self.render_sprites()
 
         screen = self.screen
         width, height = self.width, self.height
@@ -508,6 +554,7 @@ class CatUniScene(Scene):
             # check out of bounds
             if f.rect[1] > height:
                 self.fish.remove(f)
+                f.kill()
         for f in reversed(self.not_fish.sprites()):
             f.rect[0] += f[2] * dt_scaled # speed of the throw
             f.velocity[1] += 0.2 * dt_scaled  # gravity
@@ -515,15 +562,18 @@ class CatUniScene(Scene):
             # check out of bounds
             if f[1] > height:
                 self.not_fish.remove(f)
+                f.kill()
 
         # check collision with the cat
         for f in reversed(self.fish.sprites()):
             if distance([f.rect[0], f.rect[1]], self.cat_head_location) < 100:
                 self.score += 1
                 self.fish.remove(f)
+                f.kill()
         for f in reversed(self.not_fish.sprites()):
             if distance([f.rect[0], f.rect[1]], self.cat_head_location) < 50:
                 self.not_fish.remove(f)
+                f.kill()
                 self.angle_to_not_fish = (
                     math.atan2(
                         self.cat_head_location[1] - f.rect[1],
@@ -539,7 +589,7 @@ class CatUniScene(Scene):
             # choose a side of the screen
             if random.choice([0, 1]) == 0:
                 self.fish.append(
-                    Fish(
+                    Fish(self.allsprites,
                         0,
                         height/2,#random.randint(0, height / 2),
                         random.randint(3, 7),
@@ -548,7 +598,7 @@ class CatUniScene(Scene):
                 )
             else:
                 self.fish.append(
-                    Fish(
+                    Fish(self.allsprites,
                         width,
                         height/2,#random.randint(0, height / 2),
                         -random.randint(3, 7),
@@ -559,7 +609,7 @@ class CatUniScene(Scene):
             # choose a side of the screen
             if random.choice([0, 1]) == 0:
                 self.not_fish.append(
-                    Fish(
+                    Fish(self.allsprites,
                         0,
                         height/2,#random.randint(0, height / 2),
                         random.randint(3, 7),
@@ -568,7 +618,7 @@ class CatUniScene(Scene):
                 )
             else:
                 self.not_fish.append(
-                    Fish(
+                    Fish(self.allsprites,
                         width,
                         height/2,#random.randint(0, height / 2),
                         -random.randint(3, 7),
