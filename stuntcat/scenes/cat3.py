@@ -141,8 +141,8 @@ class Shark(DirtySprite):
 
 
         #TODO: to make it easier to test the shark
-        self.time_between_appearances = 1000 #ms
-        # self.time_between_appearances = 7000 #ms
+        # self.time_between_appearances = 1000 #ms
+        self.time_between_appearances = 7000 #ms
 
         self.time_of_about_to_appear = 3000
         self.time_of_poise = 3000 #ms
@@ -154,6 +154,8 @@ class Shark(DirtySprite):
         sfx('shark_appear.ogg')
         sfx('shark_gone.ogg')
         sfx('shark_lazer.ogg')
+        sfx('zirkus.ogg')
+
 
         self.image = gfx('shark.png', convert_alpha=True)
         # gfx('foot_part.png').convert_alpha()
@@ -167,6 +169,8 @@ class Shark(DirtySprite):
         if self.just_happened == 'offscreen':
             if debug:print(self.just_happened)
             sfx('shark_gone.ogg', stop=1)
+            sfx('zirkus.ogg', play=1)
+
             self.rect.x = -1000
             self.dirty = True
 
@@ -174,6 +178,8 @@ class Shark(DirtySprite):
             if debug:print(self.just_happened)
             pygame.mixer.music.stop()
             sfx('shark_appear.ogg', play=1)
+            sfx('zirkus.ogg', stop=1)
+
         elif self.just_happened == 'poise':
             if debug:print(self.just_happened)
             sfx('shark_appear.ogg', stop=1)
@@ -317,6 +323,11 @@ class Cat(DirtySprite):
         self.image = gfx('cat_unicycle.png', convert_alpha=True)
         self.rect = self.image.get_rect()
         sfx('cat_jump.ogg')
+        sfx('cat_wheel.ogg')
+
+        # sfx('cat_jump.ogg', play=1)
+        # sfx('cat_wheel.ogg', play=1)
+
         self.image_direction = [
             pygame.transform.flip(self.image, 1, 0),
             self.image,
