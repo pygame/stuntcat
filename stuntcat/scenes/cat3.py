@@ -187,20 +187,44 @@ class Shark(DirtySprite):
 
 
 class Cat(DirtySprite):
-    def __init__(self):
+    def __init__(self, cat_holder):
         DirtySprite.__init__(self)
+        self.cat_holder = cat_holder
         self.image = gfx('cat_unicycle.png').convert_alpha()
         self.rect = self.image.get_rect()
         sfx('cat_jump.ogg')
 
+        self.last_location = [0, 0]
+
     def update(self):
-        pass
+        if self.last_location != self.cat_holder.cat_location:
+            self.dirty = True
+            self.rect.x = int(self.cat_holder.cat_location[0])
+            self.rect.y = int(self.cat_holder.cat_location[1])
+        self.last_location == self.cat_holder.cat_location[:]
+
+
+        # draw cat
+        # pygame.draw.line(
+        #     screen, [0, 0, 255], self.cat_location, self.cat_head_location, 20
+        # )
+        # pygame.draw.circle(screen, [0, 0, 255], self.cat_head_location, 50, 1)
+        # pygame.draw.circle(screen, [0, 255, 0], self.cat_head_location, 100, 1)
+
+
+
+
 
 class Fish(DirtySprite):
     def __init__(self):
         DirtySprite.__init__(self)
         self.image = gfx('fish.png').convert_alpha()
         self.rect = self.image.get_rect()
+
+        height = 1080//2
+        self.rect.x = 0
+        self.rect.y = height / 2
+        self.velocity = pygame.math.Vector2(10, -5)
 
     def update(self):
         pass
@@ -230,6 +254,11 @@ class Score(DirtySprite):
                 "score : " + str(self.score_holder.score), True, [255, 255, 255]
             )
         self.last_score = self.score_holder.score
+
+
+
+
+
 
 
 class CatUniScene(Scene):
@@ -269,6 +298,8 @@ class CatUniScene(Scene):
 
         # lists of things to catch by [posx, posy, velx, vely]
         self.fish = [[0, height / 2, 10, -5]]
+        # self.fish = [Fish()]
+
         self.not_fish = []
 
         #difficulty varibles
@@ -279,7 +310,7 @@ class CatUniScene(Scene):
         self.shark = Shark()
         self.shark_active = False #is the shark enabled yet
         self.elephant_active = False
-        self.cat = Cat()
+        self.cat = Cat(self)
         self.score_text = Score(self)
         self.init_sprites()
 
@@ -392,11 +423,11 @@ class CatUniScene(Scene):
         for f in self.not_fish:
             pygame.draw.circle(screen, [255, 0, 0], [int(f[0]), int(f[1])], 10)
 
-        # draw score
-        textsurface = self.myfont.render(
-            "score : " + str(self.score), True, [255, 255, 255]
-        )
-        screen.blit(textsurface, (100, 100))
+        # # draw score
+        # textsurface = self.myfont.render(
+        #     "score : " + str(self.score), True, [255, 255, 255]
+        # )
+        # screen.blit(textsurface, (100, 100))
         return [screen.get_rect()]
 
     def tick(self, dt):
