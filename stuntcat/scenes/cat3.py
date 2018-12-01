@@ -479,7 +479,8 @@ class CatUniScene(Scene):
         self.width, self.height = width, height
 
         # Loading screen should always be a fallback active scene
-        self.active = True
+        self.active = False
+        self.first_render = True
 
         self.myfont = pygame.font.SysFont("monospace", 20)
 
@@ -515,25 +516,26 @@ class CatUniScene(Scene):
         self.cat = Cat(self)
         self.score_text = Score(self)
 
+        self.deadzones = []
 
-        self.deadzones = [
-            DeadZone(
-                [
-                    [0, height - 100],
-                    [0.1 * width, height - 100],
-                    [0.1 * width, height],
-                    [0, height],
-                ],
-            ),
-            DeadZone(
-                [
-                    [0.9 * width, height - 100],
-                    [width, height - 100],
-                    [width, height],
-                    [0.9 * width, height],
-                ],
-            ),
-        ]
+        # self.deadzones = [
+        #     DeadZone(
+        #         [
+        #             [0, height - 100],
+        #             [0.1 * width, height - 100],
+        #             [0.1 * width, height],
+        #             [0, height],
+        #         ],
+        #     ),
+        #     DeadZone(
+        #         [
+        #             [0.9 * width, height - 100],
+        #             [width, height - 100],
+        #             [width, height],
+        #             [0.9 * width, height],
+        #         ],
+        #     ),
+        # ]
 
         self.init_sprites()
 
@@ -617,8 +619,12 @@ class CatUniScene(Scene):
         return rects
 
     def render(self):
-        #TODO: use the render_sprites version.
-        return self.render_sprites()
+        rects = []
+        if self.first_render:
+            self.first_render = False
+            rects.append(self.screen.get_rect())
+        rects.extend(self.render_sprites())
+        return rects
 
         # we draw the sprites, and then the lines over the top.
         self.render_sprites()
