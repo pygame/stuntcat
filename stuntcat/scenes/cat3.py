@@ -279,21 +279,32 @@ class Cat(DirtySprite):
 
         self.last_location = [0, 0]
         self.last_direction = True #right is true
+        self.last_rotation = -1
 
     def update(self):
         direction = self.cat_holder.cat_speed[0] > 0
         # location = self.cat_holder.cat_location
         location = self.cat_holder.cat_head_location
-        if self.last_location != location:
-            self.dirty = True
-            self.rect.x = int(location[0])
-            self.rect.y = int(location[1])
+        rotation = self.cat_holder.cat_angle
+        #if self.last_location != location:
+        #    self.dirty = True
+        #    self.rect.x = int(location[0]) 
+        #    self.rect.y = int(location[1]) 
         if self.last_direction != direction:
             self.dirty = True
             self.image = self.image_direction[int(direction)]
+        if self.last_rotation != rotation or self.last_location != location:
+            self.image = pygame.transform.rotate(self.image_direction[int(direction)], -self.cat_holder.cat_angle*180/math.pi)
+            size = self.image.get_rect().size
+            self.dirty = True
+            self.rect.x = int(location[0]) - size[0]*0.5
+            self.rect.y = int(location[1]) - size[1]*0.5
 
         self.last_location == location[:]
         self.last_direction = direction
+        self.last_rotation = rotation
+
+        
 
         # draw cat
         # pygame.draw.line(
@@ -518,7 +529,7 @@ class CatUniScene(Scene):
 
     def render(self):
         #TODO: use the render_sprites version.
-        return self.render_sprites()
+        self.render_sprites()
 
         # we draw the sprites, and then the lines over the top.
         self.render_sprites()
