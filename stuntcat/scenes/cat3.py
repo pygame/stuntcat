@@ -111,8 +111,11 @@ class Elephant(DirtySprite):
                 scene.reset_on_death()
 
 class Shark(DirtySprite):
-    def __init__(self):
+    def __init__(self, width, height):
+        self._layer = 10
         DirtySprite.__init__(self)
+        self.width, self.height = width, height
+
         self.state = 0 #
         self.states = {
             0: 'offscreen',
@@ -124,9 +127,10 @@ class Shark(DirtySprite):
         self.last_state = 0
         self.just_happened = 'offscreen'
 
+
         #TODO: to make it easier to test the shark
-        # self.time_between_appearances = 1000 #ms
-        self.time_between_appearances = 7000 #ms
+        self.time_between_appearances = 1000 #ms
+        # self.time_between_appearances = 7000 #ms
 
         self.time_of_about_to_appear = 3000
         self.time_of_poise = 3000 #ms
@@ -142,14 +146,44 @@ class Shark(DirtySprite):
         self.image = gfx('shark.png', convert_alpha=True)
         # gfx('foot_part.png').convert_alpha()
         self.rect = self.image.get_rect()
+        self.rect.x = -1000
+        self.rect.y = (self.height - self.image.get_height()) - 100
 
-        # sfx('default_shark.ogg').play()
-        # sfx('shark_appear.ogg').play()
-        # sfx('shark_gone.ogg').play()
-        # sfx('jump.ogg').play()
 
     def update(self):
-        pass
+        debug = False
+        if self.just_happened == 'offscreen':
+            if debug:print(self.just_happened)
+            sfx('shark_gone.ogg', stop=1)
+            self.rect.x = -1000
+            self.dirty = True
+
+        elif self.just_happened == 'about_to_appear':
+            if debug:print(self.just_happened)
+            pygame.mixer.music.stop()
+            sfx('shark_appear.ogg', play=1)
+        elif self.just_happened == 'poise':
+            if debug:print(self.just_happened)
+            sfx('shark_appear.ogg', stop=1)
+            sfx('shark_attacks.ogg', play=1)
+
+            self.rect.x = 50
+            self.dirty = True
+
+        elif self.just_happened == 'fire laser':
+            if debug:print(self.just_happened)
+            sfx('shark_lazer.ogg', play=1)
+
+            # if cat_location[1] > height - 130:
+            #     print('shark collide')
+            #     scene.reset_on_death()
+
+        elif self.just_happened == 'leaving':
+            if debug:print(self.just_happened)
+            sfx('shark_attacks.ogg', stop=1)
+            sfx('shark_gone.ogg', play=1)
+            self.rect.x = 0
+            self.dirty = True
 
 
     def animate(self, total_time):
@@ -161,7 +195,8 @@ class Shark(DirtySprite):
             just_happened = self.state != self.last_state
             if just_happened:
                 self.just_happened = state
-                sfx('shark_gone.ogg', stop=1)
+            else:
+                self.just_happened = None
 
             if total_time > self.last_animation + self.time_between_appearances:
                 self.state += 1
@@ -171,51 +206,47 @@ class Shark(DirtySprite):
             just_happened = self.state != self.last_state
             if just_happened:
                 self.just_happened = state
-                sfx('shark_appear.ogg', play=1)
+            else:
+                self.just_happened = None
 
             if total_time > self.last_animation + self.time_of_about_to_appear:
                 self.state += 1
                 self.last_animation = total_time
 
-
         elif state == 'poise':
             just_happened = self.state != self.last_state
             if just_happened:
                 self.just_happened = state
-                sfx('shark_appear.ogg', stop=1)
-                sfx('shark_attacks.ogg', play=1)
+            else:
+                self.just_happened = None
 
             if total_time > self.last_animation + self.time_of_poise:
                 self.state += 1
                 self.last_animation = total_time
 
-
-
         elif state == 'fire laser':
             just_happened = self.state != self.last_state
             if just_happened:
                 self.just_happened = state
-                sfx('shark_lazer.ogg', play=1)
+            else:
+                self.just_happened = None
 
             if total_time > self.last_animation + self.time_of_laser:
                 self.state += 1
                 self.last_animation = total_time
 
-
         elif state == 'leaving':
             just_happened = self.state != self.last_state
             if just_happened:
                 self.just_happened = state
-                sfx('shark_attacks.ogg', stop=1)
-                sfx('shark_gone.ogg', play=1)
+            else:
+                self.just_happened = None
 
             if total_time > self.last_animation + self.time_of_leaving:
                 self.state += 1
                 if self.state == max(self.states.keys()) + 1:
                     self.state = 0
                 self.last_animation = total_time
-
-
 
         self.last_state = start_state
 
@@ -445,7 +476,7 @@ class CatUniScene(Scene):
 
         #elephant and shark classes
         self.elephant = Elephant()
-        self.shark = Shark()
+        self.shark = Shark(self.width, self.height)
         self.shark_active = False #is the shark enabled yet
         self.elephant_active = False
         self.cat = Cat(self)
