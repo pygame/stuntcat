@@ -110,10 +110,22 @@ class Elephant(DirtySprite):
             if cat_head_location[0] > width/2:
                 scene.reset_on_death()
 
+
+class Lazer(DirtySprite):
+    def __init__(self, container, width, height):
+        DirtySprite.__init__(self, container)
+        from_bottom = 210
+        self.rect = pygame.Rect([200, height - from_bottom, width, 30])
+        # self.rect.x = -1000
+        self.image = pygame.Surface((self.rect[2], self.rect[3])).convert()
+        self.image.fill((255, 0, 0))
+
+
+
 class Shark(DirtySprite):
-    def __init__(self, width, height):
-        self._layer = 10
-        DirtySprite.__init__(self)
+    def __init__(self, container, width, height):
+        DirtySprite.__init__(self, container)
+        self.container = container
         self.width, self.height = width, height
 
         self.state = 0 #
@@ -134,7 +146,7 @@ class Shark(DirtySprite):
 
         self.time_of_about_to_appear = 3000
         self.time_of_poise = 3000 #ms
-        self.time_of_laser = 100 #ms
+        self.time_of_laser = 500 #ms
         self.time_of_leaving = 3000 #ms
         self.last_animation = 0 #ms
 
@@ -173,6 +185,7 @@ class Shark(DirtySprite):
         elif self.just_happened == 'fire laser':
             if debug:print(self.just_happened)
             sfx('shark_lazer.ogg', play=1)
+            self.lazer = Lazer(self.container, self.width, self.height)
 
             # if cat_location[1] > height - 130:
             #     print('shark collide')
@@ -184,6 +197,7 @@ class Shark(DirtySprite):
             sfx('shark_gone.ogg', play=1)
             self.rect.x = 0
             self.dirty = True
+            self.lazer.kill()
 
 
     def animate(self, total_time):
@@ -319,8 +333,8 @@ class Cat(DirtySprite):
         rotation = self.cat_holder.cat_angle
         #if self.last_location != location:
         #    self.dirty = True
-        #    self.rect.x = int(location[0]) 
-        #    self.rect.y = int(location[1]) 
+        #    self.rect.x = int(location[0])
+        #    self.rect.y = int(location[1])
         if self.last_direction != direction:
             self.dirty = True
             self.image = self.image_direction[int(direction)]
@@ -335,7 +349,7 @@ class Cat(DirtySprite):
         self.last_direction = direction
         self.last_rotation = rotation
 
-        
+
 
         # draw cat
         # pygame.draw.line(
@@ -476,7 +490,6 @@ class CatUniScene(Scene):
 
         #elephant and shark classes
         self.elephant = Elephant()
-        self.shark = Shark(self.width, self.height)
         self.shark_active = False #is the shark enabled yet
         self.elephant_active = False
         self.cat = Cat(self)
@@ -520,7 +533,6 @@ class CatUniScene(Scene):
         """temp, this will go in the init.
         """
         sprite_list = [
-            self.shark,
             self.elephant,
             self.cat,
             self.score_text
@@ -530,6 +542,8 @@ class CatUniScene(Scene):
             sprite_list,
             _time_threshold=1000/10.0
         )
+        self.shark = Shark(self.allsprites, self.width, self.height)
+        self.allsprites.add(self.shark)
         self.allsprites.clear(self.screen, self.background)
 
 
