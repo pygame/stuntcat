@@ -9,4 +9,6 @@ pytest-pylint
 tox
 twine
 wheel
+-e 'git+https://github.com/anthony-tuininga/cx_Freeze.git#egg=cx_freeze ; sys.platform == "darwin" and python_version == "3.7"'
+cx_freeze ; python_version < '3.7'
 -r requirements.txt
