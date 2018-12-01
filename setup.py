@@ -1,13 +1,47 @@
 from setuptools import setup, find_packages
 from os import path
+import sys
+
 here = path.abspath(path.dirname(__file__))
+
+name = "stuntcat"
 
 from io import open
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
+freeze_cmds = ["bdist_dmg", "bdist_msi", 'build_exe', 'bdist_mac']
+if any(x in sys.argv for x in freeze_cmds):
+    # https://cx-freeze.readthedocs.io/en/latest/distutils.html
+    # Note: we needed to use git cx_freeze because it does not work on mac py3.7.
+    #
+    #     git+https://github.com/anthony-tuininga/cx_Freeze.git
+    from cx_Freeze import setup, Executable
+
+    # Dependencies are automatically detected, but it might need fine tuning.
+    build_exe_options = {
+        "packages": ["os", "pygame", "sys", "random"],
+        "excludes": ["tkinter"],
+    }
+    # GUI applications require a different base on Windows (the default is for a
+    # console application).
+    base = None
+    if sys.platform == "win32":
+        base = "Win32GUI"
+
+    options = {
+        "build_exe": build_exe_options
+    }
+    executables = [Executable("run_game.py", base=base)]
+else:
+    options = {}
+    executables = []
+
+
+
+
 setup(
-    name='stuntcat',
+    name=name,
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)',
@@ -29,7 +63,9 @@ setup(
     include_package_data=True,
     long_description=long_description,
     long_description_content_type='text/markdown',
-    package_dir={'stuntcat': 'stuntcat'},
+    options=options,
+    executables=executables,
+    package_dir={name: name},
     packages=find_packages(),
     # package_data={'stuntcat': []},
     url='https://github.com/pygame/stuntcat',
@@ -37,7 +73,7 @@ setup(
     version='0.0.5',
     entry_points={
         'console_scripts': [
-            'stuntcat=stuntcat.cli:main',
+            '%s=%s.cli:main' % (name, name),
         ],
     },
 )
