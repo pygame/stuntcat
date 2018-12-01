@@ -35,17 +35,26 @@ def main():
     if os.path.isdir(testcode):
         CODEDIR = testcode
 
-    #apply our directories and test environment
-    os.chdir(DATADIR)
-    sys.path.insert(0, CODEDIR)
-    checkdependencies()
-
+    # pyinstaller uses this variable to store the path
+    #   where it extracts data to.
+    pyinstaller_path = getattr(sys, '_MEIPASS', None)
+    if pyinstaller_path:
+        DATADIR = os.path.join(pyinstaller_path, 'data')
+    else:
+        #apply our directories and test environment
+        os.chdir(DATADIR)
+        sys.path.insert(0, CODEDIR)
+        checkdependencies()
 
     #run game and protect from exceptions
     try:
-        import main
+        # import pdb;pdb.set_trace()
+        try:
+            from .main import main
+        except ImportError:
+            from stuntcat.main import main
         import pygame as pg
-        main.main(sys.argv)
+        main(sys.argv)
     except KeyboardInterrupt:
         print('Keyboard Interrupt (Control-C)...')
     except:
