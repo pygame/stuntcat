@@ -91,6 +91,12 @@ class GamepadInput(EventHandler):
     def __init__(self, event_map=None, deadzone=.25):
         super(GamepadInput, self).__init__(event_map)
         self.deadzone = deadzone
+        self.init_all_joysticks()
+
+    def init_all_joysticks(self):
+        pg.joystick.init()
+        for index in range(pg.joystick.get_count()):
+            pg.joystick.Joystick(index).init()
 
     def process_event(self, pg_event):
         self.check_button(pg_event)
