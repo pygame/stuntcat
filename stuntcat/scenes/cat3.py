@@ -476,13 +476,12 @@ class Cat(DirtySprite):
         # pygame.draw.circle(screen, [0, 255, 0], self.cat_head_location, 100, 1)
 
 
-
-
-
 class Fish(DirtySprite):
+    colors = ["red", "yellow", "green"]
+
     def __init__(self, group, x, y, vx, vy):
         DirtySprite.__init__(self, group)
-        self.image = gfx('fish.png', convert_alpha=True)
+        self.image = gfx("fish_" + random.choice(Fish.colors) + ".png", convert_alpha=True)
         self.rect = self.image.get_rect()
         size = self.rect.size
         self.rect.x = x
