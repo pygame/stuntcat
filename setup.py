@@ -70,7 +70,7 @@ setup(
     # package_data={'stuntcat': []},
     url='https://github.com/pygame/stuntcat',
     install_requires=['pygame'],
-    version='0.0.7',
+    version='0.0.8',
     entry_points={
         'console_scripts': [
             'stuntcat=stuntcat.cli:main',

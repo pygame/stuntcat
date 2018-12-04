@@ -1,5 +1,5 @@
 from .scene import Scene
-from .. resources import gfx, sfx, music_path
+from .. resources import gfx, sfx, music
 
 import pygame as pg
 
@@ -11,8 +11,7 @@ class LoadingScene(Scene):
         self.active = True
         self.image = gfx('intro_screen.png', convert_alpha=True)
         self.timer = 0
-        pg.mixer.music.load(music_path('ict_0026.ogg'))
-        pg.mixer.music.play()
+        music('ict_0026.ogg', play=True)
 
     def render(self):
         self.screen.fill((255, 0, 255))
