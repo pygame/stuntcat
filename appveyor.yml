@@ -6,6 +6,8 @@ environment:
       PYTHON: "C:\\Python37-x64"
       PYTHON_VERSION: "3.7.0"
       PYTHON_ARCH: "64"
+      SDL_VIDEODRIVER: "dummy"
+      SDL_AUDIODRIVER: "disk"
 
     # - TOXENV: py27
     #   PYTHON: "C:\\Python27"
@@ -21,9 +23,11 @@ install:
   # We need wheel installed to build wheels
   - "%PYTHON%\\python.exe -m pip install -r requirements.dev.txt"
   - "%PYTHON%\\python.exe setup.py bdist_msi"
+  - ps: "ls dist"
 
 test_script:
-  - "%PYTHON%\\python.exe -m tox"
+  # - "%PYTHON%\\python.exe -m tox"
+  - "%PYTHON%\\python.exe -m pytest"
 
 # https://www.appveyor.com/docs/packaging-artifacts/
 artifacts:
@@ -33,16 +37,15 @@ artifacts:
 # For uploading releases to github.
 # https://www.appveyor.com/docs/deployment/github/
 deploy:
-  release: stuntcat-v$(appveyor_build_version)
   description: 'A stuntcat draft release'
   provider: GitHub
   auth_token:
     secure: AEkY1NaqqAq8NhWj7xNY+meHJINhLrnHNpwEeVtKBsAhdxo7u34gNsTH+KcYJUho # your encrypted token from GitHub
-  artifact: /dist\.*\.msi/            # upload all NuGet packages to release assets
+  artifact: dist\*.msi
   draft: true
   prerelease: false
   on:
-    branch: master                 # release from master branch only
+    # branch: master                 # release from master branch only
     appveyor_repo_tag: true        # deploy on tag push only
 
 
