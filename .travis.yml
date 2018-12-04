@@ -11,15 +11,38 @@ matrix:
     env: TOXENV=py37,py27
   - os: osx
     language: generic
-    env: TOXENV=py27
+    if: tag IS present
+    env:
+    - TOXENV=py27
+    - GITHUB_UPLOAD=yes
+
 install: pip install tox
-script: tox
-# deploy:
-#   provider: releases
-#   api_key:
-#     secure: aYvqjWrenc0OEHcECfOuqdr/p+VdclpcNINd1vcQ+WdPR0b1uSP171baQIQa0IQqVh+Egn6tYzxcumlsZTgnFVjPGdYP95QhBIFVLVJskO+a/jxL1uJMT0O+GsZL4EYyy/9RZn6RzagvrQSTkCQI14eVP9F957295ZzevS4q8ZsghiJe0HoavtqRCcKsw/AznZV+c0vwks7qA+jiH9kMqtyoqRfgOFV7e76vRfLE40RjYGfh9tNvo8BWlWcxfx+H190OXncZoQs/ML8jHgIajd3bSTtb/83TFjmkvkmUqMiuCJt3yZcOewprHcX3HEicZ8F5ImLDtqeW5VqMFUwiY2pvVWKZRnaR8tT+YlbbqK8VMR/JDCj8sLeA9cNLmp3KzbBciy+FmmHnY3QuNMebMeCxJQYk/AIBzlSdf/7U3WTrRX33qlCn5m3zqM7/swCnWw+mrZCmOHulGPlG4ykOJGo8S1Fi5erIvj3ZFGG3T2d8+JdfzOi32bA7623qxFyNDW2xpl1wZFT+6jL9WYzz9iTB0oA2RPxFYGCG5U6I5TTktVq3wl97oaedKcBZhnPdu4Bh2NnDiBk71FJtY197u8xiQ1iFI0kYnU6YjLP2BQM3HeCZu0qrXhl+M5rQCN6LHy9bKQJPe2hxoB3QLUzmmpJRZmS5/vIODbNrBreWEkY=
-#   file:
-#     - build/*.msi
-#     - build/*.dmg
-#   on:
-#     repo: pygame/stuntcat
+script:
+  - tox
+# Deploy to github releases, and pypi.
+# https://docs.travis-ci.com/user/deployment/
+# travis osx has python3.6 installed.
+  # install python3 with homebrew on osx.
+  # - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew update ; brew upgrade python; export PATH=/usr/local/bin:$PATH; fi;
+  - if [[ $GITHUB_UPLOAD == 'yes' ]]; then python3 -m pip install -r requirements.dev.txt; fi;
+  # make a sdist and a .dmg mac installer.
+  - if [[ $GITHUB_UPLOAD == 'yes' ]]; then python3 setup.py sdist; fi;
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then python3 setup.py bdist_dmg; fi;
+deploy:
+  - provider: releases
+    skip_cleanup: true
+    api_key:
+      secure: aYvqjWrenc0OEHcECfOuqdr/p+VdclpcNINd1vcQ+WdPR0b1uSP171baQIQa0IQqVh+Egn6tYzxcumlsZTgnFVjPGdYP95QhBIFVLVJskO+a/jxL1uJMT0O+GsZL4EYyy/9RZn6RzagvrQSTkCQI14eVP9F957295ZzevS4q8ZsghiJe0HoavtqRCcKsw/AznZV+c0vwks7qA+jiH9kMqtyoqRfgOFV7e76vRfLE40RjYGfh9tNvo8BWlWcxfx+H190OXncZoQs/ML8jHgIajd3bSTtb/83TFjmkvkmUqMiuCJt3yZcOewprHcX3HEicZ8F5ImLDtqeW5VqMFUwiY2pvVWKZRnaR8tT+YlbbqK8VMR/JDCj8sLeA9cNLmp3KzbBciy+FmmHnY3QuNMebMeCxJQYk/AIBzlSdf/7U3WTrRX33qlCn5m3zqM7/swCnWw+mrZCmOHulGPlG4ykOJGo8S1Fi5erIvj3ZFGG3T2d8+JdfzOi32bA7623qxFyNDW2xpl1wZFT+6jL9WYzz9iTB0oA2RPxFYGCG5U6I5TTktVq3wl97oaedKcBZhnPdu4Bh2NnDiBk71FJtY197u8xiQ1iFI0kYnU6YjLP2BQM3HeCZu0qrXhl+M5rQCN6LHy9bKQJPe2hxoB3QLUzmmpJRZmS5/vIODbNrBreWEkY=
+    file_glob: true
+    file:
+      - build/*.dmg
+      - dist/*.tar.gz
+    draft: true
+    on:
+      all_branches: true
+      # branches:
+      #   only:
+      #     - master
+      tag: true
+      repo: pygame/stuntcat
+      condition: $GITHUB_UPLOAD = yes
