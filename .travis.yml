@@ -30,6 +30,7 @@ before_deploy:
   - python3 setup.py sdist
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then python3 setup.py bdist_dmg; fi;
 deploy:
+  # leave the build/ and dist/ folders there for deploy.
   skip_cleanup: true
   - provider: releases
     api_key:
