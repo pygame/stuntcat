@@ -15,7 +15,7 @@ def pg():
 
 
 def test_first(pg):
-    surf = pg.Surface((1, 1))
+    surf = pg.Surface((1, 1), pg.SRCALPHA, 32)
     surf.fill((244, 0, 0))
     assert surf.get_at((0, 0)) == (244, 0, 0)
 
