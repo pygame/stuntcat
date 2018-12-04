@@ -11,4 +11,5 @@ twine
 wheel
 # cx_freeze at time of writing does not support python3.7 in a release.
 https://codeload.github.com/anthony-tuininga/cx_Freeze/zip/master ; python_version == "3.7"
+cx_freeze ; python_version == "2.7"
 -r requirements.txt

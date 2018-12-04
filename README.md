@@ -94,6 +94,8 @@ Tests are run on mac, linux, windows when there is a pull request made.
 
 ### releasing
 
+Releasing is tested with python3.7(not python2 or any other version).
+
 To the python package index (pypi).
 ```
 rm -rf dist/*
