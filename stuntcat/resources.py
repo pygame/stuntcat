@@ -16,6 +16,24 @@ def data_path():
         )
     return path
 
+def music(amusic=None, load=True, play=True, stop=False):
+    """ For loading and playing music.
+
+    ::Example::
+
+    music('bla.ogg', load=True, play=True)
+    music(stop=True)
+    """
+    # perhaps the mixer is not included or initialised.
+    if pygame.mixer and pygame.mixer.get_init():
+        if load and not stop:
+            pygame.mixer.music.load(music_path(amusic))
+        if play and stop is None or stop is False:
+            pygame.mixer.music.play()
+        elif stop:
+            pygame.mixer.music.stop()
+
+
 def music_path(amusic):
     path = os.path.join(data_path(), 'sounds', amusic)
     return path

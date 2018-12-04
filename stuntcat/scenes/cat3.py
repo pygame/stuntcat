@@ -4,7 +4,7 @@ import random
 from pygame.locals import *
 
 from .scene import Scene
-from .. resources import gfx, sfx
+from .. resources import gfx, sfx, music
 
 
 from pygame.sprite import DirtySprite, LayeredDirty
@@ -269,7 +269,7 @@ class Shark(DirtySprite):
 
         elif self.just_happened == 'about_to_appear':
             if debug:print(self.just_happened)
-            pygame.mixer.music.stop()
+            music(stop=True)
             sfx('shark_appear.ogg', play=1)
             sfx('zirkus.ogg', stop=1)
 
