@@ -28,7 +28,7 @@ class LoadingScene(Scene):
         self._game.scenes.remove(self)
         self._game.add_cat_scene()
         self.active = False
-        pg.mixer.music.stop()
+        music(stop=True)
 
     def event(self, event):
         if event.type == pg.KEYDOWN:

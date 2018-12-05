@@ -597,9 +597,15 @@ class CatUniScene(Scene):
         self.cat_fall_speed_max = 16
         self.cat_angle = 0
         self.cat_angular_vel = 0
+        self.cat_head_location = [
+            int(self.cat_location[0] + 100 * math.cos(self.cat_angle - math.pi / 2)),
+            int(self.cat_location[1] + 100 * math.sin(self.cat_angle - math.pi / 2)),
+        ]
+
         self.left_pressed = False
         self.right_pressed = False
         self.score = 0
+
 
         #timing
         self.dt_scaled = 0
