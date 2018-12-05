@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+import os
 from os import path
 import sys
 
@@ -18,9 +19,23 @@ if any(x in sys.argv for x in freeze_cmds):
     #
     from cx_Freeze import setup, Executable
 
+    import cx_Freeze.hooks
+    if not hasattr(cx_Freeze.hooks, 'load_pymunk'):
+        def load_pymunk(finder, module):
+            """The chipmunk.dll or .dylib or .so is included in the package.
+               But it is not found by cx_Freeze, so we include it.
+            """
+            import pymunk
+            finder.IncludeFiles(pymunk.chipmunk_path,
+                    os.path.join(os.path.basename(pymunk.chipmunk_path)),
+                    copyDependentFiles = False)
+        cx_Freeze.hooks.load_pymunk = load_pymunk
+
     # Dependencies are automatically detected, but it might need fine tuning.
     build_exe_options = {
-        "packages": ["os", "pygame", "sys", "random"],
+        "packages": [
+            "os", "pygame", "sys", "random", "pyscroll", "pytmx", "thorpy", "pymunk"
+        ],
         "excludes": ["tkinter"],
     }
     # GUI applications require a different base on Windows (the default is for a
@@ -70,7 +85,7 @@ setup(
     # package_data={'stuntcat': []},
     url='https://github.com/pygame/stuntcat',
     install_requires=['pygame'],
-    version='0.0.10',
+    version='0.0.11',
     entry_points={
         'console_scripts': [
             'stuntcat=stuntcat.cli:main',
