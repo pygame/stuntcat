@@ -41,13 +41,14 @@ if any(x in sys.argv for x in freeze_cmds):
     # GUI applications require a different base on Windows (the default is for a
     # console application).
     base = None
-    if sys.platform == "win32":
+    if sys.platform.startswith("win"):
         base = "Win32GUI"
 
     options = {
         "build_exe": build_exe_options
     }
     executables = [Executable("run_game.py", base=base)]
+    print("options, executables", options, executables)
 else:
     options = {}
     executables = []
@@ -85,7 +86,7 @@ setup(
     # package_data={'stuntcat': []},
     url='https://github.com/pygame/stuntcat',
     install_requires=['pygame'],
-    version='0.0.12',
+    version='0.0.13',
     entry_points={
         'console_scripts': [
             'stuntcat=stuntcat.cli:main',
