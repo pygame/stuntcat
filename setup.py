@@ -48,7 +48,7 @@ if any(x in sys.argv for x in freeze_cmds):
         "build_exe": build_exe_options
     }
     executables = [Executable("run_game.py", base=base)]
-    print("options, executables", options, executables)
+    print("options, executables, base", options, executables, base)
 else:
     options = {}
     executables = []
@@ -86,7 +86,7 @@ setup(
     # package_data={'stuntcat': []},
     url='https://github.com/pygame/stuntcat',
     install_requires=['pygame'],
-    version='0.0.13',
+    version='0.0.14',
     entry_points={
         'console_scripts': [
             'stuntcat=stuntcat.cli:main',
