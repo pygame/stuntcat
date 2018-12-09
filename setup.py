@@ -30,6 +30,14 @@ if any(x in sys.argv for x in freeze_cmds):
                     os.path.join(os.path.basename(pymunk.chipmunk_path)),
                     copyDependentFiles = False)
         cx_Freeze.hooks.load_pymunk = load_pymunk
+    if not hasattr(cx_Freeze.hooks, 'load_pycparser'):
+        def load_pycparser(finder, module):
+            """ These files are missing which causes
+                permission denied issues on windows when they are regenerated.
+            """
+            finder.IncludeModule("pycparser.lextab")
+            finder.IncludeModule("pycparser.yacctab")
+        cx_Freeze.hooks.load_pycparser = load_pycparser
 
     # Dependencies are automatically detected, but it might need fine tuning.
     build_exe_options = {
@@ -86,7 +94,7 @@ setup(
     # package_data={'stuntcat': []},
     url='https://github.com/pygame/stuntcat',
     install_requires=['pygame'],
-    version='0.0.14',
+    version='0.0.12',
     entry_points={
         'console_scripts': [
             'stuntcat=stuntcat.cli:main',
