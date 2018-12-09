@@ -2,10 +2,15 @@ build: false
 
 environment:
   matrix:
+    # - TOXENV: py37
+    #   PYTHON: "C:\\Python37-x64"
+    #   PYTHON_VERSION: "3.7.0"
+    #   PYTHON_ARCH: "64"
+
     - TOXENV: py37
-      PYTHON: "C:\\Python37-x64"
+      PYTHON: "C:\\Python37"
       PYTHON_VERSION: "3.7.0"
-      PYTHON_ARCH: "64"
+      PYTHON_ARCH: "32"
 
     # - TOXENV: py27
     #   PYTHON: "C:\\Python27"
