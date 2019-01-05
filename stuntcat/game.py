@@ -30,8 +30,7 @@ class Game:
 
         # self.add_cat_scene()
 
-        self.gifmaker = None
-        # self.gifmaker = GifMaker()
+        self.gifmaker = GifMaker(seconds=2)
 
     def add_cat_scene(self):
         self.cat_scene = CatUniScene(self)
