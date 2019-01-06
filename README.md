@@ -3,6 +3,9 @@
 # 🐱‍🏍 — the first pygame 2 community game. Starting now! Are you in?
 
 
+![Alt text](docs/gameplay.gif?raw=true "Stuntcat")
+
+
 "My first cat was named Speedy. Because when he went into one of those crazy dashes across the house, he'd run all along the backrest of the couch, like one of those motorcycle stuntperson.
 On a near-vertical surface."
 

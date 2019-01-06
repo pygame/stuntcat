@@ -93,8 +93,15 @@ setup(
     packages=find_packages(),
     # package_data={'stuntcat': []},
     url='https://github.com/pygame/stuntcat',
-    install_requires=['pygame'],
-    version='0.0.12',
+    install_requires=[
+        "pygame",
+        "pyscroll",
+        "pytmx",
+        "thorpy",
+        "pymunk>=5.4.1; sys_platform != 'win32'",
+        "pymunk==5.4.0; sys_platform == 'win32'",
+    ],
+    version='0.0.14.dev0',
     entry_points={
         'console_scripts': [
             'stuntcat=stuntcat.cli:main',
