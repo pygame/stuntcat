@@ -75,14 +75,13 @@ class Elephant(DirtySprite):
             self.rect.x = 0
             self.rect.y = from_top - self.height
             self.dirty = True
+            sfx('foot_elephant.ogg', play=1)
         elif self.just_happened == 'stomp left':
             self.rect.y = self.scene.cat_wire_height - self.height#(self.height - self.image.get_height()) - self.scene.cat_wire_height
             self.rect.x = 0
             self.dirty = True
 
-            sfx('foot_elephant.ogg', play=1)
             if pygame.sprite.collide_rect(self, self.scene.cat):
-                print('stop_left collide')
                 self.scene.reset_on_death()
                 self.dirty = True
 
@@ -90,13 +89,12 @@ class Elephant(DirtySprite):
             self.rect.x = self.width//2
             self.rect.y = from_top - self.height
             self.dirty = True
+            sfx('foot_elephant.ogg', play=1)
         elif self.just_happened == 'stomp right':
             self.rect.x = self.width//2
             self.rect.y = self.scene.cat_wire_height - self.height
             self.dirty = True
-            sfx('foot_elephant.ogg', play=1)
             if pygame.sprite.collide_rect(self, self.scene.cat):
-                print('stop_right collide')
                 self.scene.reset_on_death()
                 self.dirty = True
 
@@ -123,7 +121,7 @@ class Elephant(DirtySprite):
             if total_time > self.last_animation + self.time_of_poise:
                 self.state += 1
                 self.last_animation = total_time
-        elif state == 'stomp left' or self.state == 'stomp right':
+        elif state == 'stomp left' or state == 'stomp right':
             just_happened = self.state != self.last_state
             if just_happened:
                 self.just_happened = state
@@ -132,10 +130,7 @@ class Elephant(DirtySprite):
 
             if total_time > self.last_animation + self.time_of_stomp:
                 self.state += 1
-
                 if self.state == max(self.states.keys()) + 1:
-                    print("resetting state")
-                    self.state = 0
                     self.state = 0
                 self.last_animation = total_time
 
@@ -205,7 +200,7 @@ class Elephant(DirtySprite):
 class Lazer(DirtySprite):
     def __init__(self, parent, container, width, height):
         DirtySprite.__init__(self, container)
-        self.rect = pygame.Rect([200, parent.laser_height, width, 10])
+        self.rect = pygame.Rect([150, parent.laser_height - 5, width, 10])
         # self.rect.x = -1000
         self.image = pygame.Surface((self.rect[2], self.rect[3])).convert()
         self.image.fill((255, 0, 0))
@@ -235,12 +230,12 @@ class Shark(DirtySprite):
 
         #TODO: to make it easier to test the shark
         # self.time_between_appearances = 1000 #ms
-        self.time_between_appearances = 700 #ms
+        self.time_between_appearances = 5000 #ms
 
-        self.time_of_about_to_appear = 300
-        self.time_of_poise = 300 #ms
-        self.time_of_laser = 500 #ms
-        self.time_of_leaving = 300 #ms
+        self.time_of_about_to_appear = 1000#ms
+        self.time_of_poise = 1000 #ms
+        self.time_of_laser = 300 #ms
+        self.time_of_leaving = 1000 #ms
         self.last_animation = 0 #ms
 
         sfx('default_shark.ogg')
@@ -256,7 +251,7 @@ class Shark(DirtySprite):
         # gfx('foot_part.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = -1000
-        self.rect.y = (self.height - self.image.get_height()) - 0
+        self.rect.y = (self.height - self.image.get_height())
 
 
     def update(self):
@@ -280,14 +275,14 @@ class Shark(DirtySprite):
             sfx('shark_appear.ogg', stop=1)
             sfx('shark_attacks.ogg', play=1)
 
-            self.rect.x = 50
+            self.rect.x = -30
             self.dirty = True
 
         elif self.just_happened == 'fire laser':
             if debug:print(self.just_happened)
             self.lazer = Lazer(self, self.container, self.width, self.height)
 
-            if self.scene.cat_location[1] >  self.scene.cat_wire_height - 30:
+            if self.scene.cat_location[1] >  self.scene.cat_wire_height - 3:
                 # sfx('shark_lazer.ogg', play=1)
                 print('shark collide')
 
@@ -303,7 +298,6 @@ class Shark(DirtySprite):
             if debug:print(self.just_happened)
             sfx('shark_attacks.ogg', stop=1)
             sfx('shark_gone.ogg', play=1)
-            self.rect.x = 0
             self.dirty = True
             if self.lazered:
                 self.scene.reset_on_death()
@@ -345,6 +339,10 @@ class Shark(DirtySprite):
             else:
                 self.just_happened = None
 
+            #smoothly animate upwards
+            self.rect.y = (self.height - self.image.get_height()) + 0.2*(self.last_animation + self.time_of_poise - total_time)
+            self.dirty = True 
+
             if total_time > self.last_animation + self.time_of_poise:
                 self.state += 1
                 self.last_animation = total_time
@@ -366,6 +364,10 @@ class Shark(DirtySprite):
                 self.just_happened = state
             else:
                 self.just_happened = None
+
+            #smoothly animate downwards
+            self.rect.y = (self.height - self.image.get_height()) + 0.2*(total_time - self.last_animation)
+            self.dirty = True 
 
             if total_time > self.last_animation + self.time_of_leaving:
                 self.state += 1
@@ -705,17 +707,17 @@ class CatUniScene(Scene):
     #periodically increase the difficulty
     def increase_difficulty(self):
         self.number_of_not_fish = 0
-        if self.score > 6:
+        if self.score > 3:
             self.number_of_not_fish = 1
-        if self.score > 13:
+        if self.score > 9:
             self.number_of_not_fish = 0
+        if self.score > 15:
+            self.number_of_not_fish = 1
         if self.score > 19:
-            self.number_of_not_fish = 1
-        if self.score > 23:
             self.number_of_not_fish = 0
-        if self.score > 30:
+        if self.score > 25:
             self.number_of_not_fish = 1
-        if self.score > 40:
+        if self.score > 35:
             self.number_of_not_fish = 2
         if self.score >= 50:
             self.number_of_not_fish = int((self.score - 20)/10)
@@ -723,11 +725,11 @@ class CatUniScene(Scene):
         #TODO: to make it easier to test.
         # if self.score >= 15:
         #     self.shark_active = True
-        if self.score >= 15:
+        if self.score >= 10:
             self.shark_active = True
 
         #TODO: to make it easier to test.
-        if self.score >= 0:
+        if self.score >= 20:
             self.elephant_active = True
 
     def render_sprites(self):
