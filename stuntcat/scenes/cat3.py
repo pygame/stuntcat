@@ -42,18 +42,21 @@ class Elephant(DirtySprite):
         self.just_happened = None
 
 
-        self.time_between_stomps = 5000 #ms
+        self.time_between_stomps = 1500 #ms
         # self.time_between_stomps = 1000 #ms
         self.time_of_poise = 1500 #ms
-        self.time_of_stomp = 500 #ms
+        self.time_of_stomp = 1500 #ms
         self.last_animation = 0 #ms
 
         # stamp.
         sfx('foot_elephant.ogg')
 
-        self.image = gfx('foot.png', convert_alpha=True)
+        self.rect = pygame.Rect([0, 0, self.width//2, self.height])
+        self.image = pygame.Surface((self.rect[2], self.rect[3])).convert()
+        self.image.fill((255, 0, 0))
+        #self.image = gfx('foot.png', convert_alpha=True)
         # gfx('foot_part.png').convert_alpha()
-        self.rect = self.image.get_rect()
+        #self.rect = self.image.get_rect()
         self.rect.x = -1000
         self.rect.y = -1000
 
@@ -61,9 +64,7 @@ class Elephant(DirtySprite):
     def update(self):
         # if self.just_happened is not None:
         #     print(self.just_happened)
-
-        from_edge = 400
-        from_top = 0
+        from_top = 100
 
         if self.just_happened == 'offscreen':
             self.dirty = True
@@ -71,27 +72,27 @@ class Elephant(DirtySprite):
             self.rect.y = -1000
             sfx('foot_elephant.ogg', stop=1)
         elif self.just_happened == 'poise left':
-            self.rect.x = from_edge
-            self.rect.y = from_top
+            self.rect.x = 0
+            self.rect.y = from_top - self.height
             self.dirty = True
         elif self.just_happened == 'stomp left':
-            self.rect.y = (self.height - self.image.get_height()) - 10
-            self.rect.x = from_edge
+            self.rect.y = self.scene.cat_wire_height - self.height#(self.height - self.image.get_height()) - self.scene.cat_wire_height
+            self.rect.x = 0
             self.dirty = True
 
             sfx('foot_elephant.ogg', play=1)
             if pygame.sprite.collide_rect(self, self.scene.cat):
-                print('stop_right collide')
+                print('stop_left collide')
                 self.scene.reset_on_death()
                 self.dirty = True
 
         elif self.just_happened == 'poise right':
-            self.rect.x = self.width - from_edge
-            self.rect.y = from_top
+            self.rect.x = self.width//2
+            self.rect.y = from_top - self.height
             self.dirty = True
         elif self.just_happened == 'stomp right':
-            self.rect.x = self.width - from_edge
-            self.rect.y = (self.height - self.image.get_height()) - 10
+            self.rect.x = self.width//2
+            self.rect.y = self.scene.cat_wire_height - self.height
             self.dirty = True
             sfx('foot_elephant.ogg', play=1)
             if pygame.sprite.collide_rect(self, self.scene.cat):
@@ -133,6 +134,7 @@ class Elephant(DirtySprite):
                 self.state += 1
 
                 if self.state == max(self.states.keys()) + 1:
+                    print("resetting state")
                     self.state = 0
                     self.state = 0
                 self.last_animation = total_time
@@ -188,23 +190,22 @@ class Elephant(DirtySprite):
 
 
     def collide(self, scene, width, height, cat_head_location):
-        pass
-        # state = self.states[self.state]
-        # if state == 'stomp left':
-        #     if self.scene.cat_head_location[0] < width/2:
-        #         self.scene.reset_on_death()
-        #         self.dirty = True
-        # if state == 'stomp right':
-        #     if self.scene.cat_head_location[0] > width/2:
-        #         self.scene.reset_on_death()
-        #         self.dirty = True
+        #pass
+        state = self.states[self.state]
+        if state == 'stomp left':
+            if self.scene.cat_head_location[0] < width/2:
+                self.scene.reset_on_death()
+                self.dirty = True
+        if state == 'stomp right':
+            if self.scene.cat_head_location[0] > width/2:
+                self.scene.reset_on_death()
+                self.dirty = True
 
 
 class Lazer(DirtySprite):
-    def __init__(self, container, width, height):
+    def __init__(self, parent, container, width, height):
         DirtySprite.__init__(self, container)
-        from_bottom = 210
-        self.rect = pygame.Rect([200, height - from_bottom, width, 30])
+        self.rect = pygame.Rect([200, parent.laser_height, width, 10])
         # self.rect.x = -1000
         self.image = pygame.Surface((self.rect[2], self.rect[3])).convert()
         self.image.fill((255, 0, 0))
@@ -229,16 +230,17 @@ class Shark(DirtySprite):
         self.last_state = 0
         self.just_happened = None
         self.lazered = False # was the cat hit?
+        self.laser_height = height - 150 #where should the laser be on the screen?
 
 
         #TODO: to make it easier to test the shark
         # self.time_between_appearances = 1000 #ms
-        self.time_between_appearances = 7000 #ms
+        self.time_between_appearances = 700 #ms
 
-        self.time_of_about_to_appear = 3000
-        self.time_of_poise = 3000 #ms
+        self.time_of_about_to_appear = 300
+        self.time_of_poise = 300 #ms
         self.time_of_laser = 500 #ms
-        self.time_of_leaving = 3000 #ms
+        self.time_of_leaving = 300 #ms
         self.last_animation = 0 #ms
 
         sfx('default_shark.ogg')
@@ -254,7 +256,7 @@ class Shark(DirtySprite):
         # gfx('foot_part.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = -1000
-        self.rect.y = (self.height - self.image.get_height()) - 100
+        self.rect.y = (self.height - self.image.get_height()) - 0
 
 
     def update(self):
@@ -283,9 +285,9 @@ class Shark(DirtySprite):
 
         elif self.just_happened == 'fire laser':
             if debug:print(self.just_happened)
-            self.lazer = Lazer(self.container, self.width, self.height)
+            self.lazer = Lazer(self, self.container, self.width, self.height)
 
-            if self.scene.cat_location[1] > self.height - 130:
+            if self.scene.cat_location[1] >  self.scene.cat_wire_height - 30:
                 # sfx('shark_lazer.ogg', play=1)
                 print('shark collide')
 
@@ -373,6 +375,7 @@ class Shark(DirtySprite):
 
         self.last_state = start_state
 
+    #this function does nothing now I think
     def render(self, screen, width, height):
         state = self.states[self.state]
 
@@ -381,8 +384,8 @@ class Shark(DirtySprite):
                 screen,
                 [255, 255, 0],
                 [
-                    [0, height - 130],
-                    [0.2 * width, height - 130],
+                    [0, self.laser_height],
+                    [0.2 * width, self.laser_height],
                     [0.2 * width, height],
                     [0, height],
                 ],
@@ -392,8 +395,8 @@ class Shark(DirtySprite):
                 screen,
                 [255, 255, 0],
                 [
-                    [0, height - 130],
-                    [0.2 * width, height - 130],
+                    [0, self.laser_height],
+                    [0.2 * width, self.laser_height],
                     [0.2 * width, height],
                     [0, height],
                 ],
@@ -402,10 +405,10 @@ class Shark(DirtySprite):
                 screen,
                 [255, 0, 0],
                 [
-                    [0.2 * width, height - 130],
-                    [width, height - 130],
-                    [width, height - 100],
-                    [0.2 * width, height - 100],
+                    [0.2 * width, self.laser_height],
+                    [width, self.laser_height],
+                    [width, self.laser_height + 10],
+                    [0.2 * width, self.laser_height],
                 ],
             )
 
@@ -591,6 +594,7 @@ class CatUniScene(Scene):
         sfx('eatfish.ogg')
 
         #cat variables
+        self.cat_wire_height = height - 100
         self.cat_location = [width / 2, height - 100]
         self.cat_speed = [0, 0]
         self.cat_speed_max = 8
@@ -719,11 +723,11 @@ class CatUniScene(Scene):
         #TODO: to make it easier to test.
         # if self.score >= 15:
         #     self.shark_active = True
-        if self.score >= 3:
+        if self.score >= 15:
             self.shark_active = True
 
         #TODO: to make it easier to test.
-        if self.score >= 8:
+        if self.score >= 0:
             self.elephant_active = True
 
     def render_sprites(self):
@@ -833,17 +837,29 @@ class CatUniScene(Scene):
         # move cat
         self.cat_location[0] += self.cat_speed[0] * dt_scaled
         self.cat_location[1] += self.cat_speed[1] * dt_scaled
-        if self.cat_location[1] > height - 100:
-            self.cat_location[1] = height - 100
+        if self.cat_location[1] > self.cat_wire_height and self.cat_location[0] > 0.25 * width:
+            self.cat_location[1] = self.cat_wire_height
             self.cat_speed[1] = 0
+        if self.cat_location[1] > height:
+            self.reset_on_death()
+        if self.cat_location[0] > width:
+            self.cat_location[0] = width
+            if self.cat_angle > 0:
+                self.cat_angle *= 0.7
         self.cat_head_location = [
             int(self.cat_location[0] + 100 * math.cos(self.cat_angle - math.pi / 2)),
             int(self.cat_location[1] + 100 * math.sin(self.cat_angle - math.pi / 2)),
         ]
 
         # check for out of bounds
-        if (self.cat_location[0] > 0.9 * width or self.cat_location[0] < 0.1 * width) and self.cat_location[1] > height - 110:
-            self.reset_on_death()
+        if self.cat_location[0] > 0.98 * width and self.cat_location[1] > self.cat_wire_height - 30:
+            #bump the cat back in
+            self.cat_angular_vel -= 0.01*dt_scaled
+            self.cat_speed[0] = -5
+            self.cat_speed[1] = -20
+            #self.reset_on_death()
+        if self.cat_location[0] < 0.25 * width and self.cat_location[1] > self.cat_wire_height - 30:
+            pass
 
         #check for collision with the elephant stomp
         if self.elephant_active:
@@ -952,7 +968,7 @@ class CatUniScene(Scene):
             elif event.key == K_d:
                 self.cat_angular_vel += random.uniform(0.01 * math.pi, 0.03 * math.pi)
             elif event.key == K_UP:
-                if self.cat_location[1] == height - 100:
+                if self.cat_location[1] > self.cat_wire_height - 1:
                     self.cat_speed[1] -= 25
                     sfx('cat_jump.ogg', play=1)
 
