@@ -9,6 +9,20 @@ import time
 # TODO: Pillow support if imagemagik is not installed.
 # TODO: a backend for windows? Pure python gif saving?
 # TODO: ffmpeg backend? http://blog.pkh.me/p/21-high-quality-gif-with-ffmpeg.html
+# https://stackoverflow.com/questions/3688870/create-animated-gif-from-a-set-of-jpeg-images
+# ffmpeg -i bla%d.png -framerate 30 -filter_complex "[0:v] split [a][b];[a] palettegen [p];[b][p] paletteuse" anim.gif
+#
+
+
+def which(cmd):
+    """ find an executable cmd.
+    """
+    import shutil
+    if hasattr(shutil, 'which'):
+        return shutil.which(cmd)
+    import distutils.spawn
+    return distutils.spawn.find_executable(cmd)
+
 
 class GifMaker:
     """ For making gif animation of a pygame.
@@ -19,10 +33,10 @@ class GifMaker:
     Press K_g to start recording,
           K_g again to finish recording.
 
-    Uses imagemagik 'convert' tool for making the gif.
+    Uses imagemagik 'convert' or ffmpeg tool for making the gif.
 
-        brew install imagemagik
-        apt-get install imagemagick
+        brew install imagemagick ffmpeg
+        apt-get install imagemagick ffmpeg
 
     ::Example::
 
@@ -40,18 +54,14 @@ class GifMaker:
         self.fps = fps
         self.seconds = seconds
 
-    def finish(self):
-        print("saving images for gif")
-        output_path = "%s/anim.gif" % self.path
-        image_paths = []
-        for frame_idx, surf in enumerate(self.surfs):
-            image_path = "%s/bla_%05d.png" % (self.path, frame_idx)
-            image_paths.append(image_path)
-            pg.image.save(surf, image_path)
+    def convert(self, convert_path, image_paths, output_path):
 
-        convertpath = "convert"
+        convert_path = which('convert')
+        if convert_path is None:
+            return False
+
         cmd = [
-            convertpath,
+            convert_path,
             "-delay",
             "%s,1000" % (1000 // self.fps),
             "-size",
@@ -61,6 +71,39 @@ class GifMaker:
         cmd += [output_path]
         print(cmd)
         subprocess.call(cmd)
+        return True
+
+    def ffmpeg(self, output_path):
+        ffmpeg_path = which('ffmpeg')
+        if ffmpeg_path is None:
+            return False
+
+        cmd = [
+            ffmpeg_path,
+            "-i",
+            os.path.join(self.path, "bla_%05d.png"),
+            "-framerate",
+            str(self.fps),
+            "-filter_complex",
+            "[0:v] split [a][b];[a] palettegen [p];[b][p] paletteuse",
+            output_path,
+        ]
+        print(cmd)
+        subprocess.call(cmd)
+        return True
+
+    def finish(self):
+        print("saving images for gif")
+        output_path = "%s/anim.gif" % self.path
+        image_paths = []
+        for frame_idx, surf in enumerate(self.surfs):
+            image_path = "%s/bla_%05d.png" % (self.path, frame_idx)
+            image_paths.append(image_path)
+            pg.image.save(surf, image_path)
+
+        if not self.ffmpeg(output_path):
+            if not self.convert(image_paths, image_paths, output_path):
+                raise ValueError('could not find convert or ffmpeg')
 
         for image_path in image_paths:
             os.remove(image_path)
