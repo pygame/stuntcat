@@ -100,7 +100,7 @@ setup(
         "thorpy",
         "pymunk>=5.4.2",
     ],
-    version='0.0.17',
+    version='0.0.18',
     entry_points={
         'console_scripts': [
             'stuntcat=stuntcat.cli:main',
