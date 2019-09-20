@@ -26,7 +26,7 @@ if: type != push OR branch = master OR branch =~ /^\d+\.\d+(\.\d+)?(-\S*)?$/
 
 install: pip install tox
 script:
-  - tox
+  - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then tox; fi;
 # Deploy to github releases, and pypi.
 # https://docs.travis-ci.com/user/deployment/
 # travis osx has python3.6 installed.
