@@ -101,7 +101,7 @@ setup(
         "pymunk>=5.4.1; sys_platform != 'win32'",
         "pymunk==5.4.0; sys_platform == 'win32'",
     ],
-    version='0.0.14.dev0',
+    version='0.0.14',
     entry_points={
         'console_scripts': [
             'stuntcat=stuntcat.cli:main',
