@@ -13,7 +13,7 @@ matrix:
     language: generic
     if: tag IS present
     env:
-    - TOXENV=py37
+    - TOXENV=py36
     - GITHUB_UPLOAD=yes
     addons:
       homebrew:
