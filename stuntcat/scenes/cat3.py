@@ -531,22 +531,19 @@ class Score(DirtySprite):
         """
         DirtySprite.__init__(self)
         self.score_holder = score_holder
-        self.myfont = pygame.font.SysFont("monospace", 20)
-        self.image = self.myfont.render(
-            "score : " + str(self.score_holder.score), True, [255, 255, 255]
-        )
+        self.myfont = pygame.font.SysFont("monospace", 30, bold = True)
+        self.image = self.myfont.render(str(self.score_holder.score), True, [0, 0, 0])
         self.rect = self.image.get_rect()
-        self.rect.x = 100
-        self.rect.y = 100
+        self.rect.x = 460
+        self.rect.y = 451
 
         self.last_score = self.score_holder.score
 
     def update(self):
         if self.last_score != self.score_holder.score:
             self.dirty = True
-            self.image = self.myfont.render(
-                "score : " + str(self.score_holder.score), True, [255, 255, 255]
-            )
+            self.image = self.myfont.render(str(self.score_holder.score), True, [0,0,0])
+            self.rect.x = 475 - self.image.get_size()[0]/2
         self.last_score = self.score_holder.score
 
 
@@ -710,15 +707,15 @@ class CatUniScene(Scene):
         if self.score > 3:
             self.number_of_not_fish = 1
         if self.score > 9:
-            self.number_of_not_fish = 0
+            self.number_of_not_fish = 1
         if self.score > 15:
-            self.number_of_not_fish = 1
-        if self.score > 19:
-            self.number_of_not_fish = 0
-        if self.score > 25:
-            self.number_of_not_fish = 1
-        if self.score > 35:
             self.number_of_not_fish = 2
+        if self.score > 19:
+            self.number_of_not_fish = 1
+        if self.score > 25:
+            self.number_of_not_fish = 2
+        if self.score > 35:
+            self.number_of_not_fish = 3
         if self.score >= 50:
             self.number_of_not_fish = int((self.score - 20)/10)
 
@@ -796,10 +793,9 @@ class CatUniScene(Scene):
             pygame.draw.circle(screen, [255, 0, 0], [int(f.pos[0]), int(f.pos[1])], 10)
 
         # draw score
-        textsurface = self.myfont.render(
-            "score : " + str(self.score), True, [255, 255, 255]
+        textsurface = self.myfont.render(str(self.score), True, [0, 0, 0]
         )
-        screen.blit(textsurface, (100, 100))
+        screen.blit(textsurface, (200, 300))
         return [screen.get_rect()]
 
     def tick(self, dt):

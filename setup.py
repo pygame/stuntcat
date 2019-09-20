@@ -98,8 +98,7 @@ setup(
         "pyscroll",
         "pytmx",
         "thorpy",
-        "pymunk>=5.4.1; sys_platform != 'win32'",
-        "pymunk==5.4.0; sys_platform == 'win32'",
+        "pymunk>=5.4.2",
     ],
     version='0.0.14',
     entry_points={
