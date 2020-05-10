@@ -42,7 +42,7 @@ if any(x in sys.argv for x in freeze_cmds):
     # Dependencies are automatically detected, but it might need fine tuning.
     build_exe_options = {
         "packages": [
-            "os", "pygame", "sys", "random", "pyscroll", "pytmx", "thorpy", "pymunk"
+            "os", "pygame", "sys", "typing", "random", "pyscroll", "pytmx", "thorpy", "pymunk"
         ],
         "excludes": ["tkinter"],
     }
@@ -100,6 +100,11 @@ setup(
         "thorpy",
         "pymunk>=5.4.2",
     ],
+    extras_require={
+        ':python_version < "3.5"': [
+            'typing',
+        ],
+    },
     version='0.0.19',
     entry_points={
         'console_scripts': [

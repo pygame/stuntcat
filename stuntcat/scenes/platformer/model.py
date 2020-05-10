@@ -1,3 +1,7 @@
+"""
+Model Module
+"""
+
 import pymunk
 
 
@@ -17,6 +21,11 @@ class BasicModel:
 
     @property
     def position(self):
+        """
+        Position property.
+
+        :return: The model's position.
+        """
         return self.main_body.position
 
     @position.setter
@@ -31,6 +40,9 @@ class BasicModel:
 
 
 class UprightModel(BasicModel):
+    """
+    Upright Model class.
+    """
     def __init__(self):
         super().__init__()
         self.move_power = 1
@@ -41,6 +53,11 @@ class UprightModel(BasicModel):
 
     @property
     def grounded(self):
+        """
+        Grounded property.
+
+        :return: True if grounded.
+        """
         return self._grounded
 
     @grounded.setter
@@ -49,10 +66,18 @@ class UprightModel(BasicModel):
         self._grounded = value
 
     def accelerate(self, direction):
+        """
+        Accelerate in a direction.
+
+        :param direction: The direction to go.
+        """
         amt = direction * self.move_power
         self.motor.max_force = pymunk.inf
         self.motor.rate = amt
 
     def brake(self):
+        """
+        Put on the brakes.
+        """
         self.motor.rate = 0
         self.motor.max_force = 300000

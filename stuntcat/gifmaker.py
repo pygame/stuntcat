@@ -16,6 +16,8 @@ It relies on ffmpeg, or convert(from imagemagick being available):
 import os
 import subprocess
 import time
+import shutil
+import distutils.spawn
 import pygame as pg
 
 
@@ -30,10 +32,9 @@ import pygame as pg
 def which(cmd):
     """ find an executable cmd.
     """
-    import shutil
     if hasattr(shutil, 'which'):
         return shutil.which(cmd)
-    import distutils.spawn
+
     return distutils.spawn.find_executable(cmd)
 
 
@@ -97,10 +98,10 @@ class GifMaker:
             ffmpeg_path,
             "-i",
             os.path.join(self.path, "bla_%05d.png"),
-            "-y", # overwrite output file without asking.
+            "-y",  # overwrite output file without asking.
             "-framerate",
             str(self.fps),
-            "-filter_complex", # use a pallet for the gif for nicer image.
+            "-filter_complex",  # use a pallet for the gif for nicer image.
             "[0:v] split [a][b];[a] palettegen [p];[b][p] paletteuse",
             output_path,
         ]
@@ -119,9 +120,9 @@ class GifMaker:
             image_paths.append(image_path)
             pg.image.save(surf, image_path)
 
-        if not self._ffmpeg(output_path):
-            if not self._convert(image_paths, image_paths, output_path):
-                raise ValueError('could not find convert or ffmpeg')
+        if not (self._ffmpeg(output_path)
+                or self._convert(image_paths, image_paths, output_path)):
+            raise ValueError('could not find convert or ffmpeg')
 
         for image_path in image_paths:
             os.remove(image_path)
@@ -137,12 +138,12 @@ class GifMaker:
         Call it once per frame after drawing is done.
         """
         for event in events:
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_g and not self.start_saving:
+            if event.type == pg.KEYDOWN and event.key == pg.K_g:
+                if not self.start_saving:
                     self.start_saving = time.time()
                     self.finished_saving = False
                     print("recording surfs, press g")
-                elif event.key == pg.K_g and self.start_saving:
+                else:
                     self.start_saving = False
                     self.finished_saving = True
 
@@ -150,6 +151,6 @@ class GifMaker:
             self.finish()
         if self.start_saving:
             self.surfs.append(screen.copy())
-            if self.seconds is not None:
-                if time.time() - self.start_saving > self.seconds:
-                    self.finish()
+            if (self.seconds is not None
+                    and time.time() - self.start_saving > self.seconds):
+                self.finish()
