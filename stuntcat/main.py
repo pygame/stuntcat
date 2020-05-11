@@ -1,7 +1,7 @@
 """
 Main module
 """
-from .game import Game
+from stuntcat.game import Game
 
 
 def main():

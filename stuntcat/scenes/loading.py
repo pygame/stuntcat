@@ -38,9 +38,9 @@ class LoadingScene(Scene):
         self.timer += time_delta
 
         if self.timer > 10000:
-            self.next()
+            self.next_scene()
 
-    def next(self):
+    def next_scene(self):
         """
         Progress to next scene.
         """
@@ -56,4 +56,4 @@ class LoadingScene(Scene):
         :param pg_event: The event to process.
         """
         if pg_event.type == pg.KEYDOWN:
-            self.next()
+            self.next_scene()

@@ -23,10 +23,7 @@ class CatModel(model.UprightModel):
     def __init__(self):
         super().__init__()
         self.normal_rect = pygame.Rect(0, 0, 32, 40)
-        self.normal_feet_offset = (0, .7)
-        self.move_power = 10
-        self.jump_power = 30000
-        self.jump_mod = 1.0
+        self.model_data['move_power'] = 10
 
         self.feet = None  # type: Optional[pymunk.Body]
 

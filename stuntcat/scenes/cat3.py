@@ -85,7 +85,7 @@ class Elephant(DirtySprite):
         self.rect.x = -1000
         self.rect.y = -1000
 
-    def update(self):
+    def update(self, *args, **kwargs):
         """
         Update the elephant.
         """
@@ -285,7 +285,7 @@ class Shark(DirtySprite):
         self.rect.x = -1000
         self.rect.y = (self.height - self.image.get_height())
 
-    def update(self):
+    def update(self, *args, **kwargs):
         debug = True
         if self.just_happened == 'offscreen':
             if debug:
@@ -487,7 +487,7 @@ class Cat(DirtySprite):
         self.last_direction = True  # right is true
         self.last_rotation = -1
 
-    def update(self):
+    def update(self, *args, **kwargs):
         direction = self.cat_holder.cat_speed[0] > 0
         # location = self.cat_holder.cat_location
         location = self.cat_holder.cat_head_location
@@ -538,7 +538,7 @@ class Fish(DirtySprite):
         self.last_pos = [self.rect.x, self.rect.y]
         self.pos = [self.rect.x, self.rect.y]
 
-    def update(self):
+    def update(self, *args, **kwargs):
         if self.last_pos != self.pos[:2]:
             self.dirty = True
             self.rect.x = self.pos[0] - 25
@@ -561,7 +561,7 @@ class NotFish(DirtySprite):
         self.last_pos = [self.rect.x, self.rect.y]
         self.pos = [self.rect.x, self.rect.y]
 
-    def update(self):
+    def update(self, *args, **kwargs):
         if self.last_pos != self.pos[:2]:
             self.dirty = True
             self.rect.x = self.pos[0] - 25
@@ -587,7 +587,7 @@ class Score(DirtySprite):
 
         self.last_score = self.score_holder.score
 
-    def update(self):
+    def update(self, *args, **kwargs):
         if self.last_score != self.score_holder.score:
             self.dirty = True
             self.image = self.myfont.render(str(self.score_holder.score), True, [0, 0, 0])

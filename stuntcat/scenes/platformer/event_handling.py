@@ -33,6 +33,13 @@ class EventQueueHandler:
                 for game_event in player_input.get_events():
                     yield game_event
 
+    def print_controls(self):
+        """
+        Print the controls to the console.
+        """
+        print("Keyboard controls:", self._inputs[0][0], "\n")
+        print("Gamepad controls:", self._inputs[0][0], "\n")
+
 
 class PlayerInput:
     """
@@ -78,6 +85,9 @@ class EventHandler:
         self.event_map = event_map
         for button in event_map.values():
             self.buttons[button] = PlayerInput(button)
+
+    def __repr__(self):
+        print(self.event_map)
 
     def process_event(self, pg_event):
         """
@@ -142,6 +152,9 @@ class GamepadInput(EventHandler):
         super(GamepadInput, self).__init__(event_map)
         self.deadzone = deadzone
         self.init_all_joysticks()
+
+    def __repr__(self):
+        print(GamepadInput.default_input_map)
 
     @staticmethod
     def init_all_joysticks():

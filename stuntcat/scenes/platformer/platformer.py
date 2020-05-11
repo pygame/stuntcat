@@ -46,11 +46,11 @@ class PlatformerScene(Scene):
         self.player = None
         self.active = True
 
-        self.geometry = []
         self.space = Space()
         self.space.gravity = (0, 1000)
         self.sprites = LayeredUpdates()
         self.event_handler = event_handling.EventQueueHandler()
+        self.event_handler.print_controls()
         self.background = resources.gfx("background.png", convert=True)
         self.load()
         pygame.mixer.music.load(resources.music_path("zirkus.ogg"))
@@ -138,7 +138,7 @@ class PlatformerScene(Scene):
         step_amount = (1 / 30.) / 30
         for _ in range(30):
             self.space.step(step_amount)
-        self.sprites.update(time_delta)
+        self.sprites.update(time_delta=time_delta)
 
     def event(self, pg_event):
         """

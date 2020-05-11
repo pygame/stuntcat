@@ -1,7 +1,7 @@
 """
 Model Module
 """
-
+from typing import Dict, Any
 import pymunk
 
 
@@ -18,6 +18,7 @@ class BasicModel:
         self.main_body = None
         self.pymunk_objects = set()
         self.sprites = set()
+        self.model_data = {}  # type: Dict[str, Any]
 
     @property
     def position(self):
@@ -38,6 +39,12 @@ class BasicModel:
             except AttributeError:
                 continue
 
+    def list_objects(self):
+        """
+        Print out the set of pymunk objects that make up this body.
+        """
+        print(self.pymunk_objects)
+
 
 class UprightModel(BasicModel):
     """
@@ -45,8 +52,7 @@ class UprightModel(BasicModel):
     """
     def __init__(self):
         super().__init__()
-        self.move_power = 1
-        self.jump_power = 1
+        self.model_data['move_power'] = 1
         self.motor = None
         self._debounce_time = 0
         self._grounded = False
@@ -71,7 +77,7 @@ class UprightModel(BasicModel):
 
         :param direction: The direction to go.
         """
-        amt = direction * self.move_power
+        amt = direction * self.model_data['move_power']
         self.motor.max_force = pymunk.inf
         self.motor.rate = amt
 

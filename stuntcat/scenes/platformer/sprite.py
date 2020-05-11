@@ -31,7 +31,7 @@ class ShapeSprite(DirtySprite):
                     int((bounding_box.top - bounding_box.bottom) * factor))
             self.original_image = smoothscale(image, size)
 
-    def update(self, _):
+    def update(self, *args, **kwargs):
         """
         Update the shape sprite.
 

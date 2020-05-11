@@ -63,7 +63,6 @@ def gfx(image, convert=False, convert_alpha=False):
     :param convert_alpha:
     :return: Image surface.
     """
-    global _GFX_CACHE
     gfx_key = (image, convert, convert_alpha)
     if gfx_key in _GFX_CACHE:
         return _GFX_CACHE[gfx_key]
@@ -86,7 +85,6 @@ def sfx(snd, play=False, stop=False):
     :param stop:
     :return: The sound.
     """
-    global _SFX_CACHE
     snd_key = snd
     if snd_key in _SFX_CACHE:
         asound = _SFX_CACHE[snd_key]
