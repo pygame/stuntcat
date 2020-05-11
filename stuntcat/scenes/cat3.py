@@ -10,8 +10,10 @@ from typing import Optional
 import pygame
 from pygame.sprite import DirtySprite, LayeredDirty
 
-from .scene import Scene
-from ..resources import gfx, sfx, music
+from stuntcat.resources import gfx, sfx, music
+from stuntcat.scenes.scene import Scene
+from stuntcat.scenes.flying_objects import Fish, NotFish
+from stuntcat.scenes.elephant import Elephant
 
 
 def distance(pos_a, pos_b):
@@ -44,185 +46,6 @@ class LayeredDirtyAppend(LayeredDirty):
         """
         for sprite in sprite_list:
             self.add(sprite)
-
-
-class Elephant(DirtySprite):
-    """
-    Elephant sprite class.
-    """
-    def __init__(self, scene):
-        DirtySprite.__init__(self)
-        self.scene = scene
-        self.width = scene.width
-        self.height = scene.height
-        self.state = 0
-        self.states = {
-            0: 'offscreen',
-            1: 'poise left',
-            2: 'stomp left',
-            3: 'offscreen',
-            4: 'poise right',
-            5: 'stomp right',
-        }
-        self.last_state = 0
-        self.just_happened = None
-
-        self.time_between_stomps = 1500  # ms
-        # self.time_between_stomps = 1000 #ms
-        self.time_of_poise = 1500  # ms
-        self.time_of_stomp = 1500  # ms
-        self.last_animation = 0  # ms
-
-        # stamp.
-        sfx('foot_elephant.ogg')
-
-        self.rect = pygame.Rect([0, 0, self.width // 2, self.height])
-        self.image = pygame.Surface((self.rect[2], self.rect[3])).convert()
-        self.image.fill((255, 0, 0))
-        # self.image = gfx('foot.png', convert_alpha=True)
-        # gfx('foot_part.png').convert_alpha()
-        # self.rect = self.image.get_rect()
-        self.rect.x = -1000
-        self.rect.y = -1000
-
-    def update(self, *args, **kwargs):
-        """
-        Update the elephant.
-        """
-        # if self.just_happened is not None:
-        #     print(self.just_happened)
-        from_top = 100
-
-        if self.just_happened == 'offscreen':
-            self.dirty = True
-            self.rect.x = -1000
-            self.rect.y = -1000
-            sfx('foot_elephant.ogg', stop=1)
-        elif self.just_happened == 'poise left':
-            self.rect.x = 0
-            self.rect.y = from_top - self.height
-            self.dirty = True
-            sfx('foot_elephant.ogg', play=1)
-        elif self.just_happened == 'stomp left':
-            # (self.height - self.image.get_height()) - self.scene.cat_wire_height
-            self.rect.y = self.scene.cat_wire_height - self.height
-            self.rect.x = 0
-            self.dirty = True
-
-            if pygame.sprite.collide_rect(self, self.scene.cat):
-                self.scene.reset_on_death()
-                self.dirty = True
-
-        elif self.just_happened == 'poise right':
-            self.rect.x = self.width // 2
-            self.rect.y = from_top - self.height
-            self.dirty = True
-            sfx('foot_elephant.ogg', play=1)
-        elif self.just_happened == 'stomp right':
-            self.rect.x = self.width // 2
-            self.rect.y = self.scene.cat_wire_height - self.height
-            self.dirty = True
-            if pygame.sprite.collide_rect(self, self.scene.cat):
-                self.scene.reset_on_death()
-                self.dirty = True
-
-    def animate(self, total_time):
-        """
-        Animate the elephant
-        """
-        state = self.states[self.state]
-        start_state = self.state
-        if state == 'offscreen':
-            just_happened = self.state != self.last_state
-            self.just_happened = state if just_happened else None
-            if total_time > self.last_animation + self.time_between_stomps:
-                self.state += 1
-                self.last_animation = total_time
-        elif state in ['poise left', 'poise right']:
-            just_happened = self.state != self.last_state
-            self.just_happened = state if just_happened else None
-            if total_time > self.last_animation + self.time_of_poise:
-                self.state += 1
-                self.last_animation = total_time
-        elif state in ['stomp left', 'stomp right']:
-            just_happened = self.state != self.last_state
-            self.just_happened = state if just_happened else None
-            if total_time > self.last_animation + self.time_of_stomp:
-                self.state += 1
-                if self.state == max(self.states.keys()) + 1:
-                    self.state = 0
-                self.last_animation = total_time
-
-        self.last_state = start_state
-
-    def render(self, screen, width, height):
-        """
-        Render the elephant.
-
-        :param screen:
-        :param width:
-        :param height:
-        """
-        if self.state == 1:  # poise left
-            pygame.draw.polygon(
-                screen,
-                [255, 0, 0],
-                [
-                    [0.1 * width, 0],
-                    [0.5 * width, 0],
-                    [0.5 * width, 100],
-                    [0.1 * width, 100],
-                ],
-            )
-        if self.state == 2:  # stomp left
-            pygame.draw.polygon(
-                screen,
-                [255, 0, 0],
-                [
-                    [0.1 * width, 0],
-                    [0.5 * width, 0],
-                    [0.5 * width, height - 100],
-                    [0.1 * width, height - 100],
-                ],
-            )
-        if self.state == 4:  # poise right
-            pygame.draw.polygon(
-                screen,
-                [255, 0, 0],
-                [
-                    [0.5 * width, 0],
-                    [0.9 * width, 0],
-                    [0.9 * width, 100],
-                    [0.5 * width, 100],
-                ],
-            )
-        if self.state == 5:  # stomp right
-            pygame.draw.polygon(
-                screen,
-                [255, 0, 0],
-                [
-                    [0.5 * width, 0],
-                    [0.9 * width, 0],
-                    [0.9 * width, height - 100],
-                    [0.5 * width, height - 100],
-                ],
-            )
-
-    def collide(self, width):
-        """
-        Collide with the elephant.
-
-        :param width:
-        """
-        state = self.states[self.state]
-        if state == 'stomp left':
-            if self.scene.cat_head_location[0] < width / 2:
-                self.scene.reset_on_death()
-                self.dirty = True
-        elif state == 'stomp right':
-            if self.scene.cat_head_location[0] > width / 2:
-                self.scene.reset_on_death()
-                self.dirty = True
 
 
 class Lazer(DirtySprite):
@@ -367,7 +190,7 @@ class Shark(DirtySprite):
         elif state == 'poise':
             just_happened = self.state != self.last_state
             self.just_happened = state if just_happened else None
-            # smoothly animate upwards
+            # smoothly update upwards
             self.rect.y = ((self.height -
                             self.image.get_height()) +
                            0.2 *
@@ -388,7 +211,7 @@ class Shark(DirtySprite):
         elif state == 'leaving':
             just_happened = self.state != self.last_state
             self.just_happened = state if just_happened else None
-            # smoothly animate downwards
+            # smoothly update downwards
             self.rect.y = ((self.height -
                             self.image.get_height()) +
                            0.2 *
@@ -522,53 +345,6 @@ class Cat(DirtySprite):
         # pygame.draw.circle(screen, [0, 255, 0], self.cat_head_location, 100, 1)
 
 
-class Fish(DirtySprite):
-    """
-    Fish sprite class.
-    """
-    colors = ["red", "yellow", "green"]
-
-    def __init__(self, group, pos, vx, vy):
-        DirtySprite.__init__(self, group)
-        self.image = gfx("fish_" + random.choice(Fish.colors) + ".png", convert_alpha=True)
-        self.rect = self.image.get_rect()
-        self.rect.topleft = pos
-        self.velocity = pygame.math.Vector2(vx, vy)
-
-        self.last_pos = [self.rect.x, self.rect.y]
-        self.pos = [self.rect.x, self.rect.y]
-
-    def update(self, *args, **kwargs):
-        if self.last_pos != self.pos[:2]:
-            self.dirty = True
-            self.rect.x = self.pos[0] - 25
-            self.rect.y = self.pos[1] - 25
-        self.last_pos = self.pos[:2]
-
-
-class NotFish(DirtySprite):
-    """
-    Not-fish sprite class.
-    """
-    def __init__(self, group, pos, vx, vy):
-        DirtySprite.__init__(self, group)
-        self.image = gfx('ring.png', convert_alpha=True)
-        self.rect = self.image.get_rect()
-        self.rect.topleft = pos
-
-        self.velocity = pygame.math.Vector2(vx, vy)
-
-        self.last_pos = [self.rect.x, self.rect.y]
-        self.pos = [self.rect.x, self.rect.y]
-
-    def update(self, *args, **kwargs):
-        if self.last_pos != self.pos[:2]:
-            self.dirty = True
-            self.rect.x = self.pos[0] - 25
-            self.rect.y = self.pos[1] - 25
-        self.last_pos = self.pos[:2]
-
-
 class Score(DirtySprite):
     """
     Score class.
@@ -700,7 +476,7 @@ class CatUniScene(Scene):
         # self.fish = [[0, height / 2, 10, -5]]
         self.angle_to_not_fish = 0.0
         self.fish = LayeredDirtyAppend()
-        self.fish.extend([Fish(self.allsprites, (0, height / 2), 10, -5)])
+        self.fish.extend([Fish(self.allsprites, (0, height / 2), (10.0, -5.0))])
 
         self.not_fish = LayeredDirtyAppend()
 
@@ -972,16 +748,16 @@ class CatUniScene(Scene):
                 self.fish.append(
                     Fish(self.allsprites,
                          (0, height / 2),  # random.randint(0, height / 2),
-                         random.randint(3, 7),
-                         -random.randint(5, 12),
+                         (random.randint(3, 7),
+                          -random.randint(5, 12)),
                          )
                 )
             else:
                 self.fish.append(
                     Fish(self.allsprites,
                          (width, height / 2),  # random.randint(0, height / 2),
-                         -random.randint(3, 7),
-                         -random.randint(5, 12),
+                         (-random.randint(3, 7),
+                          -random.randint(5, 12)),
                          )
                 )
         while len(self.not_fish) < self.number_of_not_fish:
@@ -990,16 +766,16 @@ class CatUniScene(Scene):
                 self.not_fish.append(
                     NotFish(self.allsprites,
                             (0, height / 2),  # random.randint(0, height / 2),
-                            random.randint(3, 7),
-                            -random.randint(5, 12),
+                            (random.randint(3, 7),
+                             -random.randint(5, 12)),
                             )
                 )
             else:
                 self.not_fish.append(
                     NotFish(self.allsprites,
                             (width, height / 2),  # random.randint(0, height / 2),
-                            -random.randint(3, 7),
-                            -random.randint(5, 12),
+                            (-random.randint(3, 7),
+                             -random.randint(5, 12)),
                             )
                 )
 

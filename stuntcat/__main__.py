@@ -4,4 +4,6 @@ Another Main module.
 
 if __name__ == '__main__':
     import stuntcat.cli
-    stuntcat.cli.cli_main()
+
+    cli = stuntcat.cli.Cli()
+    cli.cli_main()
