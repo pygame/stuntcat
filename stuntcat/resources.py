@@ -9,6 +9,16 @@ _SFX_CACHE = {}
 _GFX_CACHE = {}
 
 
+def distance(pos_a, pos_b):
+    """
+    2D distance calculation function.
+
+    :param pos_a: Position as a two item tuple-like.
+    :param pos_b: Position as a two item tuple-like.
+    """
+    return ((pos_a[0] - pos_b[0]) ** 2 + (pos_a[1] - pos_b[1]) ** 2) ** 0.5
+
+
 def data_path():
     """
     Get the path for the data directory.

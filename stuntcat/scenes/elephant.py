@@ -75,22 +75,18 @@ class Elephant(DirtySprite):
     Elephant sprite class.
     """
     def __init__(self, scene):
-        DirtySprite.__init__(self)
+        super(Elephant, self).__init__()
         self.scene = scene
-        self.width = scene.width
-        self.height = scene.height
 
         self.animation = ElephantAnimation()
 
         # stamp.
         sfx('foot_elephant.ogg')
 
-        self.rect = Rect([0, 0, self.width // 2, self.height])
+        self.rect = Rect([0, 0, self.scene.width // 2, self.scene.height])
         self.image = Surface((self.rect[2], self.rect[3])).convert()
         self.image.fill((255, 0, 0))
-        # self.image = gfx('foot.png', convert_alpha=True)
-        # gfx('foot_part.png').convert_alpha()
-        # self.rect = self.image.get_rect()
+
         self.rect.x = -1000
         self.rect.y = -1000
 
@@ -115,12 +111,12 @@ class Elephant(DirtySprite):
             sfx('foot_elephant.ogg', stop=1)
         elif self.animation.just_happened == 'poise left':
             self.rect.x = 0
-            self.rect.y = from_top - self.height
+            self.rect.y = from_top - self.scene.height
             self.dirty = True
             sfx('foot_elephant.ogg', play=1)
         elif self.animation.just_happened == 'stomp left':
             # (self.height - self.image.get_height()) - self.scene.cat_wire_height
-            self.rect.y = self.scene.cat_wire_height - self.height
+            self.rect.y = self.scene.cat_wire_height - self.scene.height
             self.rect.x = 0
             self.dirty = True
 
@@ -129,13 +125,13 @@ class Elephant(DirtySprite):
                 self.dirty = True
 
         elif self.animation.just_happened == 'poise right':
-            self.rect.x = self.width // 2
-            self.rect.y = from_top - self.height
+            self.rect.x = self.scene.width // 2
+            self.rect.y = from_top - self.scene.height
             self.dirty = True
             sfx('foot_elephant.ogg', play=1)
         elif self.animation.just_happened == 'stomp right':
-            self.rect.x = self.width // 2
-            self.rect.y = self.scene.cat_wire_height - self.height
+            self.rect.x = self.scene.width // 2
+            self.rect.y = self.scene.cat_wire_height - self.scene.height
             self.dirty = True
             if collide_rect(self, self.scene.cat):
                 self.scene.reset_on_death()

@@ -3,8 +3,13 @@
 import os
 import sys
 import traceback
-import tkinter.messagebox
 
+if sys.version_info[0] >= 3:
+    import tkinter as tK
+    from tkinter.messagebox import showerror
+else:
+    import Tkinter as tK
+    from tkMessageBox import showerror  # pylint: disable=import-error
 
 LOCAL_PATH = os.path.abspath(os.path.dirname(__file__))
 
@@ -30,8 +35,6 @@ try:
     from .main import main
 except ImportError:
     from stuntcat.main import main
-
-
 
 
 class Cli:
@@ -146,8 +149,8 @@ class Cli:
 
     @staticmethod
     def __tkinterbox(title, message):
-        tkinter.Tk().wm_withdraw()
-        tkinter.messagebox.showerror(title, message)
+        tK.Tk().wm_withdraw()
+        showerror(title, message)
 
     @staticmethod
     def __pgbox(title, message):

@@ -1,0 +1,8 @@
+[MASTER]
+extension-pkg-whitelist=pygame
+
+[MESSAGES CONTROL]
+disable=fixme
+
+[DESIGN]
+max-attributes=12
