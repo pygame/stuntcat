@@ -1,9 +1,9 @@
 """
 Elephant module
 """
+import pygame
 import pygame.draw
 
-from pygame import Rect, Surface
 from pygame.sprite import DirtySprite, collide_rect
 
 from stuntcat.resources import sfx
@@ -83,8 +83,8 @@ class Elephant(DirtySprite):
         # stamp.
         sfx('foot_elephant.ogg')
 
-        self.rect = Rect([0, 0, self.scene.width // 2, self.scene.height])
-        self.image = Surface((self.rect[2], self.rect[3])).convert()
+        self.rect = pygame.Rect([0, 0, self.scene.width // 2, self.scene.height])
+        self.image = pygame.Surface((self.rect[2], self.rect[3])).convert()
         self.image.fill((255, 0, 0))
 
         self.rect.x = -1000

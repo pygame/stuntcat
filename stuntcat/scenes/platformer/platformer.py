@@ -6,10 +6,10 @@ from os.path import join as path_join
 
 import pymunk
 import pytmx
+import pygame.mixer
+
 from pygame import Rect
 from pygame.sprite import LayeredUpdates
-import pygame.mixer
-from pymunk import Space
 
 from stuntcat import resources
 from stuntcat.scenes.scene import Scene
@@ -46,7 +46,9 @@ class PlatformerScene(Scene):
         self.player = None
         self.active = True
 
-        self.space = Space()
+        self.fsm = None
+
+        self.space = pymunk.Space()
         self.space.gravity = (0, 1000)
         self.sprites = LayeredUpdates()
         self.event_handler = event_handling.EventQueueHandler()

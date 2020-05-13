@@ -68,7 +68,7 @@ class GifMaker:
         self.fps = fps
         self.seconds = seconds
 
-    def _convert(self, convert_path, image_paths, output_path):
+    def _convert(self, image_paths, output_path):
 
         convert_path = which('convert')
         if convert_path is None:
@@ -121,7 +121,7 @@ class GifMaker:
             pg.image.save(surf, image_path)
 
         if not (self._ffmpeg(output_path)
-                or self._convert(image_paths, image_paths, output_path)):
+                or self._convert(image_paths, output_path)):
             raise ValueError('could not find convert or ffmpeg')
 
         for image_path in image_paths:

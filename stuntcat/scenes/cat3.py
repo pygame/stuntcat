@@ -681,7 +681,6 @@ class CatUniScene(Scene):
             self.player_data.cat_speed[1] = -20
             # self.reset_on_death()
 
-
         # check for collision with the elephant stomp
         if self.elephant_active:
             self.elephant.animate(self.total_time)

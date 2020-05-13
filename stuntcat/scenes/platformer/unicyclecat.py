@@ -129,7 +129,6 @@ def build_cat(normal_rect,     # type: pygame.Rect
     """
     Build the cat.
 
-    :param filter2: The pymunk Shape filter.
     :param normal_rect: The cat's normal rect.
     :param pymunk_objects: The cat's list of pymunk objects.
     :param sprites: The list of pygame sprites for the cat.

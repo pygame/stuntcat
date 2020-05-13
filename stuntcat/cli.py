@@ -5,10 +5,10 @@ import sys
 import traceback
 
 if sys.version_info[0] >= 3:
-    import tkinter as tK
+    import tkinter as tk
     from tkinter.messagebox import showerror
 else:
-    import Tkinter as tK
+    import Tkinter as tk
     from tkMessageBox import showerror  # pylint: disable=import-error
 
 LOCAL_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -149,7 +149,7 @@ class Cli:
 
     @staticmethod
     def __tkinterbox(title, message):
-        tK.Tk().wm_withdraw()
+        tk.Tk().wm_withdraw()
         showerror(title, message)
 
     @staticmethod
