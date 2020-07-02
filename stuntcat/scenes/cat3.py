@@ -8,6 +8,7 @@ import random
 from typing import Optional
 
 import pygame
+from pygame.surface import Surface
 from pygame.sprite import DirtySprite, LayeredDirty
 
 from stuntcat.resources import gfx, sfx, music
@@ -46,7 +47,7 @@ class Lazer(DirtySprite):
         DirtySprite.__init__(self, container)
         self.rect = pygame.Rect([150, shark_size[1] - 155, shark_size[0], 10])
         # self.rect.x = -1000
-        self.image = pygame.Surface((self.rect[2], self.rect[3])).convert()
+        self.image = Surface((self.rect[2], self.rect[3])).convert()
         self.image.fill((255, 0, 0))
 
 
