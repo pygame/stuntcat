@@ -9,9 +9,8 @@ class LoadingScene(Scene):
 
         # Loading screen should always be a fallback active scene
         self.active = True
-        self.image = gfx('intro_screen.png', convert_alpha=True)
-        self.timer = 0
-        music('ict_0026.ogg', play=True)
+        self.image = gfx('intro_screen.png', convert=True)
+        music('mainmenu.ogg', play=True)
 
     def render(self):
         self.screen.fill((255, 0, 255))
@@ -19,9 +18,7 @@ class LoadingScene(Scene):
         return [self.screen.get_rect()]
 
     def tick(self, dt):
-        self.timer += dt
-
-        if self.timer > 10000:
+        if not pg.mixer.music.get_busy():
             self.next()
 
     def next(self):
@@ -32,4 +29,10 @@ class LoadingScene(Scene):
 
     def event(self, event):
         if event.type == pg.KEYDOWN:
+            if event.key in (pg.K_RETURN, pg.K_SPACE):
+                self.next()
+        if event.type == pg.MOUSEBUTTONDOWN:
             self.next()
+        if event.type == pg.JOYBUTTONDOWN:
+            if event.button in (0, 1):
+                self.next()

@@ -16,7 +16,7 @@ def data_path():
         )
     return path
 
-def music(amusic=None, load=True, play=True, stop=False):
+def music(amusic=None, load=True, play=True, stop=False, loop=1):
     """ For loading and playing music.
 
     ::Example::
@@ -29,7 +29,7 @@ def music(amusic=None, load=True, play=True, stop=False):
         if load and not stop:
             pygame.mixer.music.load(music_path(amusic))
         if play and stop is None or stop is False:
-            pygame.mixer.music.play()
+            pygame.mixer.music.play(loop)
         elif stop:
             pygame.mixer.music.stop()
 
@@ -46,10 +46,14 @@ def gfx(image, convert=False, convert_alpha=False):
 
     path = os.path.join(data_path(), 'images', image)
     asurf = pygame.image.load(path)
+    if convert:
+        asurf = asurf.convert()
+    if convert_alpha:
+        asurf = asurf.convert_alpha()
     _gfx_cache[gfx_key] = asurf
     return asurf
 
-def sfx(snd, play=False, stop=False):
+def sfx(snd, play=False, stop=False, fadeout=None, fadein=0, loops=0):
     global _sfx_cache
     snd_key = snd
     if snd_key in _sfx_cache:
@@ -61,7 +65,9 @@ def sfx(snd, play=False, stop=False):
 
     # print(snd_key, play, stop, time.time())
     if play:
-        asound.play()
+        asound.play(loops=loops, fade_ms=fadein)
     if stop:
         asound.stop()
+    if fadeout:
+        asound.fadeout(fadeout)
     return asound

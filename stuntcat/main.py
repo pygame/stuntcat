@@ -1,6 +1,5 @@
 import pygame as pg
 
-
 def main(args):
     try:
         gamemain(args)

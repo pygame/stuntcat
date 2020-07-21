@@ -1,3 +1,4 @@
+from stuntcat import __version__
 from setuptools import setup, find_packages
 import os
 from os import path
@@ -100,7 +101,7 @@ setup(
         "thorpy",
         "pymunk>=5.4.2",
     ],
-    version='0.0.19',
+    version=__version__,
     entry_points={
         'console_scripts': [
             'stuntcat=stuntcat.cli:main',
