@@ -3,12 +3,12 @@ import os
 from setuptools import setup, find_packages
 from stuntcat import __version__
 
-here = path.abspath(path.dirname(__file__))
+here = os.path.abspath(os.path.dirname(__file__))
 
 name = "stuntcat"
 
 from io import open
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 freeze_cmds = ["bdist_dmg", "bdist_msi", 'build_exe', 'bdist_mac']
