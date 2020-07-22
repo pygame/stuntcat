@@ -1,5 +1,5 @@
 from .scene import Scene
-from .. resources import gfx, sfx, music
+from .. resources import gfx, music
 
 import pygame as pg
 

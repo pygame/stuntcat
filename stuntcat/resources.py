@@ -1,8 +1,8 @@
 """ For loading resources.
 """
 import os
-import time
 import pygame
+
 _sfx_cache = {}
 _gfx_cache = {}
 

@@ -32,3 +32,6 @@
 * The cat's rotation now affects his X-velocity (he a bit rolls in the direction he's facing)
 * Added basic joystick control
 * Updated the "gameplay.gif" animation
+* README.md improvements
+* Fixed most of the alerts raised by lgtm
+* Added shebang (#!) to run_game.py for Linux

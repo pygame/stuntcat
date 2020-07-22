@@ -521,7 +521,6 @@ class Fish(DirtySprite):
         DirtySprite.__init__(self, group)
         self.image = gfx("fish_" + random.choice(Fish.colors) + ".png", convert_alpha=True)
         self.rect = self.image.get_rect()
-        size = self.rect.size
         self.rect.x = x
         self.rect.y = y
         self.velocity = pygame.math.Vector2(vx, vy)
@@ -541,7 +540,6 @@ class NotFish(DirtySprite):
         DirtySprite.__init__(self, group)
         self.image = gfx('ring.png', convert_alpha=True)
         self.rect = self.image.get_rect()
-        size = self.rect.size
         self.rect.x = x
         self.rect.y = y
         self.velocity = pygame.math.Vector2(vx, vy)
@@ -840,61 +838,6 @@ class CatUniScene(Scene):
         rects.extend(self.render_sprites())
         return rects
 
-        # we draw the sprites, and then the lines over the top.
-        self.render_sprites()
-
-        screen = self.screen
-        width, height = self.width, self.height
-
-        if 0:
-            background_colour = (0, 0, 0)
-            screen.fill(background_colour)
-            screen.blit(self.background, (0, 0))
-
-        self.elephant.render(screen, width, height)
-        self.shark.render(screen, width, height)
-
-        # draw cat
-        pygame.draw.line(
-            screen, [0, 0, 255], self.cat_location, self.cat_head_location, 20
-        )
-        pygame.draw.circle(screen, [0, 0, 255], self.cat_head_location, 50, 1)
-        pygame.draw.circle(screen, [0, 255, 0], self.cat_head_location, 100, 1)
-
-        # draw dead zones
-        pygame.draw.polygon(
-            screen,
-            [255, 0, 0],
-            [
-                [0, height - 100],
-                [0.1 * width, height - 100],
-                [0.1 * width, height],
-                [0, height],
-            ],
-        )
-        pygame.draw.polygon(
-            screen,
-            [255, 0, 0],
-            [
-                [0.9 * width, height - 100],
-                [width, height - 100],
-                [width, height],
-                [0.9 * width, height],
-            ],
-        )
-
-        # draw fish and not fish
-        for f in self.fish:
-            pygame.draw.circle(screen, [0, 255, 0], [int(f.pos[0]), int(f.pos[1])], 10)
-        for f in self.not_fish:
-            pygame.draw.circle(screen, [255, 0, 0], [int(f.pos[0]), int(f.pos[1])], 10)
-
-        # draw score
-        textsurface = self.myfont.render(str(self.score), True, [0, 0, 0]
-        )
-        screen.blit(textsurface, (200, 300))
-        return [screen.get_rect()]
-
     def tick(self, dt):
         self.increase_difficulty()
 
@@ -1104,7 +1047,6 @@ class CatUniScene(Scene):
         self.cat_angular_vel += random.uniform(0.01 * math.pi, 0.03 * math.pi)
 
     def event(self, event):
-        width, height = self.width, self.height
         if event.type == KEYDOWN:
             if event.key == K_RIGHT:
                 self.right_pressed = True

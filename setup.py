@@ -1,8 +1,7 @@
-from stuntcat import __version__
-from setuptools import setup, find_packages
-import os
-from os import path
 import sys
+import os
+from setuptools import setup, find_packages
+from stuntcat import __version__
 
 here = path.abspath(path.dirname(__file__))
 
