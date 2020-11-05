@@ -71,18 +71,9 @@ Apart from pygame 2 we are going to try using some awesome libraries.
 * [pytest](https://docs.pytest.org/en/latest/) - our game will have some tests.
 * ... other?
 
+### pygame compatibility
 
-## pygame 2 compilation
-
-The game should also work with pygame 1.9.4+, but this game is about using pygame 2.
-
-So...
-
-For now compiling pygame 2 from source is needed (hopefully not by the end of things).
-
-- [Ubuntu](http://www.pygame.org/wiki/CompileUbuntu#pygame%20with%20sdl2%20(alpha))
-- [Mac](https://www.pygame.org/wiki/MacCompile#pygame%20with%20sdl2)
-- [Windows](https://www.pygame.org/wiki/CompileWindows) (incomplete instructions)
+This game works with pygame 1.9.4+ and pygame 2
 
 
 ### Running tests
