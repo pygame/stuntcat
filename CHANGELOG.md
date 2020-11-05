@@ -1,5 +1,11 @@
 # StuntCat Changelog
 
+## 2020-10-05, Version 0.2.0, @nachomonkey
+
+* Created the StuntCat logo and added the SVG to the README.md file
+* Improved the intro screen by adding shading, illustrations, and the logo
+* Disabled the "elephant" because it is not ready for production
+
 ## 2020-07-21, Version 0.1.0, @nachomonkey
 
 * Added three "boing" sounds that are played when the cat is hit by a NotFish or get bumped back onto the screen

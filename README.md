@@ -2,6 +2,8 @@
 
 # 🐱‍🏍 — the first pygame 2 community game. Starting now! Are you in?
 
+<img src="docs/stuntcat.svg" style="zoom:200%;" />
+
 
 ![Alt text](docs/gameplay.gif?raw=true "Stuntcat")
 
@@ -142,6 +144,9 @@ https://creativecommons.org/2015/10/08/cc-by-sa-4-0-now-one-way-compatible-with-
 
 - @AokiAhishatsu stuntcat/data/images/
 - M. other stuntcat/data/sounds/
+
+#### Other assets
+
 - stuntcat/data/sound/boo.ogg: [Crowd booing sound](https://freesound.org/people/tim.kahn/sounds/336997/), licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/legalcode)
 
 So technically anyone should be able to distribute the game following those licenses (and even sell it).
