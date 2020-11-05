@@ -817,8 +817,10 @@ class CatUniScene(Scene):
             self.shark_active = True
 
         #TODO: to make it easier to test.
-        if self.score >= 20:
-            self.elephant_active = True
+
+        # Elephant doesn't work yet, so let's not use it
+#        if self.score >= 20:
+#            self.elephant_active = True
 
     def annoy_crowd(self):
         self.people_mad = True
