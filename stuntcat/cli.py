@@ -113,14 +113,14 @@ def checkdependencies():
 
 def __windowsbox(title, message):
     raise ImportError #the MessageBox command is crashing!
-    import win32ui, win32con
-    win32ui.MessageBox(message, title, win32con.MB_ICONERROR)
+#    import win32ui, win32con
+#    win32ui.MessageBox(message, title, win32con.MB_ICONERROR)
 
 def __wxpythonbox(title, message):
     import wxPython.wx as wx
     class LameApp(wx.wxApp):
         def OnInit(self): return 1
-    app = LameApp()
+    LameApp()
     dlg = wx.wxMessageDialog(None, message, title, wx.wxOK|wx.wxICON_EXCLAMATION)
     dlg.ShowModal()
     dlg.Destroy()

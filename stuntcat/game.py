@@ -19,10 +19,17 @@ class Game:
         pygame.font.init()
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), self.FLAGS)
         self.clock = pygame.time.Clock()
-        pygame.display.set_caption("A + D keys: lean left/right. Arrow keys left/right: move left/right. Catch fish. Avoid: shark, lazers, elephant stomps.")
+
+        try:
+            joy = pygame.joystick.Joystick(0)
+            joy.init()
+            print("Found joystick: ", joy.get_name())
+        except pygame.error:
+            pass
+
+        pygame.display.set_caption("Stunt Cat")
 
         self.running = True
-
 
         self.scenes = [
             LoadingScene(self),
