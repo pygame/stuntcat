@@ -1,4 +1,12 @@
+"""
+Scene module.
+"""
+
+
 class Scene:
+    """
+    Scene class.
+    """
     def __init__(self, game):
         self.active = False
 
@@ -6,10 +14,20 @@ class Scene:
         self._game = game
 
     def render(self):
-        pass
+        """
+        Render the scene.
+        """
 
-    def tick(self, dt):
-        pass
+    def tick(self, time_delta):
+        """
+        Tick the scene.
 
-    def event(self, event):
-        pass
+        :param time_delta: The time delta.
+        """
+
+    def event(self, pg_event):
+        """
+        Process a pygame event.
+
+        :param pg_event: The event to process.
+        """

@@ -5,6 +5,9 @@ from .scene import Scene
 
 
 class GameOverScene(Scene):
+    """
+    Game over scene class.
+    """
     def __init__(self, *args, **kwargs):
         Scene.__init__(self, *args, **kwargs)
 

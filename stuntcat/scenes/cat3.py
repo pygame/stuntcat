@@ -1,208 +1,61 @@
-import pygame
+"""
+Cat 3 Module.
+
+"""
+
 import math
 import random
-from pygame.locals import *
+from typing import Optional
 
-from .scene import Scene
-from .. resources import gfx, sfx, music
-
+import pygame
 from pygame.sprite import DirtySprite, LayeredDirty
 
-def distance(a, b):
-    return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
+from stuntcat.resources import gfx, sfx, music, distance
+from stuntcat.scenes.scene import Scene
+from stuntcat.scenes.flying_objects import Fish, NotFish
+from stuntcat.scenes.elephant import Elephant
 
 
 class LayeredDirtyAppend(LayeredDirty):
     """ Like a group, except it has append and extend methods like a list.
     """
-    def append(self, x):
-        self.add(x)
-    def extend(self, alist):
-        for x in alist:
-            self.add(x)
 
-class Elephant(DirtySprite):
-    def __init__(self, scene):
-        DirtySprite.__init__(self)
-        self.scene = scene
-        self.width = scene.width
-        self.height = scene.height
-        self.state = 0
-        self.states = {
-            0: 'offscreen',
-            1: 'poise left',
-            2: 'stomp left',
-            3: 'offscreen',
-            4: 'poise right',
-            5: 'stomp right',
-        }
-        self.last_state = 0
-        self.just_happened = None
+    def append(self, sprite):
+        """
+        Append an item to the sprite group.
 
+        :param sprite: the sprite.
+        """
+        self.add(sprite)
 
-        self.time_between_stomps = 1500 #ms
-        # self.time_between_stomps = 1000 #ms
-        self.time_of_poise = 1500 #ms
-        self.time_of_stomp = 1500 #ms
-        self.last_animation = 0 #ms
+    def extend(self, sprite_list):
+        """
+        Extend the sprite group with a list of items.
 
-        # stamp.
-        sfx('foot_elephant.ogg')
-
-        self.rect = pygame.Rect([0, 0, self.width//2, self.height])
-        self.image = pygame.Surface((self.rect[2], self.rect[3])).convert()
-        self.image.fill((255, 0, 0))
-        #self.image = gfx('foot.png', convert_alpha=True)
-        # gfx('foot_part.png').convert_alpha()
-        #self.rect = self.image.get_rect()
-        self.rect.x = -1000
-        self.rect.y = -1000
-
-
-    def update(self):
-        # if self.just_happened is not None:
-        #     print(self.just_happened)
-        from_top = 100
-
-        if self.just_happened == 'offscreen':
-            self.dirty = True
-            self.rect.x = -1000
-            self.rect.y = -1000
-            sfx('foot_elephant.ogg', stop=1)
-        elif self.just_happened == 'poise left':
-            self.rect.x = 0
-            self.rect.y = from_top - self.height
-            self.dirty = True
-            sfx('foot_elephant.ogg', play=1)
-        elif self.just_happened == 'stomp left':
-            self.rect.y = self.scene.cat_wire_height - self.height#(self.height - self.image.get_height()) - self.scene.cat_wire_height
-            self.rect.x = 0
-            self.dirty = True
-
-            if pygame.sprite.collide_rect(self, self.scene.cat):
-                self.scene.reset_on_death()
-                self.dirty = True
-
-        elif self.just_happened == 'poise right':
-            self.rect.x = self.width//2
-            self.rect.y = from_top - self.height
-            self.dirty = True
-            sfx('foot_elephant.ogg', play=1)
-        elif self.just_happened == 'stomp right':
-            self.rect.x = self.width//2
-            self.rect.y = self.scene.cat_wire_height - self.height
-            self.dirty = True
-            if pygame.sprite.collide_rect(self, self.scene.cat):
-                self.scene.reset_on_death()
-                self.dirty = True
-
-
-    def animate(self, total_time):
-        state = self.states[self.state]
-        start_state = self.state
-        if state == 'offscreen':
-            just_happened = self.state != self.last_state
-            if just_happened:
-                self.just_happened = state
-            else:
-                self.just_happened = None
-            if total_time > self.last_animation + self.time_between_stomps:
-                self.state += 1
-                self.last_animation = total_time
-        elif state == 'poise left' or state == 'poise right':
-            just_happened = self.state != self.last_state
-            if just_happened:
-                self.just_happened = state
-            else:
-                self.just_happened = None
-
-            if total_time > self.last_animation + self.time_of_poise:
-                self.state += 1
-                self.last_animation = total_time
-        elif state == 'stomp left' or state == 'stomp right':
-            just_happened = self.state != self.last_state
-            if just_happened:
-                self.just_happened = state
-            else:
-                self.just_happened = None
-
-            if total_time > self.last_animation + self.time_of_stomp:
-                self.state += 1
-                if self.state == max(self.states.keys()) + 1:
-                    self.state = 0
-                self.last_animation = total_time
-
-        self.last_state = start_state
-
-
-    def render(self, screen, width, height):
-        if self.state == 1: #poise left
-            pygame.draw.polygon(
-                screen,
-                [255, 0, 0],
-                [
-                    [0.1 * width, 0],
-                    [0.5 * width, 0],
-                    [0.5 * width, 100],
-                    [0.1 * width, 100],
-                ],
-            )
-        if self.state == 2: #stomp left
-            pygame.draw.polygon(
-                screen,
-                [255, 0, 0],
-                [
-                    [0.1 * width, 0],
-                    [0.5 * width, 0],
-                    [0.5 * width, height - 100],
-                    [0.1 * width, height - 100],
-                ],
-            )
-        if self.state == 4: #poise right
-            pygame.draw.polygon(
-                screen,
-                [255, 0, 0],
-                [
-                    [0.5 * width, 0],
-                    [0.9 * width, 0],
-                    [0.9 * width, 100],
-                    [0.5 * width, 100],
-                ],
-            )
-        if self.state == 5: #stomp right
-            pygame.draw.polygon(
-                screen,
-                [255, 0, 0],
-                [
-                    [0.5 * width, 0],
-                    [0.9 * width, 0],
-                    [0.9 * width, height - 100],
-                    [0.5 * width, height - 100],
-                ],
-            )
-
-
-    def collide(self, scene, width, height, cat_head_location):
-        #pass
-        state = self.states[self.state]
-        if state == 'stomp left':
-            if self.scene.cat_head_location[0] < width/2:
-                self.scene.reset_on_death()
-                self.dirty = True
-        if state == 'stomp right':
-            if self.scene.cat_head_location[0] > width/2:
-                self.scene.reset_on_death()
-                self.dirty = True
+        :param sprite_list: the list.
+        """
+        for sprite in sprite_list:
+            self.add(sprite)
 
 
 class Lazer(DirtySprite):
-    def __init__(self, parent, container, width, height):
+    """
+    lazer sprite class.
+    """
+    def __init__(self, container, shark_size):
         DirtySprite.__init__(self, container)
-        self.rect = pygame.Rect([150, parent.laser_height - 5, width, 10])
-        self.image = pygame.transform.scale(gfx('shark_laser.png', convert_alpha=True), self.rect.size)
+        self.rect = pygame.Rect([150, shark_size[1] - 155, shark_size[0], 10])
+        # self.rect.x = -1000
+        self.image = pygame.transform.scale(
+            gfx('shark_laser.png', convert_alpha=True),
+            self.rect.size
+        )
 
+class Shark(DirtySprite): #pylint:disable=too-many-instance-attributes
+    """
+    Shark sprite class.
+    """
 
-class Shark(DirtySprite):
     def __init__(self, container, scene, width, height):
         DirtySprite.__init__(self, container)
         self.container = container
@@ -221,18 +74,27 @@ class Shark(DirtySprite):
         self.last_state = 0
         self.just_happened = None
         self.lazered = False # was the cat hit?
-        self.lazer = None
+        self.lazer = None # type: Optional[Lazer]
         self.laser_height = height - 150 #where should the laser be on the screen?
 
         #TODO: to make it easier to test the shark
 #        self.time_between_appearances = 1000 #ms
-        self.time_between_appearances = 5000 #ms
+        # self.time_between_appearances = 5000 #ms
 
-        self.time_of_about_to_appear = 1000#ms
-        self.time_of_poise = 1000 #ms
-        self.time_of_aiming = 500 #ms
-        self.time_of_laser = 200 #ms
-        self.time_of_leaving = 1000 #ms
+        # self.time_of_about_to_appear = 1000#ms
+        # self.time_of_poise = 1000 #ms
+        # self.time_of_aiming = 500 #ms
+        # self.time_of_laser = 200 #ms
+        # self.time_of_leaving = 1000 #ms
+
+        self.timings = {
+            'time_between_appearances': 5000,
+            'time_of_about_to_appear': 1000,
+            'time_of_poise': 1000,
+            'time_of_aiming': 500,
+            'time_of_laser': 200,
+            'time_of_leaving': 1000,
+        }
         self.last_animation = 0 #ms
 
         self.applaud = True
@@ -251,7 +113,7 @@ class Shark(DirtySprite):
         self.rect.x = -1000
         self.rect.y = (self.height - self.image.get_height())
 
-    def update(self):
+    def update(self, *args, **kwargs):
         debug = False
 
         if debug and self.just_happened:
@@ -275,16 +137,7 @@ class Shark(DirtySprite):
             self.dirty = True
 
         elif self.just_happened == 'fire laser':
-            self.lazer = Lazer(self, self.container, self.width, self.height)
-
-            sfx('shark_lazer.ogg', play=1)
-
-            if self.scene.cat_location[1] >  self.scene.cat_wire_height - 3:
-                sfx('cat_shot.ogg', play=1)
-
-                self.lazered = True
-            else:
-                self.lazered = False
+            self.fire_laserbeam(debug)
 
         elif self.just_happened == 'leaving':
             sfx('shark_appear.ogg', fadeout=3500)
@@ -302,82 +155,77 @@ class Shark(DirtySprite):
                 self.lazer.kill()
                 self.lazer = None
 
+
+    def fire_laserbeam(self, debug):
+        """
+        Fires the shark's head mounted laser cannon.
+
+        :param debug:
+        """
+        if debug:
+            print(self.just_happened)
+        self.lazer = Lazer(self.container, (self.width, self.height))
+
+        sfx('shark_lazer.ogg', play=1)
+
+        if self.scene.cat_location[1] >  self.scene.cat_wire_height - 3:
+            sfx('cat_shot.ogg', play=1)
+
+            self.lazered = True
+        else:
+            self.lazered = False
+
+    def _update_last_animation(self, total_time, timing):
+        """
+        """
+        if total_time > self.last_animation + self.timings[timing]:
+            self.state += 1
+            self.last_animation = total_time
+
     def animate(self, total_time):
+        """
+        Animate method.
+
+        :param total_time:
+        """
         # print('update', self.states[self.state], self.states[self.last_state])
         state = self.states[self.state]
         start_state = self.state
 
-        if state == 'offscreen':
-            just_happened = self.state != self.last_state
-            if just_happened:
-                self.just_happened = state
-            else:
-                self.just_happened = None
 
-            if total_time > self.last_animation + self.time_between_appearances:
-                self.state += 1
-                self.last_animation = total_time
+        if state == 'offscreen':
+            self.just_happened = state if self.state != self.last_state else None
+            self._update_last_animation(total_time, 'time_between_appearances')
 
         elif state == 'about_to_appear':
-            just_happened = self.state != self.last_state
-            if just_happened:
-                self.just_happened = state
-            else:
-                self.just_happened = None
-
-            if total_time > self.last_animation + self.time_of_about_to_appear:
-                self.state += 1
-                self.last_animation = total_time
+            self.just_happened = state if self.state != self.last_state else None
+            self._update_last_animation(total_time, 'time_of_about_to_appear')
 
         elif state == 'poise':
-            just_happened = self.state != self.last_state
-            if just_happened:
-                self.just_happened = state
-            else:
-                self.just_happened = None
+            self.just_happened = state if self.state != self.last_state else None
 
             #smoothly animate upwards
-            self.rect.y = (self.height - self.image.get_height()) + 0.2*(self.last_animation + self.time_of_poise - total_time)
-            self.dirty = True 
+            self.rect.y = (self.height - self.image.get_height()) + 0.2*(self.last_animation + self.timings['time_of_poise'] - total_time)
+            self.dirty = True
 
-            if total_time > self.last_animation + self.time_of_poise:
-                self.state += 1
-                self.last_animation = total_time
+            self._update_last_animation(total_time, 'time_of_poise')
 
         elif state == 'aiming':
-            just_happened = self.state != self.last_state
-            if just_happened:
-                self.just_happened = state
-            else:
-                self.just_happened = None
-
-            if total_time > self.last_animation + self.time_of_aiming:
-                self.state += 1
-                self.last_animation = total_time
+            self.just_happened = state if self.state != self.last_state else None
+            self._update_last_animation(total_time, 'time_of_aiming')
 
         elif state == 'fire laser':
-            just_happened = self.state != self.last_state
-            if just_happened:
-                self.just_happened = state
-            else:
-                self.just_happened = None
-
-            if total_time > self.last_animation + self.time_of_laser:
-                self.state += 1
-                self.last_animation = total_time
+            self.just_happened = state if self.state != self.last_state else None
+            self._update_last_animation(total_time, 'time_of_laser')
 
         elif state == 'leaving':
-            just_happened = self.state != self.last_state
-            if just_happened:
-                self.just_happened = state
-            else:
-                self.just_happened = None
+            self.just_happened = state if self.state != self.last_state else None
 
             #smoothly animate downwards
             self.rect.y = (self.height - self.image.get_height()) + 0.2*(total_time - self.last_animation)
-            self.dirty = True 
+            self.dirty = True
 
-            if total_time > self.last_animation + self.time_of_leaving:
+            if total_time > self.last_animation + self.timings['time_of_leaving']:
                 self.state += 1
                 if self.state == max(self.states.keys()) + 1:
                     self.state = 0
@@ -439,7 +287,10 @@ class Shark(DirtySprite):
         #         scene.reset_on_death()
 
 
+
 class Cat(DirtySprite):
+    """Cat sprite class."""
+
     def __init__(self, cat_holder):
         DirtySprite.__init__(self)
         self.cat_holder = cat_holder
@@ -470,8 +321,8 @@ class Cat(DirtySprite):
     def get_image(self):
         return (self.images, self.flipped_images)[self.cat_holder.cat_speed[0] < 0][self.frame - 1]
 
-    def animate(self, dt):
-        self.frame_time += dt
+    def animate(self, time_delta):
+        self.frame_time += time_delta
         if self.frame_time >= self.frame_rate:
             if self.frame_direction:
                 self.frame += 1
@@ -481,7 +332,7 @@ class Cat(DirtySprite):
             if self.frame == self.num_frames or self.frame == 1:
                 self.frame_direction = not self.frame_direction
 
-    def update(self):
+    def update(self, *args, **kwargs):
         direction = self.cat_holder.cat_speed[0] > 0
         # location = self.cat_holder.cat_location
         location = self.cat_holder.cat_head_location
@@ -502,7 +353,7 @@ class Cat(DirtySprite):
             self.rect.x = int(location[0]) - size[0]*0.5
             self.rect.y = int(location[1]) - size[1]*0.5
 
-        self.last_location == location[:]
+        self.last_location = location[:]
         self.last_direction = direction
         self.last_rotation = rotation
         self.last_frame = self.frame
@@ -514,49 +365,11 @@ class Cat(DirtySprite):
         # pygame.draw.circle(screen, [0, 0, 255], self.cat_head_location, 50, 1)
         # pygame.draw.circle(screen, [0, 255, 0], self.cat_head_location, 100, 1)
 
-class Fish(DirtySprite):
-    colors = ["red", "yellow", "green"]
-
-    def __init__(self, group, x, y, vx, vy):
-        DirtySprite.__init__(self, group)
-        self.image = gfx("fish_" + random.choice(Fish.colors) + ".png", convert_alpha=True)
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.velocity = pygame.math.Vector2(vx, vy)
-
-        self.last_pos = [x, y]
-        self.pos = [x,y]
-
-    def update(self):
-        if self.last_pos != self.pos[:2]:
-            self.dirty = True
-            self.rect.x = self.pos[0] - 25
-            self.rect.y = self.pos[1] - 25
-        self.last_pos = self.pos[:2]
-
-class NotFish(DirtySprite):
-    def __init__(self, group, x, y, vx, vy):
-        DirtySprite.__init__(self, group)
-        self.image = gfx('ring.png', convert_alpha=True)
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.velocity = pygame.math.Vector2(vx, vy)
-
-        self.last_pos = [x, y]
-        self.pos = [x,y]
-
-    def update(self):
-        if self.last_pos != self.pos[:2]:
-            self.dirty = True
-            self.rect.x = self.pos[0] - 25
-            self.rect.y = self.pos[1] - 25
-        self.last_pos = self.pos[:2]
-
 SCORE_TEXT_CENTER = (472, 469)
 
 class Score(DirtySprite):
+    """Score class."""
+
     def __init__(self, score_holder):
         """
         score_holder has a 'score' attrib.
@@ -564,41 +377,91 @@ class Score(DirtySprite):
         DirtySprite.__init__(self)
         self.score_holder = score_holder
         self.myfont = pygame.font.SysFont("monospace", 30, bold=True)
-        self.image = self.myfont.render(str(self.score_holder.score), True, [0, 0, 0])
+        self.image = self.myfont.render(str(self.score_holder.player_data.score), True, [0, 0, 0])
+
         self.update_rect()
-        self.last_score = self.score_holder.score
+        self.last_score = self.score_holder.player_data.score
 
     def update_rect(self):
         self.rect = self.image.get_rect()
         self.rect.center = SCORE_TEXT_CENTER
 
-    def update(self):
-        if self.last_score != self.score_holder.score:
+    def update(self, *args, **kwargs):
+        if self.last_score != self.score_holder.player_data.score:
             self.dirty = True
-            self.image = self.myfont.render(str(self.score_holder.score), True, [0,0,0])
+            self.image = self.myfont.render(str(self.score_holder.player_data.score),
+                                            True, [0, 0, 0])
             self.update_rect()
-        self.last_score = self.score_holder.score
-
+        self.last_score = self.score_holder.player_data.score
 
 class DeadZone(DirtySprite):
+    """
+    Dead Zone class.
+    """
     def __init__(self, points):
         """
         score_holder has a 'score' attrib.
         """
         DirtySprite.__init__(self)
-        color = [255, 0, 0]
+        zone_color = [255, 0, 0]
 
         # draw dead zones
         surf = pygame.display.get_surface()
         rect = pygame.draw.polygon(
             surf,
-            color,
+            zone_color,
             points
         )
         self.image = surf.subsurface(rect.clip(surf.get_rect())).copy()
         self.rect = self.image.get_rect()
         self.rect.x = rect.x
         self.rect.y = rect.y
+
+
+class PlayerData:
+    """
+    Data about the player that gets passed around a lot at the minute.
+    """
+    def __init__(self, width, height):
+        self._score = 0
+
+        self.angle_to_not_fish = 0.0
+
+        self.cat_start_pos = [width / 2, height - 100]
+        self.cat_location = self.cat_start_pos[:]
+        self.cat_speed = [0, 0]
+        self.cat_angle = 0
+        self.cat_angular_vel = 0
+
+        self.cat_head_location = [
+            int(self.cat_location[0] + 100 * math.cos(self.cat_angle - math.pi / 2)),
+            int(self.cat_location[1] + 100 * math.sin(self.cat_angle - math.pi / 2)),
+        ]
+
+    def increment_score(self):
+        """
+        Increase the score.
+        """
+        self._score += 1
+
+    def reset(self):
+        """
+        Reset the player data.
+        """
+        self.cat_location = self.cat_start_pos[:]
+        self.cat_speed = [0, 0]
+        self.cat_angle = 0
+        self.cat_angular_vel = 0
+        self._score = 0
+
+    @property
+    def score(self):
+        """
+        Get the player's score.
+        """
+        return self._score
+
+
 
 
 CAT_MAX_JUMPING_TIME = 600 #ms
@@ -611,9 +474,11 @@ JOY_TILT_LEFT_AXIS = 2
 JOY_TILT_RIGHT_AXIS = 5
 JOY_SENSE = 0.5  # Joystick sensitivity for movement
 
-class CatUniScene(Scene):
+class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
+    """Cat unicycle scene."""
     def __init__(self, *args, **kwargs):
         Scene.__init__(self, *args, **kwargs)
+
         (width, height) = (1920//2, 1080//2)
         self.width, self.height = width, height
 
@@ -675,8 +540,7 @@ class CatUniScene(Scene):
 
         self.left_pressed = False
         self.right_pressed = False
-
-        self.score = 0
+        self.player_data = PlayerData(width, height)
 
         #timing
         self.dt_scaled = 0
@@ -710,15 +574,17 @@ class CatUniScene(Scene):
         #     ),
         # ]
 
+        self.allsprites = None  # type: Optional[LayeredDirty]
+        self.shark = None  # type: Optional[Shark]
         self.init_sprites()
 
         # lists of things to catch by [posx, posy, velx, vely]
         # self.fish = [[0, height / 2, 10, -5]]
         self.fish = LayeredDirtyAppend()
-        self.fish.extend([Fish(self.allsprites, 0, height / 2, 10, -5)])
+        self.fish.extend([Fish(self.allsprites, (0, height / 2), (10, -5))])
 
         self.not_fish = LayeredDirtyAppend()
-                
+
         self.unicycle_sound = sfx('unicycle.ogg', play=True, loops=-1, fadein=500)
 
         self.reset_meow()
@@ -757,14 +623,18 @@ class CatUniScene(Scene):
         self.allsprites.clear(self.screen, self.background)
 
 
-    #what to do when you die, reset the level
     def reset_on_death(self):
+        """Reset on death.
+
+        What to do when you die, reset the level.
+        """
+        self.player_data.reset()
+        self.total_time = 0
+
         self.cat_location = [self.width / 2, self.height - 100]
         self.cat_speed = [0, 0]
         self.cat_angle = 0
         self.cat_angular_vel = 0
-        self.score = 0
-        self.total_time = 0
 
         self.elephant.last_animation = 0
         self.elephant.state = 0
@@ -779,11 +649,11 @@ class CatUniScene(Scene):
         self.shark.dirty = True
 
         if self.shark.get_state() in ('aiming', 'fire laser'):
-            self.shark.just_happenend = None
+            self.shark.just_happened = None
             self.shark.set_state('leaving')
             self.shark.applaud = False
         else:
-            self.shark.just_happenend = None
+            self.shark.just_happened = None
             self.shark.set_state('offscreen')
             self.shark.animate(self.total_time)
 
@@ -792,43 +662,47 @@ class CatUniScene(Scene):
         if self.shark.lazer:
             self.shark.lazer.kill()
 
-    #periodically increase the difficulty
     def increase_difficulty(self):
+        """ Periodically increase the difficulty."""
         self.number_of_not_fish = 0
-        if self.score > 3:
+        if self.player_data.score > 3:
             self.number_of_not_fish = 1
-        if self.score > 9:
+        if self.player_data.score > 9:
             self.number_of_not_fish = 1
-        if self.score > 15:
+        if self.player_data.score > 15:
             self.number_of_not_fish = 2
-        if self.score > 19:
+        if self.player_data.score > 19:
             self.number_of_not_fish = 1
-        if self.score > 25:
+        if self.player_data.score > 25:
             self.number_of_not_fish = 2
-        if self.score > 35:
+        if self.player_data.score > 35:
             self.number_of_not_fish = 3
-        if self.score >= 50:
-            self.number_of_not_fish = int((self.score - 20)/10)
+        if self.player_data.score >= 50:
+            self.number_of_not_fish = int((self.player_data.score - 20)/10)
 
         #TODO: to make it easier to test.
-        # if self.score >= 15:
+        # if self.player_data.score >= 15:
         #     self.shark_active = True
-        if self.score >= 10:
+        if self.player_data.score >= 10:
             self.shark_active = True
 
         #TODO: to make it easier to test.
 
         # Elephant doesn't work yet, so let's not use it
-#        if self.score >= 20:
+#        if self.player_data.score >= 20:
 #            self.elephant_active = True
 
     def annoy_crowd(self):
+        """ Annoy the crowd."""
         self.people_mad = True
         self.people_mad_current_time = 0
 
     def render_sprites(self):
+        """ Render the sprites."""
         rects = []
-        self.allsprites.update()
+        self.allsprites.update(time_delta=self.dt_scaled,
+                               height=self.height,
+                               player_data=self.player_data)
         rects.extend(self.allsprites.draw(self.screen))
         return rects
 
@@ -840,13 +714,13 @@ class CatUniScene(Scene):
         rects.extend(self.render_sprites())
         return rects
 
-    def tick(self, dt):
+    def tick(self, time_delta):
         self.increase_difficulty()
 
-        self.cat.animate(dt)
+        self.cat.animate(time_delta)
 
-        self.total_time += dt #keep track of the total number of ms passed during the game
-        dt_scaled = dt/17
+        self.total_time += time_delta #keep track of the total number of ms passed during the game
+        dt_scaled = time_delta/17
         self.dt_scaled = dt_scaled
         width, height = self.width, self.height
 
@@ -920,73 +794,73 @@ class CatUniScene(Scene):
         #check for collision with the elephant stomp
         if self.elephant_active:
             self.elephant.animate(self.total_time)
-            self.elephant.collide(self, width, height, self.cat_head_location)
+            self.elephant.collide(width)
         if self.shark_active or self.shark.states[self.shark.state] == 'leaving':
             self.shark.animate(self.total_time)
             self.shark.collide(self, width, height, self.cat_location)
 
         #jumping physics
         if self.jumping:
-            self.cat_speed[1] -= dt * ((CAT_MAX_JUMPING_TIME - self.jumping_time) / CAT_MAX_JUMPING_TIME) * CAT_JUMP_SPEED
-            self.jumping_time += dt
+            self.cat_speed[1] -= time_delta * ((CAT_MAX_JUMPING_TIME - self.jumping_time) / CAT_MAX_JUMPING_TIME) * CAT_JUMP_SPEED
+            self.jumping_time += time_delta
             if self.jumping_time >= CAT_MAX_JUMPING_TIME:
                 self.jumping = False
 
         ##meow timing
         if self.next_meow <= 0:
             self.meow()
-        self.next_meow -= dt
+        self.next_meow -= time_delta
 
         ##angry people (increased throwing of not-fish)
         if self.people_mad:
-            self.people_mad_current_time += dt
-            self.notfish_time += dt
+            self.people_mad_current_time += time_delta
+            self.notfish_time += time_delta
             if self.notfish_time >= self.next_notfish:
                 self.next_notfish = random.randint(100, 400)
                 self.notfish_time = 0
-                self.SpawnNotFish()
+                self.spawn_not_fish()
             if self.people_mad_current_time >= self.people_mad_duration:
                 self.people_mad = False
 
         ##object physics
 
         # move fish and not fish
-        for f in reversed(self.fish.sprites()):
-            f.pos[0] += f.velocity[0] * dt_scaled  # speed of the throw
-            f.velocity[1] += 0.2 * dt_scaled  # gravity
-            f.pos[1] += f.velocity[1] * dt_scaled # y velocity
+        for fish in reversed(self.fish.sprites()):
+            fish.pos[0] += fish.velocity[0] * dt_scaled  # speed of the throw
+            fish.velocity[1] += 0.2 * dt_scaled  # gravity
+            fish.pos[1] += fish.velocity[1] * dt_scaled # y velocity
             # check out of bounds
-            if f.pos[1] > height:
-                self.fish.remove(f)
-                f.kill()
-        for f in reversed(self.not_fish.sprites()):
-            f.pos[0] += f.velocity[0] * dt_scaled # speed of the throw
-            f.velocity[1] += 0.2 * dt_scaled  # gravity
-            f.pos[1] += f.velocity[1] * dt_scaled  # y velocity
+            if fish.pos[1] > height:
+                self.fish.remove(fish)
+                fish.kill()
+        for fish in reversed(self.not_fish.sprites()):
+            fish.pos[0] += fish.velocity[0] * dt_scaled # speed of the throw
+            fish.velocity[1] += 0.2 * dt_scaled  # gravity
+            fish.pos[1] += fish.velocity[1] * dt_scaled  # y velocity
             # check out of bounds
-            if f.pos[1] > height:
-                self.not_fish.remove(f)
-                f.kill()
+            if fish.pos[1] > height:
+                self.not_fish.remove(fish)
+                fish.kill()
 
         # check collision with the cat
-        for f in reversed(self.fish.sprites()):
-            if distance([f.rect[0], f.rect[1]], self.cat_head_location) < 100:
-                self.score += 1
-                self.fish.remove(f)
+        for fish in reversed(self.fish.sprites()):
+            if distance([fish.rect[0], fish.rect[1]], self.cat_head_location) < 100:
+                self.player_data.increment_score()
+                self.fish.remove(fish)
                 sfx('eatfish.ogg', play=1)
-                f.kill()
-        for f in reversed(self.not_fish.sprites()):
-            if distance([f.rect[0], f.rect[1]], self.cat_head_location) < 50:
-                self.not_fish.remove(f)
-                f.kill()
-                self.angle_to_not_fish = (
+                fish.kill()
+        for fish in reversed(self.not_fish.sprites()):
+            if distance([fish.rect[0], fish.rect[1]], self.cat_head_location) < 50:
+                self.not_fish.remove(fish)
+                fish.kill()
+                self.player_data.angle_to_not_fish = (
                     math.atan2(
-                        self.cat_head_location[1] - f.rect[1],
-                        self.cat_head_location[0] - f.rect[0],
+                        self.cat_head_location[1] - fish.rect[1],
+                        self.cat_head_location[0] - fish.rect[0],
                     )
                     - math.pi / 2
                 )
-                side = 1 if self.angle_to_not_fish < 0 else -1
+                side = 1 if self.player_data.angle_to_not_fish < 0 else -1
                 self.cat_angular_vel += side * random.uniform(0.08, 0.15)
                 sfx(random.choice(self.boing_names), play=True)
 
@@ -996,26 +870,23 @@ class CatUniScene(Scene):
             if random.choice([0, 1]) == 0:
                 self.fish.append(
                     Fish(self.allsprites,
-                        0,
-                        height/2,#random.randint(0, height / 2),
-                        random.randint(3, 7),
-                        -random.randint(5, 12),
+                        (0, height / 2),#random.randint(0, height / 2),
+                        (random.randint(3, 7), -random.randint(5, 12)),
                     )
                 )
             else:
                 self.fish.append(
                     Fish(self.allsprites,
-                        width,
-                        height/2,#random.randint(0, height / 2),
-                        -random.randint(3, 7),
-                        -random.randint(5, 12),
+                        (width, height / 2),#random.randint(0, height / 2),
+                        (-random.randint(3, 7), -random.randint(5, 12)),
                     )
                 )
         while len(self.not_fish) < self.number_of_not_fish:
-            self.SpawnNotFish()
+            self.spawn_not_fish()
 
-    def SpawnNotFish(self):
-        # choose a side of the screen
+    def spawn_not_fish(self):
+        """Choose a side of the screen."""
+
         velocity_multiplier = 1
         x_pos = 0
         if random.randint(0, 1):
@@ -1023,10 +894,8 @@ class CatUniScene(Scene):
             x_pos = self.width
         self.not_fish.append(
                 NotFish(self.allsprites,
-                    x_pos,
-                    self.height / 2,
-                    random.randint(3, 7) * velocity_multiplier,
-                    -random.randint(5, 12),
+                    (x_pos, self.height / 2),
+                    (random.randint(3, 7) * velocity_multiplier, -random.randint(5, 12)),
                 )
         )
 
@@ -1049,26 +918,26 @@ class CatUniScene(Scene):
         self.cat_angular_vel += random.uniform(0.01 * math.pi, 0.03 * math.pi)
 
     def event(self, event):
-        if event.type == KEYDOWN:
-            if event.key == K_RIGHT:
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RIGHT:
                 self.right_pressed = True
-            elif event.key == K_LEFT:
+            elif event.key == pygame.K_LEFT:
                 self.left_pressed = True
-            elif event.key == K_a:
+            elif event.key == pygame.K_a:
                 self.tilt_left()
-            elif event.key == K_d:
+            elif event.key == pygame.K_d:
                 self.tilt_right()
-            elif event.key in (K_UP, K_SPACE):
+            elif event.key in (pygame.K_UP, pygame.K_SPACE):
                 self.start_jump(event.key)
-        elif event.type == KEYUP:
+        elif event.type == pygame.KEYUP:
             if event.key == self.jump_key:
                 self.stop_jump()
-            elif event.key == K_RIGHT:
+            elif event.key == pygame.K_RIGHT:
                 self.right_pressed = False
-            elif event.key == K_LEFT:
+            elif event.key == pygame.K_LEFT:
                 self.left_pressed = False
 
-        if event.type == JOYBUTTONDOWN:
+        if event.type == pygame.JOYBUTTONDOWN:
             if event.button in JOY_JUMP_BUTTONS:
                 self.start_jump("JOY" + str(event.button))
             if event.button in JOY_LEFT_BUTTONS:
@@ -1076,11 +945,11 @@ class CatUniScene(Scene):
             if event.button in JOY_RIGHT_BUTTONS:
                 self.tilt_right()
 
-        if event.type == JOYBUTTONUP:
+        if event.type == pygame.JOYBUTTONUP:
             if "JOY" + str(event.button) == self.jump_key:
                 self.stop_jump()
 
-        if event.type == JOYAXISMOTION:
+        if event.type == pygame.JOYAXISMOTION:
             if event.axis == 0:
                 if event.value >= JOY_SENSE:
                     self.right_pressed = True
