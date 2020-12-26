@@ -1,14 +1,22 @@
-import pygame as pg
+"""
+Main module
+"""
+from stuntcat.game import Game
 
 
-def main(args):
+def main():
+    """
+    Main function.
+    """
     try:
-        gamemain(args)
+        game_main()
     except KeyboardInterrupt:
         print('Keyboard Interrupt...')
         print('Exiting')
 
-def gamemain(args):
 
-    from .game import Game
+def game_main():
+    """
+    Game main function.
+    """
     Game().mainloop()

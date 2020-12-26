@@ -1,3 +1,7 @@
+"""
+Simple FSM Module
+"""
+
 from collections import namedtuple
 
 Event = namedtuple('Event', 'name src dst event')
@@ -5,15 +9,23 @@ Event.__new__.__defaults__ = (None, None, None, None)
 
 
 class SimpleFSM:
+    """
+    Simple finite state machine class.
+    """
     def __init__(self, events, initial=None):
         self.state = initial
-        self.graph = dict()
+        self.graph = {}
         self.program(events)
 
     def program(self, events):
+        """
+        Program function.
+
+        :param events: Events parameter.
+        """
         for in_event, src, dst, out_event in (Event(*i) for i in events):
             trans = self.graph.setdefault(in_event, dict())
-            if type(out_event) == str:
+            if isinstance(out_event, str):
                 out_event = [out_event]
             trans[src] = dst, out_event
 

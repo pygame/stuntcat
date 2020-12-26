@@ -1,3 +1,9 @@
+"""
+Another Main module.
+"""
+
 if __name__ == '__main__':
     import stuntcat.cli
-    stuntcat.cli.main()
+
+    cli = stuntcat.cli.Cli()
+    cli.cli_main()
