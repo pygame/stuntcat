@@ -51,7 +51,7 @@ class Lazer(DirtySprite):
         self.image.fill((255, 0, 0))
 
 
-class Shark(DirtySprite):
+class Shark(DirtySprite): #pylint:disable=too-many-instance-attributes
     """
     Shark sprite class.
     """
@@ -393,7 +393,7 @@ class PlayerData:
         return self._score
 
 
-class CatUniScene(Scene):
+class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
     """
     Cat unicycle scene.
     """

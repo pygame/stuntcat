@@ -5,7 +5,11 @@ import time
 
 from typing import List
 
-import pygame
+try:
+    import pygame
+except ImportError as exc:
+    raise ImportError("Cannot import pygame, install version 1.9.4 or higher") from exc
+
 
 from stuntcat.scenes import Scene
 from stuntcat.scenes import LoadingScene

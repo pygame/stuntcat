@@ -40,7 +40,7 @@ class SimpleFSM:
             try:
                 state, out = graph['*'][src]
             except KeyError:
-                raise ValueError(event, self.state)
+                raise ValueError(event, self.state) #pylint:disable=raise-missing-from
 
         self.state = src if state == '=' else state
         return self.state, out

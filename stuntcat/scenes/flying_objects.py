@@ -53,7 +53,8 @@ class Fish(FlyingObject):
         FlyingObject.__init__(self, group, pos, vel, image)
 
     def update(self, *args, **kwargs):
-        super(Fish, self).update(*args, **kwargs)
+        FlyingObject.update(self, *args, **kwargs)
+
         if distance([self.rect[0], self.rect[1]], kwargs['player_data'].cat_head_location) < 100:
             kwargs['player_data'].increment_score()
             self.kill()
@@ -69,7 +70,8 @@ class NotFish(FlyingObject):
         FlyingObject.__init__(self, group, pos, vel, image)
 
     def update(self, *args, **kwargs):
-        super(NotFish, self).update(*args, **kwargs)
+        FlyingObject.update(self, *args, **kwargs)
+
         if distance([self.rect[0], self.rect[1]], kwargs['player_data'].cat_head_location) < 50:
             self.kill()
             kwargs['player_data'].angle_to_not_fish = (

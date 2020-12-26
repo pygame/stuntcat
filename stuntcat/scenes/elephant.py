@@ -76,7 +76,8 @@ class Elephant(DirtySprite):
     Elephant sprite class.
     """
     def __init__(self, scene):
-        super(Elephant, self).__init__()
+        DirtySprite.__init__(self)
+
         self.scene = scene
 
         self.animation = ElephantAnimation()

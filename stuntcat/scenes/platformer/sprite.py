@@ -19,7 +19,7 @@ class ShapeSprite(DirtySprite):
     Shape sprite class.
     """
     def __init__(self, image=None, shape=None, factor=1.0):
-        super(ShapeSprite, self).__init__()
+        DirtySprite.__init__(self)
         self.original_image = image
         self.shape = shape
         self._old_angle = None
@@ -54,7 +54,8 @@ class Ball(ShapeSprite):
     Ball class.
     """
     def __init__(self, rect):
-        super(Ball, self).__init__()
+        ShapeSprite.__init__(self)
+
         radius = rect.width / 2
         body = Body()
         body.position = rect.center

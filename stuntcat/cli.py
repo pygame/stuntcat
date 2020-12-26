@@ -28,7 +28,7 @@ try:
     import pygame as pg
 except ImportError:
     pg = None
-    raise ImportError("Cannot import pygame, install version 1.9.4 or higher")
+    raise ImportError("Cannot import pygame, install version 1.9.4 or higher") #pylint:disable=raise-missing-from
 
 
 try:
@@ -185,7 +185,7 @@ class Cli:
                     break
             pg.quit()
         except pg.error:
-            raise ImportError
+            raise ImportError #pylint:disable=raise-missing-from
 
     def __showerrorbox(self, message):
         title = os.path.splitext(os.path.split(sys.argv[0])[1])[0]

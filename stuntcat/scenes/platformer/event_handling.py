@@ -149,7 +149,8 @@ class GamepadInput(EventHandler):
     }
 
     def __init__(self, event_map=None, deadzone=.25):
-        super(GamepadInput, self).__init__(event_map)
+        EventHandler.__init__(self, event_map)
+
         self.deadzone = deadzone
         self.init_all_joysticks()
 
