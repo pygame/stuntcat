@@ -1,9 +1,17 @@
-from .scene import Scene
-from .. resources import gfx, sfx, music
+"""
+Loading module.
+"""
 
 import pygame as pg
 
+from .scene import Scene
+from .. resources import gfx, music
+
+
 class LoadingScene(Scene):
+    """
+    Loading Scene class.
+    """
     def __init__(self, *args, **kwargs):
         Scene.__init__(self, *args, **kwargs)
 
@@ -14,22 +22,38 @@ class LoadingScene(Scene):
         music('ict_0026.ogg', play=True)
 
     def render(self):
+        """
+        Render the scene.
+        """
         self.screen.fill((255, 0, 255))
-        self.screen.blit(self.image, [0,0])
+        self.screen.blit(self.image, [0, 0])
         return [self.screen.get_rect()]
 
-    def tick(self, dt):
-        self.timer += dt
+    def tick(self, time_delta):
+        """
+        Tick the scene.
+
+        :param time_delta: The time delta.
+        """
+        self.timer += time_delta
 
         if self.timer > 10000:
-            self.next()
+            self.next_scene()
 
-    def next(self):
+    def next_scene(self):
+        """
+        Progress to next scene.
+        """
         self._game.scenes.remove(self)
         self._game.add_cat_scene()
         self.active = False
         music(stop=True)
 
-    def event(self, event):
-        if event.type == pg.KEYDOWN:
-            self.next()
+    def event(self, pg_event):
+        """
+        Process a pygame event.
+
+        :param pg_event: The event to process.
+        """
+        if pg_event.type == pg.KEYDOWN:
+            self.next_scene()

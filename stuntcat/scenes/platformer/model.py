@@ -1,3 +1,7 @@
+"""
+Model Module
+"""
+from typing import Dict, Any
 import pymunk
 
 
@@ -14,9 +18,15 @@ class BasicModel:
         self.main_body = None
         self.pymunk_objects = set()
         self.sprites = set()
+        self.model_data = {}  # type: Dict[str, Any]
 
     @property
     def position(self):
+        """
+        Position property.
+
+        :return: The model's position.
+        """
         return self.main_body.position
 
     @position.setter
@@ -29,18 +39,31 @@ class BasicModel:
             except AttributeError:
                 continue
 
+    def list_objects(self):
+        """
+        Print out the set of pymunk objects that make up this body.
+        """
+        print(self.pymunk_objects)
+
 
 class UprightModel(BasicModel):
+    """
+    Upright Model class.
+    """
     def __init__(self):
         super().__init__()
-        self.move_power = 1
-        self.jump_power = 1
+        self.model_data['move_power'] = 1
         self.motor = None
         self._debounce_time = 0
         self._grounded = False
 
     @property
     def grounded(self):
+        """
+        Grounded property.
+
+        :return: True if grounded.
+        """
         return self._grounded
 
     @grounded.setter
@@ -49,10 +72,18 @@ class UprightModel(BasicModel):
         self._grounded = value
 
     def accelerate(self, direction):
-        amt = direction * self.move_power
+        """
+        Accelerate in a direction.
+
+        :param direction: The direction to go.
+        """
+        amt = direction * self.model_data['move_power']
         self.motor.max_force = pymunk.inf
         self.motor.rate = amt
 
     def brake(self):
+        """
+        Put on the brakes.
+        """
         self.motor.rate = 0
         self.motor.max_force = 300000
