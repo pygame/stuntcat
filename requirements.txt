@@ -2,5 +2,5 @@ pygame
 pyscroll
 pytmx
 thorpy
-pymunk>=5.4.2
+pymunk>=5.4.2,<6.0.0
 typing;python_version<"3.5"
