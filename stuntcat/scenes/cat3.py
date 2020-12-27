@@ -325,19 +325,14 @@ class Cat(AnimatedCat):
 
     def update(self, *args, **kwargs):
         direction = self.cat_holder.player_data.cat_speed[0] > 0
-        # location = self.cat_holder.cat_location
         location = self.cat_holder.player_data.cat_head_location
         rotation = self.cat_holder.player_data.cat_angle
-        # if self.last_location != location:
-        #    self.dirty = True
-        #    self.rect.x = int(location[0])
-        #    self.rect.y = int(location[1])
+
         if self.last_direction != direction:
             self.dirty = True
             self.image = self.get_image()
 
         if self.changed(location[:], direction, rotation, self.frame):
-            #            self.image = pygame.transform.rotate(self.image_direction[int(direction)], -self.cat_holder.player_data.cat_angle*180/math.pi)
             self.image = pygame.transform.rotate(
                 self.get_image(), -self.cat_holder.player_data.cat_angle * 180 / math.pi
             )

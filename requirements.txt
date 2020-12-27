@@ -1,6 +1,8 @@
 pygame
 pyscroll
-pytmx
+pytmx==3.21.6;python_version<="2.7"
+pytmx;python_version>"2.7"
+
 thorpy
 pymunk>=5.4.2,<6.0.0
 typing;python_version<"3.5"

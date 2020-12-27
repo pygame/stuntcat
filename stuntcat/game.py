@@ -8,7 +8,7 @@ from typing import List
 try:
     import pygame
 except ImportError as exc:
-    raise ImportError("Cannot import pygame, install version 1.9.4 or higher") from exc
+    raise ImportError("Cannot import pygame, install version 1.9.4 or higher") #pylint:disable=raise-missing-from
 
 
 from stuntcat.scenes import Scene
