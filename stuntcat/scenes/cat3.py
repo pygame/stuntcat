@@ -58,6 +58,7 @@ class Shark(DirtySprite):  # pylint:disable=too-many-instance-attributes
 
     def __init__(self, container, scene, width, height):
         DirtySprite.__init__(self, container)
+        self.debug = False
         self.container = container
         self.scene = scene
         self.width, self.height = width, height
@@ -114,9 +115,8 @@ class Shark(DirtySprite):  # pylint:disable=too-many-instance-attributes
         self.rect.y = self.height - self.image.get_height()
 
     def update(self, *args, **kwargs):
-        debug = False
 
-        if debug and self.just_happened:
+        if self.debug and self.just_happened:
             print(self.just_happened)
 
         if self.just_happened == "offscreen":
@@ -137,7 +137,7 @@ class Shark(DirtySprite):  # pylint:disable=too-many-instance-attributes
             self.dirty = True
 
         elif self.just_happened == "fire laser":
-            self.fire_laserbeam(debug)
+            self.fire_laserbeam(self.debug)
 
         elif self.just_happened == "leaving":
             sfx("shark_appear.ogg", fadeout=3500)
