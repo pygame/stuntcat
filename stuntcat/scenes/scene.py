@@ -25,9 +25,9 @@ class Scene:
         :param time_delta: The time delta.
         """
 
-    def event(self, pg_event):
+    def event(self, event):
         """
         Process a pygame event.
 
-        :param pg_event: The event to process.
+        :param event: The event to process.
         """
