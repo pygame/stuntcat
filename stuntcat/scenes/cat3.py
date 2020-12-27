@@ -916,54 +916,67 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
     def tilt_right(self):
         self.player_data.cat_angular_vel += random.uniform(0.01 * math.pi, 0.03 * math.pi)
 
+
+    def _event_keydown(self, event):
+        if event.key == pygame.K_RIGHT:
+            self.right_pressed = True
+        elif event.key == pygame.K_LEFT:
+            self.left_pressed = True
+        elif event.key == pygame.K_a:
+            self.tilt_left()
+        elif event.key == pygame.K_d:
+            self.tilt_right()
+        elif event.key in (pygame.K_UP, pygame.K_SPACE):
+            self.start_jump(event.key)
+
+    def _event_keyup(self, event):
+        if event.key == self.jump_key:
+            self.stop_jump()
+        elif event.key == pygame.K_RIGHT:
+            self.right_pressed = False
+        elif event.key == pygame.K_LEFT:
+            self.left_pressed = False
+
+    def _event_joybuttondown(self, event):
+        if event.button in JOY_JUMP_BUTTONS:
+            self.start_jump("JOY" + str(event.button))
+        if event.button in JOY_LEFT_BUTTONS:
+            self.tilt_left()
+        if event.button in JOY_RIGHT_BUTTONS:
+            self.tilt_right()
+
+    def _event_joybuttonup(self, event):
+        if "JOY" + str(event.button) == self.jump_key:
+            self.stop_jump()
+
+    def _event_joyaxismotion(self, event):
+        if event.axis == 0:
+            if event.value >= JOY_SENSE:
+                self.right_pressed = True
+                self.left_pressed = False
+            elif event.value <= -JOY_SENSE:
+                self.right_pressed = False
+                self.left_pressed = True
+            else:
+                self.right_pressed = False
+                self.left_pressed = False
+        if event.axis == JOY_TILT_RIGHT_AXIS:
+            if self.last_joy_right_tilt < JOY_SENSE and event.value >= JOY_SENSE:
+                self.tilt_right()
+            self.last_joy_right_tilt = event.value
+        if event.axis == JOY_TILT_LEFT_AXIS:
+            if self.last_joy_left_tilt < JOY_SENSE and event.value >= JOY_SENSE:
+                self.tilt_left()
+            self.last_joy_left_tilt = event.value
+
     def event(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RIGHT:
-                self.right_pressed = True
-            elif event.key == pygame.K_LEFT:
-                self.left_pressed = True
-            elif event.key == pygame.K_a:
-                self.tilt_left()
-            elif event.key == pygame.K_d:
-                self.tilt_right()
-            elif event.key in (pygame.K_UP, pygame.K_SPACE):
-                self.start_jump(event.key)
+            self._event_keydown(event)
         elif event.type == pygame.KEYUP:
-            if event.key == self.jump_key:
-                self.stop_jump()
-            elif event.key == pygame.K_RIGHT:
-                self.right_pressed = False
-            elif event.key == pygame.K_LEFT:
-                self.left_pressed = False
-
-        if event.type == pygame.JOYBUTTONDOWN:
-            if event.button in JOY_JUMP_BUTTONS:
-                self.start_jump("JOY" + str(event.button))
-            if event.button in JOY_LEFT_BUTTONS:
-                self.tilt_left()
-            if event.button in JOY_RIGHT_BUTTONS:
-                self.tilt_right()
-
-        if event.type == pygame.JOYBUTTONUP:
-            if "JOY" + str(event.button) == self.jump_key:
-                self.stop_jump()
-
-        if event.type == pygame.JOYAXISMOTION:
-            if event.axis == 0:
-                if event.value >= JOY_SENSE:
-                    self.right_pressed = True
-                    self.left_pressed = False
-                elif event.value <= -JOY_SENSE:
-                    self.right_pressed = False
-                    self.left_pressed = True
-                else:
-                    self.right_pressed = False
-                    self.left_pressed = False
-            if event.axis == JOY_TILT_RIGHT_AXIS:
-                if self.last_joy_right_tilt < JOY_SENSE and event.value >= JOY_SENSE:
-                    self.tilt_right()
-                self.last_joy_right_tilt = event.value
-            if event.axis == JOY_TILT_LEFT_AXIS:
-                if self.last_joy_left_tilt < JOY_SENSE and event.value >= JOY_SENSE:
-                    self.tilt_left()
-                self.last_joy_left_tilt = event.value
+            self._event_keyup(event)
+        elif event.type == pygame.JOYBUTTONDOWN:
+            self._event_joybuttondown(event)
+        elif event.type == pygame.JOYBUTTONUP:
+            self._event_joybuttonup(event)
+        elif event.type == pygame.JOYAXISMOTION:
+            self._event_joyaxismotion(event)
