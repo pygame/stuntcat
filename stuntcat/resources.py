@@ -87,6 +87,7 @@ def gfx(image, convert=False, convert_alpha=False):
     return asurf
 
 
+#pylint:disable=too-many-arguments
 def sfx(snd, play=False, stop=False, fadeout=None, fadein=0, loops=0):
     """
     Load and return a sound effect from the sound directory.
