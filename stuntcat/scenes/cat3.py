@@ -961,11 +961,13 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
                 self.right_pressed = False
                 self.left_pressed = False
         if event.axis == JOY_TILT_RIGHT_AXIS:
-            if self.last_joy_right_tilt < JOY_SENSE and event.value >= JOY_SENSE:
+            # if self.last_joy_right_tilt < JOY_SENSE and event.value >= JOY_SENSE:
+            if self.last_joy_right_tilt < JOY_SENSE < event.value:
                 self.tilt_right()
             self.last_joy_right_tilt = event.value
         if event.axis == JOY_TILT_LEFT_AXIS:
-            if self.last_joy_left_tilt < JOY_SENSE and event.value >= JOY_SENSE:
+            # if self.last_joy_left_tilt < JOY_SENSE and event.value >= JOY_SENSE:
+            if self.last_joy_left_tilt < JOY_SENSE < event.value:
                 self.tilt_left()
             self.last_joy_left_tilt = event.value
 
