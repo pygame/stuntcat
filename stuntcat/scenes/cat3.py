@@ -288,18 +288,11 @@ class Shark(DirtySprite): #pylint:disable=too-many-instance-attributes
 
 
 
-class Cat(DirtySprite):
-    """Cat sprite class."""
+class AnimatedCat(DirtySprite):
+    """Handle animations for the cat."""
 
-    def __init__(self, cat_holder):
+    def __init__(self):
         DirtySprite.__init__(self)
-        self.cat_holder = cat_holder
-        self.image = gfx('cat_unicycle1.png', convert_alpha=True)
-        self.rect = self.image.get_rect()
-        sfx('cat_jump.ogg')
-
-        self.images = []
-        self.flipped_images = []
 
         self.last_location = [0, 0]
         self.last_direction = True #right is true
@@ -313,13 +306,15 @@ class Cat(DirtySprite):
 
         self.num_frames = 4
 
-        for i in range(self.num_frames):
-            img = gfx('cat_unicycle%d.png' % (i+1), convert_alpha=True)
-            self.images.append(img)
-            self.flipped_images.append(pygame.transform.flip(img, 1, 0))
+    def changed(self, location, direction, rotation, frame):
+        changed = self.last_rotation != rotation or self.last_location != location or self.last_frame != self.frame
 
-    def get_image(self):
-        return (self.images, self.flipped_images)[self.cat_holder.cat_speed[0] < 0][self.frame - 1]
+        self.last_location = location
+        self.last_direction = direction
+        self.last_rotation = rotation
+        self.last_frame = frame
+
+        return changed
 
     def animate(self, time_delta):
         self.frame_time += time_delta
@@ -331,6 +326,30 @@ class Cat(DirtySprite):
             self.frame_time = 0
             if self.frame == self.num_frames or self.frame == 1:
                 self.frame_direction = not self.frame_direction
+
+
+class Cat(AnimatedCat):
+    """Cat sprite class."""
+
+    def __init__(self, cat_holder):
+        AnimatedCat.__init__(self)
+        self.cat_holder = cat_holder
+        self.image = gfx('cat_unicycle1.png', convert_alpha=True)
+        self.rect = self.image.get_rect()
+        sfx('cat_jump.ogg')
+
+        self.images = []
+        self.flipped_images = []
+
+        for i in range(self.num_frames):
+            img = gfx('cat_unicycle%d.png' % (i+1), convert_alpha=True)
+            self.images.append(img)
+            self.flipped_images.append(pygame.transform.flip(img, 1, 0))
+
+    def get_image(self):
+        """Return the image for the animated frame"""
+        return (self.images, self.flipped_images)[self.cat_holder.cat_speed[0] < 0][self.frame - 1]
+
 
     def update(self, *args, **kwargs):
         direction = self.cat_holder.cat_speed[0] > 0
@@ -345,7 +364,7 @@ class Cat(DirtySprite):
             self.dirty = True
             self.image = self.get_image()
 
-        if self.last_rotation != rotation or self.last_location != location or self.last_frame != self.frame:
+        if self.changed(location[:], direction, rotation, self.frame):
 #            self.image = pygame.transform.rotate(self.image_direction[int(direction)], -self.cat_holder.cat_angle*180/math.pi)
             self.image = pygame.transform.rotate(self.get_image(), -self.cat_holder.cat_angle*180/math.pi)
             size = self.image.get_rect().size
@@ -353,17 +372,6 @@ class Cat(DirtySprite):
             self.rect.x = int(location[0]) - size[0]*0.5
             self.rect.y = int(location[1]) - size[1]*0.5
 
-        self.last_location = location[:]
-        self.last_direction = direction
-        self.last_rotation = rotation
-        self.last_frame = self.frame
-
-        # draw cat
-        # pygame.draw.line(
-        #     screen, [0, 0, 255], self.cat_location, self.cat_head_location, 20
-        # )
-        # pygame.draw.circle(screen, [0, 0, 255], self.cat_head_location, 50, 1)
-        # pygame.draw.circle(screen, [0, 255, 0], self.cat_head_location, 100, 1)
 
 SCORE_TEXT_CENTER = (472, 469)
 
