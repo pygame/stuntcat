@@ -168,7 +168,7 @@ class Shark(DirtySprite): #pylint:disable=too-many-instance-attributes
 
         sfx('shark_lazer.ogg', play=1)
 
-        if self.scene.cat_location[1] >  self.scene.cat_wire_height - 3:
+        if self.scene.player_data.cat_location[1] >  self.scene.player_data.cat_wire_height - 3:
             sfx('cat_shot.ogg', play=1)
 
             self.lazered = True
@@ -348,14 +348,14 @@ class Cat(AnimatedCat):
 
     def get_image(self):
         """Return the image for the animated frame"""
-        return (self.images, self.flipped_images)[self.cat_holder.cat_speed[0] < 0][self.frame - 1]
+        return (self.images, self.flipped_images)[self.cat_holder.player_data.cat_speed[0] < 0][self.frame - 1]
 
 
     def update(self, *args, **kwargs):
-        direction = self.cat_holder.cat_speed[0] > 0
+        direction = self.cat_holder.player_data.cat_speed[0] > 0
         # location = self.cat_holder.cat_location
-        location = self.cat_holder.cat_head_location
-        rotation = self.cat_holder.cat_angle
+        location = self.cat_holder.player_data.cat_head_location
+        rotation = self.cat_holder.player_data.cat_angle
         #if self.last_location != location:
         #    self.dirty = True
         #    self.rect.x = int(location[0])
@@ -365,8 +365,8 @@ class Cat(AnimatedCat):
             self.image = self.get_image()
 
         if self.changed(location[:], direction, rotation, self.frame):
-#            self.image = pygame.transform.rotate(self.image_direction[int(direction)], -self.cat_holder.cat_angle*180/math.pi)
-            self.image = pygame.transform.rotate(self.get_image(), -self.cat_holder.cat_angle*180/math.pi)
+#            self.image = pygame.transform.rotate(self.image_direction[int(direction)], -self.cat_holder.player_data.cat_angle*180/math.pi)
+            self.image = pygame.transform.rotate(self.get_image(), -self.cat_holder.player_data.cat_angle*180/math.pi)
             size = self.image.get_rect().size
             self.dirty = True
             self.rect.x = int(location[0]) - size[0]*0.5
@@ -435,16 +435,24 @@ class PlayerData:
 
         self.angle_to_not_fish = 0.0
 
+        self.cat_wire_height = height - 100
+
         self.cat_start_pos = [width / 2, height - 100]
         self.cat_location = self.cat_start_pos[:]
+
         self.cat_speed = [0, 0]
+        self.cat_speed_max = 8
+        self.cat_fall_speed_max = 16
+        self.cat_roll_speed = .01
         self.cat_angle = 0
         self.cat_angular_vel = 0
-
         self.cat_head_location = [
             int(self.cat_location[0] + 100 * math.cos(self.cat_angle - math.pi / 2)),
             int(self.cat_location[1] + 100 * math.sin(self.cat_angle - math.pi / 2)),
         ]
+
+
+
 
     def increment_score(self):
         """
@@ -523,19 +531,6 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
         for boing_name in self.boing_names:
             sfx(boing_name)
 
-        #cat variables
-        self.cat_wire_height = height - 100
-        self.cat_location = [width / 2, height - 100]
-        self.cat_speed = [0, 0]
-        self.cat_speed_max = 8
-        self.cat_fall_speed_max = 16
-        self.cat_roll_speed = .01
-        self.cat_angle = 0
-        self.cat_angular_vel = 0
-        self.cat_head_location = [
-            int(self.cat_location[0] + 100 * math.cos(self.cat_angle - math.pi / 2)),
-            int(self.cat_location[1] + 100 * math.sin(self.cat_angle - math.pi / 2)),
-        ]
 
         self.people_mad = False
         self.people_mad_duration = 3000 #ms
@@ -630,7 +625,6 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
         self.allsprites.add(self.shark)
         self.allsprites.clear(self.screen, self.background)
 
-
     def reset_on_death(self):
         """Reset on death.
 
@@ -639,10 +633,10 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
         self.player_data.reset()
         self.total_time = 0
 
-        self.cat_location = [self.width / 2, self.height - 100]
-        self.cat_speed = [0, 0]
-        self.cat_angle = 0
-        self.cat_angular_vel = 0
+        # self.cat_location = [self.width / 2, self.height - 100]
+        # self.cat_speed = [0, 0]
+        # self.cat_angle = 0
+        # self.cat_angular_vel = 0
 
         self.elephant.last_animation = 0
         self.elephant.state = 0
@@ -733,70 +727,70 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
         width, height = self.width, self.height
 
         ##cat physics
-        self.cat_angular_vel *= 0.9**dt_scaled #max(0.9/(max(0.1,dt_scaled)),0.999)
+        self.player_data.cat_angular_vel *= 0.9**dt_scaled #max(0.9/(max(0.1,dt_scaled)),0.999)
 
         #make the cat slide in the direction it's rotated
-        self.cat_speed[0] += math.sin(self.cat_angle) * (dt_scaled * self.cat_roll_speed)
+        self.player_data.cat_speed[0] += math.sin(self.player_data.cat_angle) * (dt_scaled * self.player_data.cat_roll_speed)
 
         # add gravity
-        self.cat_speed[1] = min(self.cat_speed[1] + (1 * dt_scaled), self.cat_fall_speed_max)
+        self.player_data.cat_speed[1] = min(self.player_data.cat_speed[1] + (1 * dt_scaled), self.player_data.cat_fall_speed_max)
 
-        self.unicycle_sound.set_volume(abs(self.cat_speed[0] / self.cat_speed_max))
+        self.unicycle_sound.set_volume(abs(self.player_data.cat_speed[0] / self.player_data.cat_speed_max))
 
         # accelerate the cat left or right
         if self.right_pressed:
-            self.cat_speed[0] = min(
-                self.cat_speed[0] + 0.3 * dt_scaled, self.cat_speed_max
+            self.player_data.cat_speed[0] = min(
+                self.player_data.cat_speed[0] + 0.3 * dt_scaled, self.player_data.cat_speed_max
             )
-            self.cat_angle -= 0.003 * dt_scaled
+            self.player_data.cat_angle -= 0.003 * dt_scaled
 
         if self.left_pressed:
-            self.cat_speed[0] = max(
-                self.cat_speed[0] - 0.3 * dt_scaled, -self.cat_speed_max
+            self.player_data.cat_speed[0] = max(
+                self.player_data.cat_speed[0] - 0.3 * dt_scaled, -self.player_data.cat_speed_max
             )
-            self.cat_angle += 0.003 * dt_scaled
+            self.player_data.cat_angle += 0.003 * dt_scaled
 
         # make the cat fall
-        angle_sign = 1 if self.cat_angle > 0 else -1
-        self.cat_angular_vel += 0.0002 * angle_sign * dt_scaled
-        self.cat_angle += self.cat_angular_vel * dt_scaled
-        if (self.cat_angle > math.pi / 2 or self.cat_angle < -math.pi / 2) and self.cat_location[1] > height - 160:
+        angle_sign = 1 if self.player_data.cat_angle > 0 else -1
+        self.player_data.cat_angular_vel += 0.0002 * angle_sign * dt_scaled
+        self.player_data.cat_angle += self.player_data.cat_angular_vel * dt_scaled
+        if (self.player_data.cat_angle > math.pi / 2 or self.player_data.cat_angle < -math.pi / 2) and self.player_data.cat_location[1] > height - 160:
             sfx('cat_crash.ogg', play=1)
             self.reset_on_death()
 
         # move cat
-        self.cat_location[0] += self.cat_speed[0] * dt_scaled
-        self.cat_location[1] += self.cat_speed[1] * dt_scaled
-        if self.cat_location[1] > self.cat_wire_height and self.cat_location[0] > 0.25 * width:
+        self.player_data.cat_location[0] += self.player_data.cat_speed[0] * dt_scaled
+        self.player_data.cat_location[1] += self.player_data.cat_speed[1] * dt_scaled
+        if self.player_data.cat_location[1] > self.player_data.cat_wire_height and self.player_data.cat_location[0] > 0.25 * width:
             self.touching_ground = True
-            self.cat_location[1] = self.cat_wire_height
-            self.cat_speed[1] = 0
+            self.player_data.cat_location[1] = self.player_data.cat_wire_height
+            self.player_data.cat_speed[1] = 0
         else:
             self.touching_ground = False
 
-        if self.cat_location[1] > height:
+        if self.player_data.cat_location[1] > height:
             sfx('splash.ogg', play=1)
             self.meow()
             self.reset_on_death()
-        if self.cat_location[0] > width:
-            self.cat_location[0] = width
-            if self.cat_angle > 0:
-                self.cat_angle *= 0.7
-        self.cat_head_location = [
-            int(self.cat_location[0] + 100 * math.cos(self.cat_angle - math.pi / 2)),
-            int(self.cat_location[1] + 100 * math.sin(self.cat_angle - math.pi / 2)),
+        if self.player_data.cat_location[0] > width:
+            self.player_data.cat_location[0] = width
+            if self.player_data.cat_angle > 0:
+                self.player_data.cat_angle *= 0.7
+        self.player_data.cat_head_location = [
+            int(self.player_data.cat_location[0] + 100 * math.cos(self.player_data.cat_angle - math.pi / 2)),
+            int(self.player_data.cat_location[1] + 100 * math.sin(self.player_data.cat_angle - math.pi / 2)),
         ]
 
         # check for out of bounds
-        if self.cat_location[0] > 0.98 * width and self.cat_location[1] > self.cat_wire_height - 30:
+        if self.player_data.cat_location[0] > 0.98 * width and self.player_data.cat_location[1] > self.player_data.cat_wire_height - 30:
             #bump the cat back in
             self.meow()
             sfx(random.choice(self.boing_names), play=True)
-            self.cat_angular_vel -= 0.01*dt_scaled
-            self.cat_speed[0] = -5
-            self.cat_speed[1] = -20
+            self.player_data.cat_angular_vel -= 0.01*dt_scaled
+            self.player_data.cat_speed[0] = -5
+            self.player_data.cat_speed[1] = -20
             #self.reset_on_death()
-        if self.cat_location[0] < 0.25 * width and self.cat_location[1] > self.cat_wire_height - 30:
+        if self.player_data.cat_location[0] < 0.25 * width and self.player_data.cat_location[1] > self.player_data.cat_wire_height - 30:
             pass
 
         #check for collision with the elephant stomp
@@ -805,21 +799,29 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
             self.elephant.collide(width)
         if self.shark_active or self.shark.states[self.shark.state] == 'leaving':
             self.shark.animate(self.total_time)
-            self.shark.collide(self, width, height, self.cat_location)
+            self.shark.collide(self, width, height, self.player_data.cat_location)
 
         #jumping physics
         if self.jumping:
-            self.cat_speed[1] -= time_delta * ((CAT_MAX_JUMPING_TIME - self.jumping_time) / CAT_MAX_JUMPING_TIME) * CAT_JUMP_SPEED
+            self.player_data.cat_speed[1] -= time_delta * ((CAT_MAX_JUMPING_TIME - self.jumping_time) / CAT_MAX_JUMPING_TIME) * CAT_JUMP_SPEED
             self.jumping_time += time_delta
             if self.jumping_time >= CAT_MAX_JUMPING_TIME:
                 self.jumping = False
 
-        ##meow timing
+        self.cats_meow(time_delta)
+        self.angry_people(time_delta)
+        self.collide_flying_objects()
+        self.spawn_flying_objects()
+
+    def cats_meow(self, time_delta):
+        """meow timing"""
         if self.next_meow <= 0:
             self.meow()
         self.next_meow -= time_delta
 
-        ##angry people (increased throwing of not-fish)
+    def angry_people(self, time_delta):
+        """angry people (increased throwing of not-fish)"""
+
         if self.people_mad:
             self.people_mad_current_time += time_delta
             self.notfish_time += time_delta
@@ -830,7 +832,10 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
             if self.people_mad_current_time >= self.people_mad_duration:
                 self.people_mad = False
 
-        ##object physics
+    def collide_flying_objects(self):
+        """object physics"""
+        height = self.height
+        dt_scaled = self.dt_scaled
 
         # move fish and not fish
         for fish in reversed(self.fish.sprites()):
@@ -852,25 +857,31 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
 
         # check collision with the cat
         for fish in reversed(self.fish.sprites()):
-            if distance([fish.rect[0], fish.rect[1]], self.cat_head_location) < 100:
+            if distance([fish.rect[0], fish.rect[1]], self.player_data.cat_head_location) < 100:
                 self.player_data.increment_score()
                 self.fish.remove(fish)
                 sfx('eatfish.ogg', play=1)
                 fish.kill()
         for fish in reversed(self.not_fish.sprites()):
-            if distance([fish.rect[0], fish.rect[1]], self.cat_head_location) < 50:
+            if distance([fish.rect[0], fish.rect[1]], self.player_data.cat_head_location) < 50:
                 self.not_fish.remove(fish)
                 fish.kill()
                 self.player_data.angle_to_not_fish = (
                     math.atan2(
-                        self.cat_head_location[1] - fish.rect[1],
-                        self.cat_head_location[0] - fish.rect[0],
+                        self.player_data.cat_head_location[1] - fish.rect[1],
+                        self.player_data.cat_head_location[0] - fish.rect[0],
                     )
                     - math.pi / 2
                 )
                 side = 1 if self.player_data.angle_to_not_fish < 0 else -1
-                self.cat_angular_vel += side * random.uniform(0.08, 0.15)
+                self.player_data.cat_angular_vel += side * random.uniform(0.08, 0.15)
                 sfx(random.choice(self.boing_names), play=True)
+
+
+
+    def spawn_flying_objects(self):
+        """Throws random objects at the cat."""
+        width, height = self.width, self.height
 
         # refresh lists
         while len(self.fish) < 1 and not self.people_mad:
@@ -912,7 +923,7 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
         if self.touching_ground and not self.jumping:
             self.jumping = True
             self.jumping_time = 0
-            self.cat_speed[1] -= 12.5
+            self.player_data.cat_speed[1] -= 12.5
             sfx('cat_jump.ogg', play=1)
 
     def stop_jump(self):
@@ -920,10 +931,10 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
         sfx('cat_jump.ogg', fadeout=50)
 
     def tilt_left(self):
-        self.cat_angular_vel -= random.uniform(0.01 * math.pi, 0.03 * math.pi)
+        self.player_data.cat_angular_vel -= random.uniform(0.01 * math.pi, 0.03 * math.pi)
 
     def tilt_right(self):
-        self.cat_angular_vel += random.uniform(0.01 * math.pi, 0.03 * math.pi)
+        self.player_data.cat_angular_vel += random.uniform(0.01 * math.pi, 0.03 * math.pi)
 
     def event(self, event):
         if event.type == pygame.KEYDOWN:
