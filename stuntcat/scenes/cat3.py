@@ -233,54 +233,16 @@ class Shark(DirtySprite): #pylint:disable=too-many-instance-attributes
 
         self.last_state = start_state
 
-    #set the state number from the name
     def set_state(self, new_state):
+        """set the state number from the name """
         self.state = list(self.states.values()).index(new_state)
 
     def get_state(self):
+        """get state name"""
         return self.states[self.state]
 
-    #this function does nothing now I think
-    def render(self, screen, width, height):
-        state = self.states[self.state]
-
-        if state == 'poise':
-            pygame.draw.polygon(
-                screen,
-                [255, 255, 0],
-                [
-                    [0, self.laser_height],
-                    [0.2 * width, self.laser_height],
-                    [0.2 * width, height],
-                    [0, height],
-                ],
-            )
-        if state == 'fire laser':
-            pygame.draw.polygon(
-                screen,
-                [255, 255, 0],
-                [
-                    [0, self.laser_height],
-                    [0.2 * width, self.laser_height],
-                    [0.2 * width, height],
-                    [0, height],
-                ],
-            )
-            pygame.draw.polygon(
-                screen,
-                [255, 0, 0],
-                [
-                    [0.2 * width, self.laser_height],
-                    [width, self.laser_height],
-                    [width, self.laser_height + 10],
-                    [0.2 * width, self.laser_height],
-                ],
-            )
-
-
     def collide(self, scene, width, height, cat_location):
-        pass
-        #TODO: this doesn't work. It means the laser never fires.
+        """ TODO: this doesn't work. It means the laser never fires."""
         # if self.state == 2:
         #     if cat_location[1] > height - 130:
         #         print('shark collide')
@@ -307,6 +269,8 @@ class AnimatedCat(DirtySprite):
         self.num_frames = 4
 
     def changed(self, location, direction, rotation, frame):
+        """Has the cat state changed? Store the last state.
+        """
         changed = self.last_rotation != rotation or self.last_location != location or self.last_frame != self.frame
 
         self.last_location = location
@@ -317,6 +281,8 @@ class AnimatedCat(DirtySprite):
         return changed
 
     def animate(self, time_delta):
+        """ Animate the sprite.
+        """
         self.frame_time += time_delta
         if self.frame_time >= self.frame_rate:
             if self.frame_direction:
@@ -387,10 +353,10 @@ class Score(DirtySprite):
         self.myfont = pygame.font.SysFont("monospace", 30, bold=True)
         self.image = self.myfont.render(str(self.score_holder.player_data.score), True, [0, 0, 0])
 
-        self.update_rect()
+        self._update_rect()
         self.last_score = self.score_holder.player_data.score
 
-    def update_rect(self):
+    def _update_rect(self):
         self.rect = self.image.get_rect()
         self.rect.center = SCORE_TEXT_CENTER
 
@@ -399,7 +365,7 @@ class Score(DirtySprite):
             self.dirty = True
             self.image = self.myfont.render(str(self.score_holder.player_data.score),
                                             True, [0, 0, 0])
-            self.update_rect()
+            self._update_rect()
         self.last_score = self.score_holder.player_data.score
 
 class DeadZone(DirtySprite):
@@ -569,22 +535,22 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
 
         self.unicycle_sound = sfx('unicycle.ogg', play=True, loops=-1, fadein=500)
 
-        self.reset_meow()
+        self._reset_meow()
 
         #difficulty varibles
         self.number_of_not_fish = 0
 
-    def reset_meow(self):
+    def _reset_meow(self):
         self.next_meow = random.uniform(5000, 10000)
 
-    def meow(self):
+    def _meow(self):
         # Play a meow sound, but not the same one twice in a row
         meow_names = self.meow_names[:]
         if self.last_meow in self.meow_names:
             meow_names.remove(self.last_meow)
         self.last_meow = random.choice(meow_names)
         sfx(self.last_meow, play=1)
-        self.reset_meow()
+        self._reset_meow()
 
     def init_sprites(self):
         """temp, this will go in the init.
@@ -762,7 +728,7 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
         # in the pool
         if self.player_data.cat_location[1] > self.height:
             sfx('splash.ogg', play=1)
-            self.meow()
+            self._meow()
             self.reset_on_death()
 
         # to the right of screen.
@@ -778,7 +744,7 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
 
         if self.player_data.cat_location[0] > 0.98 * self.width and self.player_data.cat_location[1] > self.player_data.cat_wire_height - 30:
             #bump the cat back in
-            self.meow()
+            self._meow()
             sfx(random.choice(self.boing_names), play=True)
             self.player_data.cat_angular_vel -= 0.01 * self.dt_scaled
             self.player_data.cat_speed[0] = -5
@@ -798,7 +764,7 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
     def _cats_meow(self, time_delta):
         """meow timing"""
         if self.next_meow <= 0:
-            self.meow()
+            self._meow()
         self.next_meow -= time_delta
 
     def _angry_people(self, time_delta):
@@ -898,7 +864,7 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
                 )
         )
 
-    def start_jump(self, key):
+    def _start_jump(self, key):
         self.jump_key = key
         if self.touching_ground and not self.jumping:
             self.jumping = True
@@ -906,14 +872,14 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
             self.player_data.cat_speed[1] -= 12.5
             sfx('cat_jump.ogg', play=1)
 
-    def stop_jump(self):
+    def _stop_jump(self):
         self.jumping = False
         sfx('cat_jump.ogg', fadeout=50)
 
-    def tilt_left(self):
+    def _tilt_left(self):
         self.player_data.cat_angular_vel -= random.uniform(0.01 * math.pi, 0.03 * math.pi)
 
-    def tilt_right(self):
+    def _tilt_right(self):
         self.player_data.cat_angular_vel += random.uniform(0.01 * math.pi, 0.03 * math.pi)
 
 
@@ -923,15 +889,15 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
         elif event.key == pygame.K_LEFT:
             self.left_pressed = True
         elif event.key == pygame.K_a:
-            self.tilt_left()
+            self._tilt_left()
         elif event.key == pygame.K_d:
-            self.tilt_right()
+            self._tilt_right()
         elif event.key in (pygame.K_UP, pygame.K_SPACE):
-            self.start_jump(event.key)
+            self._start_jump(event.key)
 
     def _event_keyup(self, event):
         if event.key == self.jump_key:
-            self.stop_jump()
+            self._stop_jump()
         elif event.key == pygame.K_RIGHT:
             self.right_pressed = False
         elif event.key == pygame.K_LEFT:
@@ -939,15 +905,15 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
 
     def _event_joybuttondown(self, event):
         if event.button in JOY_JUMP_BUTTONS:
-            self.start_jump("JOY" + str(event.button))
+            self._start_jump("JOY" + str(event.button))
         if event.button in JOY_LEFT_BUTTONS:
-            self.tilt_left()
+            self._tilt_left()
         if event.button in JOY_RIGHT_BUTTONS:
-            self.tilt_right()
+            self._tilt_right()
 
     def _event_joybuttonup(self, event):
         if "JOY" + str(event.button) == self.jump_key:
-            self.stop_jump()
+            self._stop_jump()
 
     def _event_joyaxismotion(self, event):
         if event.axis == 0:
@@ -963,12 +929,12 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
         if event.axis == JOY_TILT_RIGHT_AXIS:
             # if self.last_joy_right_tilt < JOY_SENSE and event.value >= JOY_SENSE:
             if self.last_joy_right_tilt < JOY_SENSE < event.value:
-                self.tilt_right()
+                self._tilt_right()
             self.last_joy_right_tilt = event.value
         if event.axis == JOY_TILT_LEFT_AXIS:
             # if self.last_joy_left_tilt < JOY_SENSE and event.value >= JOY_SENSE:
             if self.last_joy_left_tilt < JOY_SENSE < event.value:
-                self.tilt_left()
+                self._tilt_left()
             self.last_joy_left_tilt = event.value
 
     def event(self, event):
