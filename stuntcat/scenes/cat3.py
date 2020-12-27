@@ -17,8 +17,7 @@ from stuntcat.scenes.elephant import Elephant
 
 
 class LayeredDirtyAppend(LayeredDirty):
-    """ Like a group, except it has append and extend methods like a list.
-    """
+    """Like a group, except it has append and extend methods like a list."""
 
     def append(self, sprite):
         """
@@ -42,16 +41,17 @@ class Lazer(DirtySprite):
     """
     lazer sprite class.
     """
+
     def __init__(self, container, shark_size):
         DirtySprite.__init__(self, container)
         self.rect = pygame.Rect([150, shark_size[1] - 155, shark_size[0], 10])
         # self.rect.x = -1000
         self.image = pygame.transform.scale(
-            gfx('shark_laser.png', convert_alpha=True),
-            self.rect.size
+            gfx("shark_laser.png", convert_alpha=True), self.rect.size
         )
 
-class Shark(DirtySprite): #pylint:disable=too-many-instance-attributes
+
+class Shark(DirtySprite):  # pylint:disable=too-many-instance-attributes
     """
     Shark sprite class.
     """
@@ -62,23 +62,23 @@ class Shark(DirtySprite): #pylint:disable=too-many-instance-attributes
         self.scene = scene
         self.width, self.height = width, height
 
-        self.state = 0 #
+        self.state = 0  #
         self.states = {
-            0: 'offscreen',
-            1: 'about_to_appear',
-            2: 'poise',
-            3: 'aiming',
-            4: 'fire laser',
-            5: 'leaving',
+            0: "offscreen",
+            1: "about_to_appear",
+            2: "poise",
+            3: "aiming",
+            4: "fire laser",
+            5: "leaving",
         }
         self.last_state = 0
         self.just_happened = None
-        self.lazered = False # was the cat hit?
-        self.lazer = None # type: Optional[Lazer]
-        self.laser_height = height - 150 #where should the laser be on the screen?
+        self.lazered = False  # was the cat hit?
+        self.lazer = None  # type: Optional[Lazer]
+        self.laser_height = height - 150  # where should the laser be on the screen?
 
-        #TODO: to make it easier to test the shark
-#        self.time_between_appearances = 1000 #ms
+        # TODO: to make it easier to test the shark
+        #        self.time_between_appearances = 1000 #ms
         # self.time_between_appearances = 5000 #ms
 
         # self.time_of_about_to_appear = 1000#ms
@@ -88,30 +88,30 @@ class Shark(DirtySprite): #pylint:disable=too-many-instance-attributes
         # self.time_of_leaving = 1000 #ms
 
         self.timings = {
-            'time_between_appearances': 5000,
-            'time_of_about_to_appear': 1000,
-            'time_of_poise': 1000,
-            'time_of_aiming': 500,
-            'time_of_laser': 200,
-            'time_of_leaving': 1000,
+            "time_between_appearances": 5000,
+            "time_of_about_to_appear": 1000,
+            "time_of_poise": 1000,
+            "time_of_aiming": 500,
+            "time_of_laser": 200,
+            "time_of_leaving": 1000,
         }
-        self.last_animation = 0 #ms
+        self.last_animation = 0  # ms
 
         self.applaud = True
 
-        sfx('default_shark.ogg')
-        sfx('shark_appear.ogg')
-        sfx('shark_gone.ogg')
-        sfx('shark_lazer.ogg')
-        sfx('applause.ogg')
-        sfx('cat_shot.ogg')
+        sfx("default_shark.ogg")
+        sfx("shark_appear.ogg")
+        sfx("shark_gone.ogg")
+        sfx("shark_lazer.ogg")
+        sfx("applause.ogg")
+        sfx("cat_shot.ogg")
         sfx("boo.ogg")
 
-        self.image = gfx('shark.png', convert_alpha=True)
+        self.image = gfx("shark.png", convert_alpha=True)
         # gfx('foot_part.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = -1000
-        self.rect.y = (self.height - self.image.get_height())
+        self.rect.y = self.height - self.image.get_height()
 
     def update(self, *args, **kwargs):
         debug = False
@@ -119,30 +119,30 @@ class Shark(DirtySprite): #pylint:disable=too-many-instance-attributes
         if debug and self.just_happened:
             print(self.just_happened)
 
-        if self.just_happened == 'offscreen':
-            sfx('shark_gone.ogg', stop=1)
+        if self.just_happened == "offscreen":
+            sfx("shark_gone.ogg", stop=1)
 
             self.rect.x = -1000
             self.dirty = True
 
-        elif self.just_happened == 'about_to_appear':
+        elif self.just_happened == "about_to_appear":
             music(stop=True)
             self.applaud = True
-            sfx('shark_appear.ogg', play=1)
+            sfx("shark_appear.ogg", play=1)
 
-        elif self.just_happened == 'poise':
-            sfx('shark_attacks.ogg', play=1)
+        elif self.just_happened == "poise":
+            sfx("shark_attacks.ogg", play=1)
 
             self.rect.x = -30
             self.dirty = True
 
-        elif self.just_happened == 'fire laser':
+        elif self.just_happened == "fire laser":
             self.fire_laserbeam(debug)
 
-        elif self.just_happened == 'leaving':
-            sfx('shark_appear.ogg', fadeout=3500)
-            sfx('shark_attacks.ogg', stop=1)
-            sfx('shark_gone.ogg', play=1)
+        elif self.just_happened == "leaving":
+            sfx("shark_appear.ogg", fadeout=3500)
+            sfx("shark_attacks.ogg", stop=1)
+            sfx("shark_gone.ogg", play=1)
             self.dirty = True
             if self.lazered:
                 sfx("boo.ogg", play=True)
@@ -150,11 +150,10 @@ class Shark(DirtySprite): #pylint:disable=too-many-instance-attributes
                 self.lazered = False
                 self.scene.annoy_crowd()
             elif self.applaud:
-                sfx('applause.ogg', play=1)
+                sfx("applause.ogg", play=1)
             if self.lazer:
                 self.lazer.kill()
                 self.lazer = None
-
 
     def fire_laserbeam(self, debug):
         """
@@ -166,18 +165,20 @@ class Shark(DirtySprite): #pylint:disable=too-many-instance-attributes
             print(self.just_happened)
         self.lazer = Lazer(self.container, (self.width, self.height))
 
-        sfx('shark_lazer.ogg', play=1)
+        sfx("shark_lazer.ogg", play=1)
 
-        if self.scene.player_data.cat_location[1] >  self.scene.player_data.cat_wire_height - 3:
-            sfx('cat_shot.ogg', play=1)
+        if (
+            self.scene.player_data.cat_location[1]
+            > self.scene.player_data.cat_wire_height - 3
+        ):
+            sfx("cat_shot.ogg", play=1)
 
             self.lazered = True
         else:
             self.lazered = False
 
     def _update_last_animation(self, total_time, timing):
-        """
-        """
+        """"""
         if total_time > self.last_animation + self.timings[timing]:
             self.state += 1
             self.last_animation = total_time
@@ -192,40 +193,43 @@ class Shark(DirtySprite): #pylint:disable=too-many-instance-attributes
         state = self.states[self.state]
         start_state = self.state
 
-
-        if state == 'offscreen':
+        if state == "offscreen":
             self.just_happened = state if self.state != self.last_state else None
-            self._update_last_animation(total_time, 'time_between_appearances')
+            self._update_last_animation(total_time, "time_between_appearances")
 
-        elif state == 'about_to_appear':
+        elif state == "about_to_appear":
             self.just_happened = state if self.state != self.last_state else None
-            self._update_last_animation(total_time, 'time_of_about_to_appear')
+            self._update_last_animation(total_time, "time_of_about_to_appear")
 
-        elif state == 'poise':
+        elif state == "poise":
             self.just_happened = state if self.state != self.last_state else None
 
-            #smoothly animate upwards
-            self.rect.y = (self.height - self.image.get_height()) + 0.2*(self.last_animation + self.timings['time_of_poise'] - total_time)
+            # smoothly animate upwards
+            self.rect.y = (self.height - self.image.get_height()) + 0.2 * (
+                self.last_animation + self.timings["time_of_poise"] - total_time
+            )
             self.dirty = True
 
-            self._update_last_animation(total_time, 'time_of_poise')
+            self._update_last_animation(total_time, "time_of_poise")
 
-        elif state == 'aiming':
+        elif state == "aiming":
             self.just_happened = state if self.state != self.last_state else None
-            self._update_last_animation(total_time, 'time_of_aiming')
+            self._update_last_animation(total_time, "time_of_aiming")
 
-        elif state == 'fire laser':
+        elif state == "fire laser":
             self.just_happened = state if self.state != self.last_state else None
-            self._update_last_animation(total_time, 'time_of_laser')
+            self._update_last_animation(total_time, "time_of_laser")
 
-        elif state == 'leaving':
+        elif state == "leaving":
             self.just_happened = state if self.state != self.last_state else None
 
-            #smoothly animate downwards
-            self.rect.y = (self.height - self.image.get_height()) + 0.2*(total_time - self.last_animation)
+            # smoothly animate downwards
+            self.rect.y = (self.height - self.image.get_height()) + 0.2 * (
+                total_time - self.last_animation
+            )
             self.dirty = True
 
-            if total_time > self.last_animation + self.timings['time_of_leaving']:
+            if total_time > self.last_animation + self.timings["time_of_leaving"]:
                 self.state += 1
                 if self.state == max(self.states.keys()) + 1:
                     self.state = 0
@@ -249,7 +253,6 @@ class Shark(DirtySprite): #pylint:disable=too-many-instance-attributes
         #         scene.reset_on_death()
 
 
-
 class AnimatedCat(DirtySprite):
     """Handle animations for the cat."""
 
@@ -257,21 +260,24 @@ class AnimatedCat(DirtySprite):
         DirtySprite.__init__(self)
 
         self.last_location = [0, 0]
-        self.last_direction = True #right is true
+        self.last_direction = True  # right is true
         self.last_rotation = -1
         self.last_frame = None
 
         self.frame = 1
-        self.frame_rate = 750 # time passed in ms before frame changes
+        self.frame_rate = 750  # time passed in ms before frame changes
         self.frame_time = 0
-        self.frame_direction = True # True = increasing, False = decreasing
+        self.frame_direction = True  # True = increasing, False = decreasing
 
         self.num_frames = 4
 
     def changed(self, location, direction, rotation, frame):
-        """Has the cat state changed? Store the last state.
-        """
-        changed = self.last_rotation != rotation or self.last_location != location or self.last_frame != self.frame
+        """Has the cat state changed? Store the last state."""
+        changed = (
+            self.last_rotation != rotation
+            or self.last_location != location
+            or self.last_frame != self.frame
+        )
 
         self.last_location = location
         self.last_direction = direction
@@ -281,8 +287,7 @@ class AnimatedCat(DirtySprite):
         return changed
 
     def animate(self, time_delta):
-        """ Animate the sprite.
-        """
+        """Animate the sprite."""
         self.frame_time += time_delta
         if self.frame_time >= self.frame_rate:
             if self.frame_direction:
@@ -300,29 +305,30 @@ class Cat(AnimatedCat):
     def __init__(self, cat_holder):
         AnimatedCat.__init__(self)
         self.cat_holder = cat_holder
-        self.image = gfx('cat_unicycle1.png', convert_alpha=True)
+        self.image = gfx("cat_unicycle1.png", convert_alpha=True)
         self.rect = self.image.get_rect()
-        sfx('cat_jump.ogg')
+        sfx("cat_jump.ogg")
 
         self.images = []
         self.flipped_images = []
 
         for i in range(self.num_frames):
-            img = gfx('cat_unicycle%d.png' % (i+1), convert_alpha=True)
+            img = gfx("cat_unicycle%d.png" % (i + 1), convert_alpha=True)
             self.images.append(img)
             self.flipped_images.append(pygame.transform.flip(img, 1, 0))
 
     def get_image(self):
         """Return the image for the animated frame"""
-        return (self.images, self.flipped_images)[self.cat_holder.player_data.cat_speed[0] < 0][self.frame - 1]
-
+        return (self.images, self.flipped_images)[
+            self.cat_holder.player_data.cat_speed[0] < 0
+        ][self.frame - 1]
 
     def update(self, *args, **kwargs):
         direction = self.cat_holder.player_data.cat_speed[0] > 0
         # location = self.cat_holder.cat_location
         location = self.cat_holder.player_data.cat_head_location
         rotation = self.cat_holder.player_data.cat_angle
-        #if self.last_location != location:
+        # if self.last_location != location:
         #    self.dirty = True
         #    self.rect.x = int(location[0])
         #    self.rect.y = int(location[1])
@@ -331,15 +337,18 @@ class Cat(AnimatedCat):
             self.image = self.get_image()
 
         if self.changed(location[:], direction, rotation, self.frame):
-#            self.image = pygame.transform.rotate(self.image_direction[int(direction)], -self.cat_holder.player_data.cat_angle*180/math.pi)
-            self.image = pygame.transform.rotate(self.get_image(), -self.cat_holder.player_data.cat_angle*180/math.pi)
+            #            self.image = pygame.transform.rotate(self.image_direction[int(direction)], -self.cat_holder.player_data.cat_angle*180/math.pi)
+            self.image = pygame.transform.rotate(
+                self.get_image(), -self.cat_holder.player_data.cat_angle * 180 / math.pi
+            )
             size = self.image.get_rect().size
             self.dirty = True
-            self.rect.x = int(location[0]) - size[0]*0.5
-            self.rect.y = int(location[1]) - size[1]*0.5
+            self.rect.x = int(location[0]) - size[0] * 0.5
+            self.rect.y = int(location[1]) - size[1] * 0.5
 
 
 SCORE_TEXT_CENTER = (472, 469)
+
 
 class Score(DirtySprite):
     """Score class."""
@@ -351,7 +360,9 @@ class Score(DirtySprite):
         DirtySprite.__init__(self)
         self.score_holder = score_holder
         self.myfont = pygame.font.SysFont("monospace", 30, bold=True)
-        self.image = self.myfont.render(str(self.score_holder.player_data.score), True, [0, 0, 0])
+        self.image = self.myfont.render(
+            str(self.score_holder.player_data.score), True, [0, 0, 0]
+        )
 
         self._update_rect()
         self.last_score = self.score_holder.player_data.score
@@ -363,15 +374,18 @@ class Score(DirtySprite):
     def update(self, *args, **kwargs):
         if self.last_score != self.score_holder.player_data.score:
             self.dirty = True
-            self.image = self.myfont.render(str(self.score_holder.player_data.score),
-                                            True, [0, 0, 0])
+            self.image = self.myfont.render(
+                str(self.score_holder.player_data.score), True, [0, 0, 0]
+            )
             self._update_rect()
         self.last_score = self.score_holder.player_data.score
+
 
 class DeadZone(DirtySprite):
     """
     Dead Zone class.
     """
+
     def __init__(self, points):
         """
         score_holder has a 'score' attrib.
@@ -381,11 +395,7 @@ class DeadZone(DirtySprite):
 
         # draw dead zones
         surf = pygame.display.get_surface()
-        rect = pygame.draw.polygon(
-            surf,
-            zone_color,
-            points
-        )
+        rect = pygame.draw.polygon(surf, zone_color, points)
         self.image = surf.subsurface(rect.clip(surf.get_rect())).copy()
         self.rect = self.image.get_rect()
         self.rect.x = rect.x
@@ -396,6 +406,7 @@ class PlayerData:
     """
     Data about the player that gets passed around a lot at the minute.
     """
+
     def __init__(self, width, height):
         self._score = 0
 
@@ -409,16 +420,13 @@ class PlayerData:
         self.cat_speed = [0, 0]
         self.cat_speed_max = 8
         self.cat_fall_speed_max = 16
-        self.cat_roll_speed = .01
+        self.cat_roll_speed = 0.01
         self.cat_angle = 0
         self.cat_angular_vel = 0
         self.cat_head_location = [
             int(self.cat_location[0] + 100 * math.cos(self.cat_angle - math.pi / 2)),
             int(self.cat_location[1] + 100 * math.sin(self.cat_angle - math.pi / 2)),
         ]
-
-
-
 
     def increment_score(self):
         """
@@ -444,9 +452,7 @@ class PlayerData:
         return self._score
 
 
-
-
-CAT_MAX_JUMPING_TIME = 600 #ms
+CAT_MAX_JUMPING_TIME = 600  # ms
 CAT_JUMP_SPEED = 0.07
 
 JOY_JUMP_BUTTONS = (0, 1)
@@ -456,12 +462,14 @@ JOY_TILT_LEFT_AXIS = 2
 JOY_TILT_RIGHT_AXIS = 5
 JOY_SENSE = 0.5  # Joystick sensitivity for movement
 
-class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
+
+class CatUniScene(Scene):  # pylint:disable=too-many-instance-attributes
     """Cat unicycle scene."""
+
     def __init__(self, *args, **kwargs):
         Scene.__init__(self, *args, **kwargs)
 
-        (width, height) = (1920//2, 1080//2)
+        (width, height) = (1920 // 2, 1080 // 2)
         self.width, self.height = width, height
 
         # Loading screen should always be a fallback active scene
@@ -470,19 +478,19 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
 
         self.myfont = pygame.font.SysFont("monospace", 20)
 
-        self.background = gfx('background.png', convert=True)
+        self.background = gfx("background.png", convert=True)
         # self.cat_unicycle = gfx('cat_unicycle.png').convert_alpha()
         # self.fish = gfx('fish.png').convert_alpha()
         # self.foot = gfx('foot.png').convert_alpha()
         # self.foot_part = gfx('foot_part.png').convert_alpha()
         # self.shark = gfx('shark.png').convert_alpha()
 
-        sfx('cat_jump.ogg')
-        sfx('eatfish.ogg')
-        sfx('splash.ogg')
-        sfx('cat_crash.ogg')
+        sfx("cat_jump.ogg")
+        sfx("eatfish.ogg")
+        sfx("splash.ogg")
+        sfx("cat_crash.ogg")
 
-        self.meow_names = ['cat_meow01.ogg', 'cat_meow02.ogg', 'cat_meow03.ogg']
+        self.meow_names = ["cat_meow01.ogg", "cat_meow02.ogg", "cat_meow03.ogg"]
         self.last_meow = None
 
         self.touching_ground = True
@@ -493,13 +501,12 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
         for meow_name in self.meow_names:
             sfx(meow_name)
 
-        self.boing_names = ['boing1.ogg', 'boing2.ogg', 'boing3.ogg']
+        self.boing_names = ["boing1.ogg", "boing2.ogg", "boing3.ogg"]
         for boing_name in self.boing_names:
             sfx(boing_name)
 
-
         self.people_mad = False
-        self.people_mad_duration = 3000 #ms
+        self.people_mad_duration = 3000  # ms
         self.people_mad_current_time = 0
         self.next_notfish = 0
         self.notfish_time = 0
@@ -511,13 +518,13 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
         self.right_pressed = False
         self.player_data = PlayerData(width, height)
 
-        #timing
+        # timing
         self.dt_scaled = 0
         self.total_time = 0
 
-        #elephant and shark classes
+        # elephant and shark classes
         self.elephant = Elephant(self)
-        self.shark_active = False #is the shark enabled yet
+        self.shark_active = False  # is the shark enabled yet
         self.elephant_active = False
         self.cat = Cat(self)
         self.score_text = Score(self)
@@ -533,11 +540,11 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
 
         self.not_fish = LayeredDirtyAppend()
 
-        self.unicycle_sound = sfx('unicycle.ogg', play=True, loops=-1, fadein=500)
+        self.unicycle_sound = sfx("unicycle.ogg", play=True, loops=-1, fadein=500)
 
         self._reset_meow()
 
-        #difficulty varibles
+        # difficulty varibles
         self.number_of_not_fish = 0
 
     def _reset_meow(self):
@@ -553,17 +560,9 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
         self._reset_meow()
 
     def init_sprites(self):
-        """temp, this will go in the init.
-        """
-        sprite_list = [
-            self.elephant,
-            self.cat,
-            self.score_text
-        ]
-        self.allsprites = LayeredDirty(
-            sprite_list,
-            _time_threshold=1000/10.0
-        )
+        """temp, this will go in the init."""
+        sprite_list = [self.elephant, self.cat, self.score_text]
+        self.allsprites = LayeredDirty(sprite_list, _time_threshold=1000 / 10.0)
         scene = self
         self.shark = Shark(self.allsprites, scene, self.width, self.height)
         self.allsprites.add(self.shark)
@@ -584,21 +583,21 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
         self.elephant_active = False
         self.elephant.animate(self.total_time)
 
-        #make the shark leave
+        # make the shark leave
         self.shark_active = False
         self.shark.last_animation = 0
         self.shark.dirty = True
 
-        if self.shark.get_state() in ('aiming', 'fire laser'):
+        if self.shark.get_state() in ("aiming", "fire laser"):
             self.shark.just_happened = None
-            self.shark.set_state('leaving')
+            self.shark.set_state("leaving")
             self.shark.applaud = False
         else:
             self.shark.just_happened = None
-            self.shark.set_state('offscreen')
+            self.shark.set_state("offscreen")
             self.shark.animate(self.total_time)
 
-        sfx('shark_appear.ogg', fadeout=1000)
+        sfx("shark_appear.ogg", fadeout=1000)
 
         if self.shark.lazer:
             self.shark.lazer.kill()
@@ -619,14 +618,15 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
         if self.player_data.score > 35:
             self.number_of_not_fish = 3
         if self.player_data.score >= 50:
-            self.number_of_not_fish = int((self.player_data.score - 20)/10)
+            self.number_of_not_fish = int((self.player_data.score - 20) / 10)
 
         if self.player_data.score >= 10:
             self.shark_active = True
 
         # Elephant doesn't work yet, so let's not use it
-#        if self.player_data.score >= 20:
-#            self.elephant_active = True
+
+    #        if self.player_data.score >= 20:
+    #            self.elephant_active = True
 
     def annoy_crowd(self):
         """ Annoy the crowd."""
@@ -636,9 +636,9 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
     def render_sprites(self):
         """ Render the sprites."""
         rects = []
-        self.allsprites.update(time_delta=self.dt_scaled,
-                               height=self.height,
-                               player_data=self.player_data)
+        self.allsprites.update(
+            time_delta=self.dt_scaled, height=self.height, player_data=self.player_data
+        )
         rects.extend(self.allsprites.draw(self.screen))
         return rects
 
@@ -655,30 +655,41 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
 
         self.cat.animate(time_delta)
 
-        self.total_time += time_delta #keep track of the total number of ms passed during the game
-        dt_scaled = time_delta/17
+        self.total_time += (
+            time_delta  # keep track of the total number of ms passed during the game
+        )
+        dt_scaled = time_delta / 17
         self.dt_scaled = dt_scaled
         width, height = self.width, self.height
 
         ##cat physics
-        self.player_data.cat_angular_vel *= 0.9**dt_scaled #max(0.9/(max(0.1,dt_scaled)),0.999)
+        self.player_data.cat_angular_vel *= (
+            0.9 ** dt_scaled
+        )  # max(0.9/(max(0.1,dt_scaled)),0.999)
 
-        #make the cat slide in the direction it's rotated
-        self.player_data.cat_speed[0] += math.sin(self.player_data.cat_angle) * (dt_scaled * self.player_data.cat_roll_speed)
+        # make the cat slide in the direction it's rotated
+        self.player_data.cat_speed[0] += math.sin(self.player_data.cat_angle) * (
+            dt_scaled * self.player_data.cat_roll_speed
+        )
 
         # add gravity
-        self.player_data.cat_speed[1] = min(self.player_data.cat_speed[1] + (1 * dt_scaled), self.player_data.cat_fall_speed_max)
+        self.player_data.cat_speed[1] = min(
+            self.player_data.cat_speed[1] + (1 * dt_scaled),
+            self.player_data.cat_fall_speed_max,
+        )
 
-        self.unicycle_sound.set_volume(abs(self.player_data.cat_speed[0] / self.player_data.cat_speed_max))
+        self.unicycle_sound.set_volume(
+            abs(self.player_data.cat_speed[0] / self.player_data.cat_speed_max)
+        )
 
         self._move_cat()
         self._cat_out_of_bounds()
 
-        #check for collision with the elephant stomp
+        # check for collision with the elephant stomp
         if self.elephant_active:
             self.elephant.animate(self.total_time)
             self.elephant.collide(width)
-        if self.shark_active or self.shark.states[self.shark.state] == 'leaving':
+        if self.shark_active or self.shark.states[self.shark.state] == "leaving":
             self.shark.animate(self.total_time)
             self.shark.collide(self, width, height, self.player_data.cat_location)
 
@@ -694,13 +705,15 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
         # accelerate the cat left or right
         if self.right_pressed:
             self.player_data.cat_speed[0] = min(
-                self.player_data.cat_speed[0] + 0.3 * self.dt_scaled, self.player_data.cat_speed_max
+                self.player_data.cat_speed[0] + 0.3 * self.dt_scaled,
+                self.player_data.cat_speed_max,
             )
             self.player_data.cat_angle -= 0.003 * self.dt_scaled
 
         if self.left_pressed:
             self.player_data.cat_speed[0] = max(
-                self.player_data.cat_speed[0] - 0.3 * self.dt_scaled, -self.player_data.cat_speed_max
+                self.player_data.cat_speed[0] - 0.3 * self.dt_scaled,
+                -self.player_data.cat_speed_max,
             )
             self.player_data.cat_angle += 0.003 * self.dt_scaled
 
@@ -708,14 +721,24 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
         angle_sign = 1 if self.player_data.cat_angle > 0 else -1
         self.player_data.cat_angular_vel += 0.0002 * angle_sign * self.dt_scaled
         self.player_data.cat_angle += self.player_data.cat_angular_vel * self.dt_scaled
-        if (self.player_data.cat_angle > math.pi / 2 or self.player_data.cat_angle < -math.pi / 2) and self.player_data.cat_location[1] > self.height - 160:
-            sfx('cat_crash.ogg', play=1)
+        if (
+            self.player_data.cat_angle > math.pi / 2
+            or self.player_data.cat_angle < -math.pi / 2
+        ) and self.player_data.cat_location[1] > self.height - 160:
+            sfx("cat_crash.ogg", play=1)
             self.reset_on_death()
 
         # move cat
-        self.player_data.cat_location[0] += self.player_data.cat_speed[0] * self.dt_scaled
-        self.player_data.cat_location[1] += self.player_data.cat_speed[1] * self.dt_scaled
-        if self.player_data.cat_location[1] > self.player_data.cat_wire_height and self.player_data.cat_location[0] > 0.25 * self.width:
+        self.player_data.cat_location[0] += (
+            self.player_data.cat_speed[0] * self.dt_scaled
+        )
+        self.player_data.cat_location[1] += (
+            self.player_data.cat_speed[1] * self.dt_scaled
+        )
+        if (
+            self.player_data.cat_location[1] > self.player_data.cat_wire_height
+            and self.player_data.cat_location[0] > 0.25 * self.width
+        ):
             self.touching_ground = True
             self.player_data.cat_location[1] = self.player_data.cat_wire_height
             self.player_data.cat_speed[1] = 0
@@ -727,7 +750,7 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
 
         # in the pool
         if self.player_data.cat_location[1] > self.height:
-            sfx('splash.ogg', play=1)
+            sfx("splash.ogg", play=1)
             self._meow()
             self.reset_on_death()
 
@@ -738,25 +761,41 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
                 self.player_data.cat_angle *= 0.7
 
         self.player_data.cat_head_location = [
-            int(self.player_data.cat_location[0] + 100 * math.cos(self.player_data.cat_angle - math.pi / 2)),
-            int(self.player_data.cat_location[1] + 100 * math.sin(self.player_data.cat_angle - math.pi / 2)),
+            int(
+                self.player_data.cat_location[0]
+                + 100 * math.cos(self.player_data.cat_angle - math.pi / 2)
+            ),
+            int(
+                self.player_data.cat_location[1]
+                + 100 * math.sin(self.player_data.cat_angle - math.pi / 2)
+            ),
         ]
 
-        if self.player_data.cat_location[0] > 0.98 * self.width and self.player_data.cat_location[1] > self.player_data.cat_wire_height - 30:
-            #bump the cat back in
+        if (
+            self.player_data.cat_location[0] > 0.98 * self.width
+            and self.player_data.cat_location[1] > self.player_data.cat_wire_height - 30
+        ):
+            # bump the cat back in
             self._meow()
             sfx(random.choice(self.boing_names), play=True)
             self.player_data.cat_angular_vel -= 0.01 * self.dt_scaled
             self.player_data.cat_speed[0] = -5
             self.player_data.cat_speed[1] = -20
-            #self.reset_on_death()
-        if self.player_data.cat_location[0] < 0.25 * self.width and self.player_data.cat_location[1] > self.player_data.cat_wire_height - 30:
+            # self.reset_on_death()
+        if (
+            self.player_data.cat_location[0] < 0.25 * self.width
+            and self.player_data.cat_location[1] > self.player_data.cat_wire_height - 30
+        ):
             pass
 
     def _cat_jumping(self, time_delta):
         """jumping physics"""
         if self.jumping:
-            self.player_data.cat_speed[1] -= time_delta * ((CAT_MAX_JUMPING_TIME - self.jumping_time) / CAT_MAX_JUMPING_TIME) * CAT_JUMP_SPEED
+            self.player_data.cat_speed[1] -= (
+                time_delta
+                * ((CAT_MAX_JUMPING_TIME - self.jumping_time) / CAT_MAX_JUMPING_TIME)
+                * CAT_JUMP_SPEED
+            )
             self.jumping_time += time_delta
             if self.jumping_time >= CAT_MAX_JUMPING_TIME:
                 self.jumping = False
@@ -789,13 +828,13 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
         for fish in reversed(self.fish.sprites()):
             fish.pos[0] += fish.velocity[0] * dt_scaled  # speed of the throw
             fish.velocity[1] += 0.2 * dt_scaled  # gravity
-            fish.pos[1] += fish.velocity[1] * dt_scaled # y velocity
+            fish.pos[1] += fish.velocity[1] * dt_scaled  # y velocity
             # check out of bounds
             if fish.pos[1] > height:
                 self.fish.remove(fish)
                 fish.kill()
         for fish in reversed(self.not_fish.sprites()):
-            fish.pos[0] += fish.velocity[0] * dt_scaled # speed of the throw
+            fish.pos[0] += fish.velocity[0] * dt_scaled  # speed of the throw
             fish.velocity[1] += 0.2 * dt_scaled  # gravity
             fish.pos[1] += fish.velocity[1] * dt_scaled  # y velocity
             # check out of bounds
@@ -805,13 +844,23 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
 
         # check collision with the cat
         for fish in reversed(self.fish.sprites()):
-            if distance([fish.rect[0], fish.rect[1]], self.player_data.cat_head_location) < 100:
+            if (
+                distance(
+                    [fish.rect[0], fish.rect[1]], self.player_data.cat_head_location
+                )
+                < 100
+            ):
                 self.player_data.increment_score()
                 self.fish.remove(fish)
-                sfx('eatfish.ogg', play=1)
+                sfx("eatfish.ogg", play=1)
                 fish.kill()
         for fish in reversed(self.not_fish.sprites()):
-            if distance([fish.rect[0], fish.rect[1]], self.player_data.cat_head_location) < 50:
+            if (
+                distance(
+                    [fish.rect[0], fish.rect[1]], self.player_data.cat_head_location
+                )
+                < 50
+            ):
                 self.not_fish.remove(fish)
                 fish.kill()
                 self.player_data.angle_to_not_fish = (
@@ -834,15 +883,17 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
             # choose a side of the screen
             if random.choice([0, 1]) == 0:
                 self.fish.append(
-                    Fish(self.allsprites,
-                        (0, height / 2),#random.randint(0, height / 2),
+                    Fish(
+                        self.allsprites,
+                        (0, height / 2),  # random.randint(0, height / 2),
                         (random.randint(3, 7), -random.randint(5, 12)),
                     )
                 )
             else:
                 self.fish.append(
-                    Fish(self.allsprites,
-                        (width, height / 2),#random.randint(0, height / 2),
+                    Fish(
+                        self.allsprites,
+                        (width, height / 2),  # random.randint(0, height / 2),
                         (-random.randint(3, 7), -random.randint(5, 12)),
                     )
                 )
@@ -858,10 +909,11 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
             velocity_multiplier *= -1
             x_pos = self.width
         self.not_fish.append(
-                NotFish(self.allsprites,
-                    (x_pos, self.height / 2),
-                    (random.randint(3, 7) * velocity_multiplier, -random.randint(5, 12)),
-                )
+            NotFish(
+                self.allsprites,
+                (x_pos, self.height / 2),
+                (random.randint(3, 7) * velocity_multiplier, -random.randint(5, 12)),
+            )
         )
 
     def _start_jump(self, key):
@@ -870,18 +922,21 @@ class CatUniScene(Scene):#pylint:disable=too-many-instance-attributes
             self.jumping = True
             self.jumping_time = 0
             self.player_data.cat_speed[1] -= 12.5
-            sfx('cat_jump.ogg', play=1)
+            sfx("cat_jump.ogg", play=1)
 
     def _stop_jump(self):
         self.jumping = False
-        sfx('cat_jump.ogg', fadeout=50)
+        sfx("cat_jump.ogg", fadeout=50)
 
     def _tilt_left(self):
-        self.player_data.cat_angular_vel -= random.uniform(0.01 * math.pi, 0.03 * math.pi)
+        self.player_data.cat_angular_vel -= random.uniform(
+            0.01 * math.pi, 0.03 * math.pi
+        )
 
     def _tilt_right(self):
-        self.player_data.cat_angular_vel += random.uniform(0.01 * math.pi, 0.03 * math.pi)
-
+        self.player_data.cat_angular_vel += random.uniform(
+            0.01 * math.pi, 0.03 * math.pi
+        )
 
     def _event_keydown(self, event):
         if event.key == pygame.K_RIGHT:
