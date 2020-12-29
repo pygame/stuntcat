@@ -10,19 +10,16 @@
 "My first cat was named Speedy. Because when he went into one of those crazy dashes across the house, he'd run all along the backrest of the couch, like one of those motorcycle stuntperson.
 On a near-vertical surface."
 
-* repo: [https://github.com/pygame/stuntcat](https://github.com/pygame/stuntcat)
-* [discord web chat](https://discordapp.com/invite/r8yreB6) #communitygame channel.
+* github repo: [https://github.com/pygame/stuntcat](https://github.com/pygame/stuntcat)
 
+This was originally an experiment in having the whole pygame community being invited to take part. In making this one game. In 4 days. [More info here](https://renesd.blogspot.com/2018/11/first-pygame-2-community-game-starting.html) It was meant to help drive pygame 2 development, making a game with pygame 2. Since then a few people have improved things. It's still meant to be used to develop pygame features and be an example game.
 
-To help drive pygame 2 development, we are making a game with pygame 2.
-
-The whole pygame community is invited to take part. In making this one game. In 4 days.
-
-[More info here](https://renesd.blogspot.com/2018/11/first-pygame-2-community-game-starting.html)
-
+See the [stuntcat release notes](https://github.com/pygame/stuntcat/releases) for details on what has changed.
 
 
 ## Get started
+
+For development you can start like this:
 
 ```
 python3 -m venv venv
@@ -31,31 +28,33 @@ pip install -r requirements.dev.txt
 python run_game.py
 ```
 
+For playing you could install it with `python3 -m pip install stuntcat`, or download an executable from the [stuntcat releases](https://github.com/pygame/stuntcat/releases) page.
+
+
 
 ## The team:
 
-* bitcraft - "I hope I can contribute, but my work schedule is awful". pyscroll, pytmx libraries.
-
-* blubberquark - "Anyway, I would love to work on some kind of async networking or server features
-Twitch/IRC integration, leaderboards, Discord...""
-
-* Bottersnake - snäke library. "In fact, I have a a load of frees today so I'll probably whip up all the boilerplate needed to make everything else quicker to write."
-
-* claudeb - "My first cat was named Speedy. Because when he went into one of those crazy dashes across the house"
-
-* dirk0 - "Unfortunately I am terribly busy right now, but I could contribute music and Mac OSX compilation/testing, if needed."
-
-* illume - fixes to pygame 2, any general thing that needs doing.
-
-* Kuba | ThePolish - "pm me if you need sfx and/or music"
+* @illume - "fixes to pygame 2, any general thing that needs doing.""
 
 * TJWhale - "Hey, I'm interested in helping with this community game if I can :) I've got some experience with pygame, I actually lanched a game on steam with it"
 
-* *** - writing
+* @nachomonkey - "This update focuses primarily on fixing bugs and adding sounds."
 
-* hfoxp - "Im interested in helping. Im still learning pygame but I would still love to be involved. Will be fun and a good learning experience"
+* @MyreMylar - "Investigating this issue here, I thought I'd start by clearing the pylint output of as much as I could."
 
-* xeno - I tried drawing a cat, it looks weird.
+* bitcraft - "I hope I can contribute, but my work schedule is awful". pyscroll, pytmx libraries.
+
+* Bottersnake - snäke library. "In fact, I have a a load of frees today so I'll probably whip up all the boilerplate needed to make everything else quicker to write."
+
+* @dirk0 - "Unfortunately I am terribly busy right now, but I could contribute music and Mac OSX compilation/testing, if needed."
+
+* M - "¡Gatito!" music, sound effects, game design, and graphics.
+
+* @xeno - "I tried drawing a cat, it looks weird."
+
+* @kleinesfilmroellchen
+
+
 
 
 ## Awesome libraries
