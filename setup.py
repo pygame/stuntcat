@@ -1,7 +1,7 @@
-from setuptools import setup, find_packages
-import os
-
 import sys
+import os
+from setuptools import setup, find_packages
+from stuntcat import __version__
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -100,12 +100,12 @@ setup(
         "thorpy",
         "pymunk>=5.4.2",
     ],
+    version=__version__,
     extras_require={
         ':python_version < "3.5"': [
             'typing',
         ],
     },
-    version='0.0.19',
     entry_points={
         'console_scripts': [
             'stuntcat=stuntcat.cli:main',

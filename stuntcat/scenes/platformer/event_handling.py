@@ -18,15 +18,15 @@ class EventQueueHandler:
         self._inputs[0].append(KeyboardInput())
         self._inputs[0].append(GamepadInput())
 
-    def process_event(self, pg_event):
+    def process_event(self, event):
         """
         Process pygame events.
 
-        :param pg_event: The event to process.
+        :param event: The event to process.
         """
         for _, inputs in self._inputs.items():
             for player_input in inputs:
-                player_input.process_event(pg_event)
+                player_input.process_event(event)
 
         for _, inputs in self._inputs.items():
             for player_input in inputs:
@@ -89,11 +89,11 @@ class EventHandler:
     def __repr__(self):
         print(self.event_map)
 
-    def process_event(self, pg_event):
+    def process_event(self, event):
         """
         Process pygame events.
 
-        :param pg_event: The event to process.
+        :param event: The event to process.
         """
         raise NotImplementedError
 
@@ -166,40 +166,40 @@ class GamepadInput(EventHandler):
         for index in range(pg.joystick.get_count()):
             pg.joystick.Joystick(index).init()
 
-    def process_event(self, pg_event):
+    def process_event(self, event):
         """
         Process a joystick/game controller event.
 
-        :param pg_event: The event to process.
+        :param event: The event to process.
         """
-        self.check_button(pg_event)
-        self.check_hat(pg_event)
-        self.check_axis(pg_event)
+        self.check_button(event)
+        self.check_hat(event)
+        self.check_axis(event)
 
-    def check_button(self, pg_event):
+    def check_button(self, event):
         """
         Check joystick button event.
 
-        :param pg_event: The event to check.
+        :param event: The event to check.
         """
         try:
-            button = self.event_map[pg_event.button]
-            if pg_event.type == pg.JOYBUTTONDOWN:
+            button = self.event_map[event.button]
+            if event.type == pg.JOYBUTTONDOWN:
                 self.press(button)
-            elif pg_event.type == pg.JOYBUTTONUP:
+            elif event.type == pg.JOYBUTTONUP:
                 self.release(button)
         except (KeyError, AttributeError):
             pass
 
-    def check_hat(self, pg_event):
+    def check_hat(self, event):
         """
         Check joystick hat event.
 
-        :param pg_event: The event to check.
+        :param event: The event to check.
         """
-        if pg_event.type != pg.JOYHATMOTION:
+        if event.type != pg.JOYHATMOTION:
             return
-        hat_x, hat_y = pg_event.value
+        hat_x, hat_y = event.value
         if hat_x == -1:
             self.press(actions.LEFT, value=hat_x * -1)
         elif hat_x == 0:
@@ -216,17 +216,17 @@ class GamepadInput(EventHandler):
         elif hat_y == 1:
             self.press(actions.UP)
 
-    def check_axis(self, pg_event):
+    def check_axis(self, event):
         """
         Check joystick axis motion event.
 
-        :param pg_event: The event to check.
+        :param event: The event to check.
         """
-        if pg_event.type != pg.JOYAXISMOTION:
+        if event.type != pg.JOYAXISMOTION:
             return
-        value = pg_event.value
+        value = event.value
 
-        if pg_event.axis == 0:
+        if event.axis == 0:
             if abs(value) >= self.deadzone:
                 if value < 0:
                     self.press(actions.LEFT, value * -1)
@@ -236,7 +236,7 @@ class GamepadInput(EventHandler):
                 self.release(actions.LEFT)
                 self.release(actions.RIGHT)
 
-        elif pg_event.axis == 1:
+        elif event.axis == 1:
             if abs(value) >= self.deadzone:
                 if value < 0:
                     self.press(actions.UP, value * -1)
@@ -263,19 +263,19 @@ class KeyboardInput(EventHandler):
         None: actions.UNICODE,
     }
 
-    def process_event(self, pg_event):
+    def process_event(self, event):
         """
         Translate a pg event to an internal game event
 
-        :type pg_event: pg.event.Event
+        :type event: pg.event.Event
         """
-        pressed = pg_event.type == pg.KEYDOWN
-        released = pg_event.type == pg.KEYUP
+        pressed = event.type == pg.KEYDOWN
+        released = event.type == pg.KEYUP
 
         if pressed or released:
             # try to get game-specific action for the key
             try:
-                button = self.event_map[pg_event.key]
+                button = self.event_map[event.key]
             except KeyError:
                 pass
             else:
@@ -289,6 +289,6 @@ class KeyboardInput(EventHandler):
             try:
                 self.release(actions.UNICODE)
                 if pressed:
-                    self.press(actions.UNICODE, pg_event.unicode)
+                    self.press(actions.UNICODE, event.unicode)
             except AttributeError:
                 pass

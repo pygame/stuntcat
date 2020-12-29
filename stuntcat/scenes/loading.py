@@ -1,7 +1,6 @@
 """
 Loading module.
 """
-
 import pygame as pg
 
 from .scene import Scene
@@ -17,9 +16,8 @@ class LoadingScene(Scene):
 
         # Loading screen should always be a fallback active scene
         self.active = True
-        self.image = gfx('intro_screen.png', convert_alpha=True)
-        self.timer = 0
-        music('ict_0026.ogg', play=True)
+        self.image = gfx('intro_screen.png', convert=True)
+        music('mainmenu.ogg', play=True)
 
     def render(self):
         """
@@ -35,9 +33,7 @@ class LoadingScene(Scene):
 
         :param time_delta: The time delta.
         """
-        self.timer += time_delta
-
-        if self.timer > 10000:
+        if not pg.mixer.music.get_busy():
             self.next_scene()
 
     def next_scene(self):
@@ -49,11 +45,15 @@ class LoadingScene(Scene):
         self.active = False
         music(stop=True)
 
-    def event(self, pg_event):
+    def event(self, event):
         """
         Process a pygame event.
 
-        :param pg_event: The event to process.
+        :param event: The event to process.
         """
-        if pg_event.type == pg.KEYDOWN:
+        if event.type == pg.KEYDOWN and event.key in (pg.K_RETURN, pg.K_SPACE):
+            self.next_scene()
+        elif event.type == pg.MOUSEBUTTONDOWN:
+            self.next_scene()
+        elif event.type == pg.JOYBUTTONDOWN and event.button in (0, 1):
             self.next_scene()

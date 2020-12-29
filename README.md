@@ -2,9 +2,10 @@
 
 # 🐱‍🏍 — the first pygame 2 community game. Starting now! Are you in?
 
+<img src="docs/stuntcat.svg" style="zoom:200%;" />
+
 
 ![Alt text](docs/gameplay.gif?raw=true "Stuntcat")
-
 
 "My first cat was named Speedy. Because when he went into one of those crazy dashes across the house, he'd run all along the backrest of the couch, like one of those motorcycle stuntperson.
 On a near-vertical surface."
@@ -21,7 +22,7 @@ The whole pygame community is invited to take part. In making this one game. In 
 
 
 
-## Get started.
+## Get started
 
 ```
 python3 -m venv venv
@@ -31,7 +32,7 @@ python run_game.py
 ```
 
 
-## The team.
+## The team:
 
 * bitcraft - "I hope I can contribute, but my work schedule is awful". pyscroll, pytmx libraries.
 
@@ -57,8 +58,6 @@ Twitch/IRC integration, leaderboards, Discord...""
 * xeno - I tried drawing a cat, it looks weird.
 
 
-
-
 ## Awesome libraries
 
 Apart from pygame 2 we are going to try using some awesome libraries.
@@ -72,60 +71,54 @@ Apart from pygame 2 we are going to try using some awesome libraries.
 * [pytest](https://docs.pytest.org/en/latest/) - our game will have some tests.
 * ... other?
 
+### pygame compatibility
 
-## pygame 2 compilation
-
-The game should also work with pygame 1.9.4+, but this game is about using pygame 2.
-
-So...
-
-For now compiling pygame 2 from source is needed (hopefully not by the end of things).
-
-- [Ubuntu](http://www.pygame.org/wiki/CompileUbuntu#pygame%20with%20sdl2%20(alpha))
-- [Mac](https://www.pygame.org/wiki/MacCompile#pygame%20with%20sdl2)
-- [Windows](https://www.pygame.org/wiki/CompileWindows) (incomplete instructions)
+This game works with pygame 1.9.4+ and pygame 2
 
 
-### Running tests.
+### Running tests
 
 Tests can be found in the tests/ folder.
 
 Type `pytest`.
 Or run `python -m tox`
 
-Tests are run on mac, linux, windows when there is a pull request made.
+Tests are run on Mac, Linux, Windows when there is a pull request made.
 
-### releasing
+### Releasing
 
-Releasing is tested with python3.7(not python2 or any other version).
+Releasing is tested with python3.7 (not python2 or any other version).
 
-To the python package index (pypi).
+To the python package index (PyPI).
 ```
 rm -rf dist/*
 python setup.py sdist bdist_wheel
 twine upload dist/*
 ```
 
-On windows:
+On Windows:
 ```
 python setup.py bdist_msi
 dir build/*.msi
 ```
 
-On mac:
+On Mac:
 ```
 python setup.py bdist_dmg
 ls build/*.dmg
 ```
 
-### Making gif.
+### Recording gif animations
 
-Uncomment the game.py line. Then press g to start recording, g to stop.
-```python
-        # self.gifmaker = GifMaker()
+Run the game with the argument `-g`:
+
+```bash
+python run_game.py -g
 ```
 
-Requires imagemagic tested on OSX, probably works on linux.
+Press G to start recording two seconds of footage.
+
+Requires imagemagick. Tested on OSX and Linux.
 
 
 ## Licenses
@@ -137,11 +130,14 @@ License for code will be the same as the pygame license (LGPL, but you can keep 
 
 #### Art assets
 
-https://creativecommons.org/licenses/by-sa/4.0/
+https://creativecommons.org/licenses/by-sa/4.0/legalcode
 https://creativecommons.org/2015/10/08/cc-by-sa-4-0-now-one-way-compatible-with-gplv3/
 
 - @AokiAhishatsu stuntcat/data/images/
-- @dirkk0 stuntcat/data/sounds/ict_0026.ogg
 - M. other stuntcat/data/sounds/
+
+#### Other assets
+
+- stuntcat/data/sound/boo.ogg: [Crowd booing sound](https://freesound.org/people/tim.kahn/sounds/336997/), licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/legalcode)
 
 So technically anyone should be able to distribute the game following those licenses (and even sell it).

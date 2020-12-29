@@ -6,8 +6,8 @@ from os.path import join as path_join
 
 import pymunk
 import pytmx
-import pygame.mixer
 
+import pygame.mixer
 from pygame import Rect
 from pygame.sprite import LayeredUpdates
 
@@ -45,9 +45,7 @@ class PlatformerScene(Scene):
         super().__init__(game)
         self.player = None
         self.active = True
-
         self.fsm = None
-
         self.space = pymunk.Space()
         self.space.gravity = (0, 1000)
         self.sprites = LayeredUpdates()
@@ -142,18 +140,18 @@ class PlatformerScene(Scene):
             self.space.step(step_amount)
         self.sprites.update(time_delta=time_delta)
 
-    def event(self, pg_event):
+    def event(self, event):
         """
         Process an event.
 
-        :param pg_event: The event to process
+        :param event: The event to process
         """
-        events = self.event_handler.process_event(pg_event)
+        events = self.event_handler.process_event(event)
         position = self.player.position
 
-        for event in events:
+        for evt in events:
             try:
-                cmd, arg = self.fsm((event.button, event.held))
+                cmd, arg = self.fsm((evt.button, evt.held))
             except ValueError:
                 continue
 

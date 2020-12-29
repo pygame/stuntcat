@@ -8,7 +8,7 @@ from typing import List
 try:
     import pygame
 except ImportError as exc:
-    raise ImportError("Cannot import pygame, install version 1.9.4 or higher") from exc
+    raise ImportError("Cannot import pygame, install version 1.9.4 or higher") #pylint:disable=raise-missing-from
 
 
 from stuntcat.scenes import Scene
@@ -36,6 +36,13 @@ class Game:
         pygame.display.set_caption("A + D keys: lean left/right. Arrow keys left/right:"
                                    " move left/right. Catch fish. Avoid: shark, lazers,"
                                    " elephant stomps.")
+
+        try:
+            joy = pygame.joystick.Joystick(0)
+            joy.init()
+            print("Found joystick: ", joy.get_name())
+        except pygame.error:
+            pass
 
         self.running = True
 
