@@ -73,28 +73,6 @@ class Score(DirtySprite):
             self._update_rect()
         self.last_score = self.score_holder.player_data.score
 
-
-class DeadZone(DirtySprite):
-    """
-    Dead Zone class.
-    """
-
-    def __init__(self, points):
-        """
-        score_holder has a 'score' attrib.
-        """
-        DirtySprite.__init__(self)
-        zone_color = [255, 0, 0]
-
-        # draw dead zones
-        surf = pygame.display.get_surface()
-        rect = pygame.draw.polygon(surf, zone_color, points)
-        self.image = surf.subsurface(rect.clip(surf.get_rect())).copy()
-        self.rect = self.image.get_rect()
-        self.rect.x = rect.x
-        self.rect.y = rect.y
-
-
 class PlayerData:
     """
     Data about the player that gets passed around a lot at the minute.
