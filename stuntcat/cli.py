@@ -4,13 +4,6 @@ import os
 import sys
 import traceback
 
-if sys.version_info[0] >= 3:
-    import tkinter as tk
-    from tkinter.messagebox import showerror
-else:
-    import Tkinter as tk
-    from tkMessageBox import showerror  # pylint: disable=import-error
-
 LOCAL_PATH = os.path.abspath(os.path.dirname(__file__))
 
 # What was this trying to do?
@@ -152,6 +145,14 @@ class Cli:
 
     @staticmethod
     def __tkinterbox(title, message):
+        #pylint: disable=import-outside-toplevel, import-error
+        if sys.version_info[0] >= 3:
+            import tkinter as tk
+            from tkinter.messagebox import showerror
+        else:
+            import Tkinter as tk
+            from tkMessageBox import showerror
+
         tk.Tk().wm_withdraw()
         showerror(title, message)
 
