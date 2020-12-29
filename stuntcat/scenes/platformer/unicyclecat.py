@@ -20,10 +20,11 @@ class CatModel(model.UprightModel):
     """
     Cat model class.
     """
+
     def __init__(self):
         super().__init__()
         self.normal_rect = pygame.Rect(0, 0, 32, 40)
-        self.model_data['move_power'] = 10
+        self.model_data["move_power"] = 10
 
         self.feet = None  # type: Optional[pymunk.Body]
 
@@ -37,7 +38,7 @@ class CatModel(model.UprightModel):
         :param feet_shape: The shape of the feet.
         :return: The feet position
         """
-        return position[0], position[1] - feet_shape.radius * .7
+        return position[0], position[1] - feet_shape.radius * 0.7
 
 
 def make_hitbox(body, rect):
@@ -91,8 +92,9 @@ def build(space, group):
     seat_body = build_seat(filter1, normal_rect, pymunk_objects, sprites)
 
     # build feet
-    cat_model.feet, feet_sprite = build_feet(filter1, normal_rect,
-                                             pymunk_objects, body_body, seat_body)
+    cat_model.feet, feet_sprite = build_feet(
+        filter1, normal_rect, pymunk_objects, body_body, seat_body
+    )
     sprites.append(feet_sprite)
 
     # Add motor
@@ -103,8 +105,9 @@ def build(space, group):
     cat_body, cat_rect = build_cat(normal_rect, pymunk_objects, sprites)
 
     # hold cat the the seat
-    spring = pymunk.DampedSpring(seat_body, cat_body, normal_rect.midtop,
-                                 cat_rect.midbottom, 0, 1, 0)
+    spring = pymunk.DampedSpring(
+        seat_body, cat_body, normal_rect.midtop, cat_rect.midbottom, 0, 1, 0
+    )
     pymunk_objects.append(spring)
 
     # tilt corrector
@@ -121,10 +124,11 @@ def build(space, group):
     return cat_model
 
 
-def build_cat(normal_rect,     # type: pygame.Rect
-              pymunk_objects,  # type: List[Any]
-              sprites,         # type: List[ShapeSprite]
-              ):
+def build_cat(
+    normal_rect,  # type: pygame.Rect
+    pymunk_objects,  # type: List[Any]
+    sprites,  # type: List[ShapeSprite]
+):
     # type: (...) -> Tuple[pymunk.Body, pygame.Rect]
     """
     Build the cat.
@@ -141,7 +145,7 @@ def build_cat(normal_rect,     # type: pygame.Rect
     cat_shape = make_hitbox(cat_body, cat_rect)
     cat_body.position = normal_rect.x, normal_rect.y - cat_rect.height - 10
     cat_shape.mass = 0.001
-    cat_shape.elasticity = .1
+    cat_shape.elasticity = 0.1
     cat_shape.friction = 10.0
     cat_shape.filter = pymunk.ShapeFilter(group=0b000010)
     cat_sprite = ShapeSprite(cat_surface, cat_shape, 1.5)
@@ -152,12 +156,13 @@ def build_cat(normal_rect,     # type: pygame.Rect
     return cat_body, cat_rect
 
 
-def build_feet(filter1,         # type: pymunk.ShapeFilter
-               normal_rect,     # type: pygame.Rect
-               pymunk_objects,  # type: List[Any]
-               body_body,       # type: pymunk.Body
-               seat_body        # type: pymunk.Body
-               ):
+def build_feet(
+    filter1,  # type: pymunk.ShapeFilter
+    normal_rect,  # type: pygame.Rect
+    pymunk_objects,  # type: List[Any]
+    body_body,  # type: pymunk.Body
+    seat_body,  # type: pymunk.Body
+):
     # type: (...) -> Tuple[pymunk.Body, pygame.Sprite]
     """
     Builds our unicycle cat's feet.
@@ -168,15 +173,16 @@ def build_feet(filter1,         # type: pymunk.ShapeFilter
     :param body_body: The cat's body Pymunk.Body.
     :param seat_body: The unicycle seat's Pymunk.Body.
     """
-    radius = normal_rect.width * .55
+    radius = normal_rect.width * 0.55
     feet_body = pymunk.Body()
     feet_shape = pymunk.Circle(feet_body, radius, (0, 0))
     feet_shape.mass = 1
     feet_shape.elasticity = 0
     feet_shape.friction = 100
     feet_shape.filter = filter1
-    feet_sprite = ShapeSprite(resources.gfx("wheel.png", convert_alpha=True),
-                              feet_shape)
+    feet_sprite = ShapeSprite(
+        resources.gfx("wheel.png", convert_alpha=True), feet_shape
+    )
     feet_sprite.layer = 0
 
     pymunk_objects.append(feet_body)
@@ -186,24 +192,23 @@ def build_feet(filter1,         # type: pymunk.ShapeFilter
     feet_body.position = normal_rect.midbottom
 
     # motor and joints for feet
-    joint = pymunk.PivotJoint(body_body,
-                              feet_body,
-                              (normal_rect.centerx, normal_rect.bottom - 10),
-                              (0, 0))
+    joint = pymunk.PivotJoint(
+        body_body, feet_body, (normal_rect.centerx, normal_rect.bottom - 10), (0, 0)
+    )
     pymunk_objects.append(joint)
-    joint = pymunk.PivotJoint(seat_body,
-                              feet_body,
-                              (normal_rect.centerx, normal_rect.bottom - 10),
-                              (0, 0))
+    joint = pymunk.PivotJoint(
+        seat_body, feet_body, (normal_rect.centerx, normal_rect.bottom - 10), (0, 0)
+    )
     pymunk_objects.append(joint)
     return feet_body, feet_sprite
 
 
-def build_seat(filter1,         # type: pymunk.ShapeFilter
-               normal_rect,     # type: pygame.Rect
-               pymunk_objects,  # type: List[Any]
-               sprites          # type: List[ShapeSprite]
-               ):
+def build_seat(
+    filter1,  # type: pymunk.ShapeFilter
+    normal_rect,  # type: pygame.Rect
+    pymunk_objects,  # type: List[Any]
+    sprites,  # type: List[ShapeSprite]
+):
     # type: (...) -> pymunk.Body
     """
     Builds our unicycle cat's unicycle seat.
@@ -217,12 +222,11 @@ def build_seat(filter1,         # type: pymunk.ShapeFilter
     seat_body.center_of_gravity = normal_rect.midbottom
     seat_body.position = normal_rect.topleft
     seat_shape = make_hitbox(seat_body, normal_rect)
-    seat_shape.mass = .5
+    seat_shape.mass = 0.5
     seat_shape.elasticity = 0
     seat_shape.friction = 2
     seat_shape.filter = filter1
-    seat_sprite = ShapeSprite(resources.gfx("seat.png", convert_alpha=True),
-                              seat_shape)
+    seat_sprite = ShapeSprite(resources.gfx("seat.png", convert_alpha=True), seat_shape)
     seat_sprite.layer = 1
     sprites.append(seat_sprite)
     pymunk_objects.append(seat_body)

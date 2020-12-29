@@ -4,20 +4,21 @@ Loading module.
 import pygame as pg
 
 from .scene import Scene
-from .. resources import gfx, music
+from ..resources import gfx, music
 
 
 class LoadingScene(Scene):
     """
     Loading Scene class.
     """
+
     def __init__(self, *args, **kwargs):
         Scene.__init__(self, *args, **kwargs)
 
         # Loading screen should always be a fallback active scene
         self.active = True
-        self.image = gfx('intro_screen.png', convert=True)
-        music('mainmenu.ogg', play=True)
+        self.image = gfx("intro_screen.png", convert=True)
+        music("mainmenu.ogg", play=True)
 
     def render(self):
         """

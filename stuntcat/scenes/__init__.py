@@ -10,10 +10,12 @@ from .settings import SettingsScene
 from .unisharklazer import CatUniScene
 from .platformer.platformer import PlatformerScene
 
-__all__ = ['Scene',
-           'GameOverScene',
-           'LoadingScene',
-           'NewsScene',
-           'SettingsScene',
-           'CatUniScene',
-           'PlatformerScene']
+__all__ = [
+    "Scene",
+    "GameOverScene",
+    "LoadingScene",
+    "NewsScene",
+    "SettingsScene",
+    "CatUniScene",
+    "PlatformerScene",
+]

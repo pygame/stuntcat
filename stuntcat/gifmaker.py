@@ -30,16 +30,15 @@ import pygame as pg
 
 
 def which(cmd):
-    """ find an executable cmd.
-    """
-    if hasattr(shutil, 'which'):
+    """find an executable cmd."""
+    if hasattr(shutil, "which"):
         return shutil.which(cmd)
 
     return distutils.spawn.find_executable(cmd)
 
 
 class GifMaker:
-    """ For making gif animation of a pygame.
+    """For making gif animation of a pygame.
 
     >>> gifmaker = GifMaker()
     >>> gifmaker.update(events, screen)
@@ -70,7 +69,7 @@ class GifMaker:
 
     def _convert(self, image_paths, output_path):
 
-        convert_path = which('convert')
+        convert_path = which("convert")
         if convert_path is None:
             return False
 
@@ -90,7 +89,7 @@ class GifMaker:
     def _ffmpeg(self, output_path):
         # https://stackoverflow.com/questions/3688870/create-animated-gif-from-a-set-of-jpeg-images
 
-        ffmpeg_path = which('ffmpeg')
+        ffmpeg_path = which("ffmpeg")
         if ffmpeg_path is None:
             return False
 
@@ -110,8 +109,7 @@ class GifMaker:
         return True
 
     def finish(self):
-        """ Called when finished with making the gifs.
-        """
+        """Called when finished with making the gifs."""
         print("saving images for gif")
         output_path = "%s/anim.gif" % self.path
         image_paths = []
@@ -120,9 +118,8 @@ class GifMaker:
             image_paths.append(image_path)
             pg.image.save(surf, image_path)
 
-        if not (self._ffmpeg(output_path)
-                or self._convert(image_paths, output_path)):
-            raise ValueError('could not find convert or ffmpeg')
+        if not (self._ffmpeg(output_path) or self._convert(image_paths, output_path)):
+            raise ValueError("could not find convert or ffmpeg")
 
         for image_path in image_paths:
             os.remove(image_path)
@@ -133,7 +130,7 @@ class GifMaker:
         self.start_saving = False
 
     def update(self, events, screen):
-        """ To integrate with the main program.
+        """To integrate with the main program.
 
         Call it once per frame after drawing is done.
         """
@@ -151,6 +148,8 @@ class GifMaker:
             self.finish()
         if self.start_saving:
             self.surfs.append(screen.copy())
-            if (self.seconds is not None
-                    and time.time() - self.start_saving > self.seconds):
+            if (
+                self.seconds is not None
+                and time.time() - self.start_saving > self.seconds
+            ):
                 self.finish()

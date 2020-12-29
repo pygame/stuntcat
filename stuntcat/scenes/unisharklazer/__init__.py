@@ -39,7 +39,6 @@ class LayeredDirtyAppend(LayeredDirty):
             self.add(sprite)
 
 
-
 SCORE_TEXT_CENTER = (472, 469)
 
 
@@ -72,6 +71,7 @@ class Score(DirtySprite):
             )
             self._update_rect()
         self.last_score = self.score_holder.player_data.score
+
 
 class PlayerData:
     """

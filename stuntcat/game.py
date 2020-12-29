@@ -8,7 +8,9 @@ from typing import List
 try:
     import pygame
 except ImportError as exc:
-    raise ImportError("Cannot import pygame, install version 1.9.4 or higher") #pylint:disable=raise-missing-from
+    raise ImportError( # pylint:disable=raise-missing-from
+        "Cannot import pygame, install version 1.9.4 or higher"
+    )
 
 
 from stuntcat.scenes import Scene
@@ -22,6 +24,7 @@ class Game:
     """
     Game class.
     """
+
     FLAGS = 0
     WIDTH = 960
     HEIGHT = 540
@@ -33,9 +36,11 @@ class Game:
         pygame.font.init()
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), self.FLAGS)
         self.clock = pygame.time.Clock()
-        pygame.display.set_caption("A + D keys: lean left/right. Arrow keys left/right:"
-                                   " move left/right. Catch fish. Avoid: shark, lazers,"
-                                   " elephant stomps.")
+        pygame.display.set_caption(
+            "A + D keys: lean left/right. Arrow keys left/right:"
+            " move left/right. Catch fish. Avoid: shark, lazers,"
+            " elephant stomps."
+        )
 
         try:
             joy = pygame.joystick.Joystick(0)
@@ -75,7 +80,7 @@ class Game:
         self.clock.tick(self.FPS)
 
     def render(self):
-        """ Propagate a render to the highest active scene.
+        """Propagate a render to the highest active scene.
 
         If ascene.propagate_render is True, the render will
             continue to be propagated.
@@ -92,7 +97,7 @@ class Game:
                 rects = ascene.render()
                 if rects is not None:
                     all_rects.extend(rects)
-                if not getattr(ascene, 'propagate_render', False):
+                if not getattr(ascene, "propagate_render", False):
                     break
         # print(all_rects)
         pygame.display.update(all_rects)

@@ -8,6 +8,7 @@ from pygame.sprite import DirtySprite
 
 from stuntcat.resources import gfx, sfx
 
+
 class AnimatedCat(DirtySprite):
     """Handle animations for the cat."""
 

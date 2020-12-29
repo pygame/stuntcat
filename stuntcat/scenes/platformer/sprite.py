@@ -18,6 +18,7 @@ class ShapeSprite(DirtySprite):
     """
     Shape sprite class.
     """
+
     def __init__(self, image=None, shape=None, factor=1.0):
         DirtySprite.__init__(self)
         self.original_image = image
@@ -27,8 +28,10 @@ class ShapeSprite(DirtySprite):
         self.rect = None
         if shape and image:
             bounding_box = shape.cache_bb()
-            size = (int((bounding_box.right - bounding_box.left) * factor),
-                    int((bounding_box.top - bounding_box.bottom) * factor))
+            size = (
+                int((bounding_box.right - bounding_box.left) * factor),
+                int((bounding_box.top - bounding_box.bottom) * factor),
+            )
             self.original_image = smoothscale(image, size)
 
     def update(self, *args, **kwargs):
@@ -53,6 +56,7 @@ class Ball(ShapeSprite):
     """
     Ball class.
     """
+
     def __init__(self, rect):
         ShapeSprite.__init__(self)
 
@@ -61,7 +65,7 @@ class Ball(ShapeSprite):
         body.position = rect.center
         self.shape = Circle(body, radius)
         self.shape.mass = BALL_MASS
-        self.shape.elasticity = .25
+        self.shape.elasticity = 0.25
         self.shape.friction = 1
         self.rect = Rect(0, 0, rect.width, rect.width)
         self.original_image = resources.gfx("yarnball.png", convert_alpha=True)

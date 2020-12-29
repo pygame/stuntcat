@@ -5,4 +5,4 @@ __version__ = "0.2"
 
 from stuntcat import game
 
-__all__ = ['game']
+__all__ = ["game"]

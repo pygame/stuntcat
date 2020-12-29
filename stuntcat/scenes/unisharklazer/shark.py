@@ -7,7 +7,6 @@ from pygame.sprite import DirtySprite, LayeredDirty
 from stuntcat.resources import gfx, sfx, music
 
 
-
 class Lazer(DirtySprite):
     """
     lazer sprite class.
