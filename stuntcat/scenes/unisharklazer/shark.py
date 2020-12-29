@@ -2,7 +2,7 @@
 """
 
 import pygame
-from pygame.sprite import DirtySprite, LayeredDirty
+from pygame.sprite import DirtySprite
 
 from stuntcat.resources import gfx, sfx, music
 
