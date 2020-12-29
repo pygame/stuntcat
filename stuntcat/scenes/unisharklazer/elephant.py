@@ -14,23 +14,25 @@ class ElephantAnimation:
     """
     Handles the elephant animations
     """
+
     def __init__(self):
 
         self.current_state = 0
         self.states = {
-            0: 'offscreen',
-            1: 'poise left',
-            2: 'stomp left',
-            3: 'offscreen',
-            4: 'poise right',
-            5: 'stomp right',
+            0: "offscreen",
+            1: "poise left",
+            2: "stomp left",
+            3: "offscreen",
+            4: "poise right",
+            5: "stomp right",
         }
         self.last_state = 0
 
-        self.action_times = {'between_stomps': 1500,  # ms
-                             'poise': 1500,  # ms
-                             'stomp': 1500  # ms
-                             }
+        self.action_times = {
+            "between_stomps": 1500,  # ms
+            "poise": 1500,  # ms
+            "stomp": 1500,  # ms
+        }
         self.last_animation = 0  # ms
         self.just_happened = None
 
@@ -40,12 +42,16 @@ class ElephantAnimation:
         """
         state = self.states[self.current_state]
         start_state = self.current_state
-        if state == 'offscreen':
-            self.update_single_action(state, total_time, self.action_times["between_stomps"])
-        elif state in ['poise left', 'poise right']:
+        if state == "offscreen":
+            self.update_single_action(
+                state, total_time, self.action_times["between_stomps"]
+            )
+        elif state in ["poise left", "poise right"]:
             self.update_single_action(state, total_time, self.action_times["poise"])
-        elif state in ['stomp left', 'stomp right']:
-            finished = self.update_single_action(state, total_time, self.action_times["stomp"])
+        elif state in ["stomp left", "stomp right"]:
+            finished = self.update_single_action(
+                state, total_time, self.action_times["stomp"]
+            )
             if finished and self.current_state == max(self.states.keys()) + 1:
                 self.current_state = 0
 
@@ -75,6 +81,7 @@ class Elephant(DirtySprite):
     """
     Elephant sprite class.
     """
+
     def __init__(self, scene):
         DirtySprite.__init__(self)
 
@@ -83,7 +90,7 @@ class Elephant(DirtySprite):
         self.animation = ElephantAnimation()
 
         # stamp.
-        sfx('foot_elephant.ogg')
+        sfx("foot_elephant.ogg")
 
         self.rect = pygame.Rect([0, 0, self.scene.width // 2, self.scene.height])
         self.image = Surface((self.rect[2], self.rect[3])).convert()
@@ -106,17 +113,17 @@ class Elephant(DirtySprite):
         #     print(self.animation.just_happened)
         from_top = 100
 
-        if self.animation.just_happened == 'offscreen':
+        if self.animation.just_happened == "offscreen":
             self.dirty = True
             self.rect.x = -1000
             self.rect.y = -1000
-            sfx('foot_elephant.ogg', stop=1)
-        elif self.animation.just_happened == 'poise left':
+            sfx("foot_elephant.ogg", stop=1)
+        elif self.animation.just_happened == "poise left":
             self.rect.x = 0
             self.rect.y = from_top - self.scene.height
             self.dirty = True
-            sfx('foot_elephant.ogg', play=1)
-        elif self.animation.just_happened == 'stomp left':
+            sfx("foot_elephant.ogg", play=1)
+        elif self.animation.just_happened == "stomp left":
             # (self.height - self.image.get_height()) - self.scene.cat_wire_height
             self.rect.y = self.scene.cat_wire_height - self.scene.height
             self.rect.x = 0
@@ -126,12 +133,12 @@ class Elephant(DirtySprite):
                 self.scene.reset_on_death()
                 self.dirty = True
 
-        elif self.animation.just_happened == 'poise right':
+        elif self.animation.just_happened == "poise right":
             self.rect.x = self.scene.width // 2
             self.rect.y = from_top - self.scene.height
             self.dirty = True
-            sfx('foot_elephant.ogg', play=1)
-        elif self.animation.just_happened == 'stomp right':
+            sfx("foot_elephant.ogg", play=1)
+        elif self.animation.just_happened == "stomp right":
             self.rect.x = self.scene.width // 2
             self.rect.y = self.scene.cat_wire_height - self.scene.height
             self.dirty = True
@@ -199,11 +206,11 @@ class Elephant(DirtySprite):
         :param width:
         """
         state = self.animation.states[self.animation.current_state]
-        if state == 'stomp left':
+        if state == "stomp left":
             if self.scene.cat_head_location[0] < width / 2:
                 self.scene.reset_on_death()
                 self.dirty = True
-        elif state == 'stomp right':
+        elif state == "stomp right":
             if self.scene.cat_head_location[0] > width / 2:
                 self.scene.reset_on_death()
                 self.dirty = True

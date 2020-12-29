@@ -13,6 +13,7 @@ class EventQueueHandler:
     """
     Event Queue Handler class.
     """
+
     def __init__(self):
         self._inputs = defaultdict(list)
         self._inputs[0].append(KeyboardInput())
@@ -45,6 +46,7 @@ class PlayerInput:
     """
     Player input class.
     """
+
     __slots__ = ["button", "value", "hold_time", "triggered"]
 
     def __init__(self, button, value=0, hold_time=0):
@@ -76,6 +78,7 @@ class EventHandler:
     """
     Event handler class.
     """
+
     default_input_map = None
 
     def __init__(self, event_map=None):
@@ -137,6 +140,7 @@ class GamepadInput(EventHandler):
     """
     Gamepad input class.
     """
+
     default_input_map = {
         0: actions.JUMP,
         1: actions.INTERACT,
@@ -148,7 +152,7 @@ class GamepadInput(EventHandler):
         7: actions.START,
     }
 
-    def __init__(self, event_map=None, deadzone=.25):
+    def __init__(self, event_map=None, deadzone=0.25):
         EventHandler.__init__(self, event_map)
 
         self.deadzone = deadzone
@@ -251,6 +255,7 @@ class KeyboardInput(EventHandler):
     """
     Keyboard Input class.
     """
+
     default_input_map = {
         pg.K_UP: actions.UP,
         pg.K_DOWN: actions.DOWN,

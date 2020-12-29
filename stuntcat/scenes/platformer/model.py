@@ -50,9 +50,10 @@ class UprightModel(BasicModel):
     """
     Upright Model class.
     """
+
     def __init__(self):
         super().__init__()
-        self.model_data['move_power'] = 1
+        self.model_data["move_power"] = 1
         self.motor = None
         self._debounce_time = 0
         self._grounded = False
@@ -77,7 +78,7 @@ class UprightModel(BasicModel):
 
         :param direction: The direction to go.
         """
-        amt = direction * self.model_data['move_power']
+        amt = direction * self.model_data["move_power"]
         self.motor.max_force = pymunk.inf
         self.motor.rate = amt
 

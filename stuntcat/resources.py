@@ -25,18 +25,18 @@ def data_path():
 
     :return: The path.
     """
-    if os.path.exists('data'):
-        path = 'data'
+    if os.path.exists("data"):
+        path = "data"
     else:
         path = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
-            'data',
+            "data",
         )
     return path
 
 
 def music(amusic=None, load=True, play=True, stop=False, loop=1):
-    """ For loading and playing music.
+    """For loading and playing music.
 
     ::Example::
 
@@ -61,7 +61,7 @@ def music_path(amusic):
 
     :return: The path.
     """
-    return os.path.join(data_path(), 'sounds', amusic)
+    return os.path.join(data_path(), "sounds", amusic)
 
 
 def gfx(image, convert=False, convert_alpha=False):
@@ -77,7 +77,7 @@ def gfx(image, convert=False, convert_alpha=False):
     if gfx_key in _GFX_CACHE:
         return _GFX_CACHE[gfx_key]
 
-    path = os.path.join(data_path(), 'images', image)
+    path = os.path.join(data_path(), "images", image)
     asurf = pygame.image.load(path)
     if convert:
         asurf = asurf.convert()
@@ -87,7 +87,7 @@ def gfx(image, convert=False, convert_alpha=False):
     return asurf
 
 
-#pylint:disable=too-many-arguments
+# pylint:disable=too-many-arguments
 def sfx(snd, play=False, stop=False, fadeout=None, fadein=0, loops=0):
     """
     Load and return a sound effect from the sound directory.
@@ -103,7 +103,7 @@ def sfx(snd, play=False, stop=False, fadeout=None, fadein=0, loops=0):
     if snd_key in _SFX_CACHE:
         asound = _SFX_CACHE[snd_key]
     else:
-        path = os.path.join(data_path(), 'sounds', snd)
+        path = os.path.join(data_path(), "sounds", snd)
         asound = pygame.mixer.Sound(path)
         _SFX_CACHE[snd_key] = asound
 

@@ -8,6 +8,7 @@ class NewsScene(Scene):
     """
     News Scene class.
     """
+
     def __init__(self, *args, **kwargs):
         Scene.__init__(self, *args, **kwargs)
 

@@ -11,8 +11,8 @@ def main():
     try:
         game_main()
     except KeyboardInterrupt:
-        print('Keyboard Interrupt...')
-        print('Exiting')
+        print("Keyboard Interrupt...")
+        print("Exiting")
 
 
 def game_main():

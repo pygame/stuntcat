@@ -4,7 +4,7 @@ Simple FSM Module
 
 from collections import namedtuple
 
-Event = namedtuple('Event', 'name src dst event')
+Event = namedtuple("Event", "name src dst event")
 Event.__new__.__defaults__ = (None, None, None, None)
 
 
@@ -12,6 +12,7 @@ class SimpleFSM:
     """
     Simple finite state machine class.
     """
+
     def __init__(self, events, initial=None):
         self.state = initial
         self.graph = {}
@@ -33,14 +34,16 @@ class SimpleFSM:
         src = self.state
         graph = self.graph
         try:
-            state, out = ((src in graph[event] and graph[event][src]) or
-                          ('*' in graph[event] and graph[event]['*']) or
-                          (graph['ThisIsMostCertainlyNotHandled!1']))
+            state, out = (
+                (src in graph[event] and graph[event][src])
+                or ("*" in graph[event] and graph[event]["*"])
+                or (graph["ThisIsMostCertainlyNotHandled!1"])
+            )
         except KeyError:
             try:
-                state, out = graph['*'][src]
+                state, out = graph["*"][src]
             except KeyError:
-                raise ValueError(event, self.state) #pylint:disable=raise-missing-from
+                raise ValueError(event, self.state)  # pylint:disable=raise-missing-from
 
-        self.state = src if state == '=' else state
+        self.state = src if state == "=" else state
         return self.state, out

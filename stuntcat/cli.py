@@ -4,13 +4,6 @@ import os
 import sys
 import traceback
 
-if sys.version_info[0] >= 3:
-    import tkinter as tk
-    from tkinter.messagebox import showerror
-else:
-    import Tkinter as tk
-    from tkMessageBox import showerror  # pylint: disable=import-error
-
 LOCAL_PATH = os.path.abspath(os.path.dirname(__file__))
 
 # What was this trying to do?
@@ -28,7 +21,9 @@ try:
     import pygame as pg
 except ImportError:
     pg = None
-    raise ImportError("Cannot import pygame, install version 1.9.4 or higher") #pylint:disable=raise-missing-from
+    raise ImportError( # pylint:disable=raise-missing-from
+        "Cannot import pygame, install version 1.9.4 or higher"
+    )
 
 
 try:
@@ -41,6 +36,7 @@ class Cli:
     """
     Cli Class.
     """
+
     def __init__(self):
         # these directories will be used if stuntcat cannot find
         # the directories in the location of the main program
@@ -60,18 +56,18 @@ class Cli:
         # figure out our directories
         # first try to get the path from the stuntcat package.
         testdata = LOCAL_PATH
-        testcode = os.path.join(LOCAL_PATH, '.')
+        testcode = os.path.join(LOCAL_PATH, ".")
 
-        if os.path.isdir(os.path.join(testdata, 'data')):
+        if os.path.isdir(os.path.join(testdata, "data")):
             self.data_dir = testdata
         if os.path.isdir(testcode):
             self.code_dir = testcode
 
         # pyinstaller uses this variable to store the path
         #   where it extracts data to.
-        pyinstaller_path = getattr(sys, '_MEIPASS', None)
+        pyinstaller_path = getattr(sys, "_MEIPASS", None)
         if pyinstaller_path:
-            self.data_dir = os.path.join(pyinstaller_path, 'data')
+            self.data_dir = os.path.join(pyinstaller_path, "data")
         else:
             # apply our directories and test environment
             os.chdir(self.data_dir)
@@ -83,7 +79,7 @@ class Cli:
             # import pdb;pdb.set_trace()
             main()
         except KeyboardInterrupt:
-            print('Keyboard Interrupt (Control-C)...')
+            print("Keyboard Interrupt (Control-C)...")
         except Exception as err:
             # must wait on any threading
             # if game.thread:
@@ -106,27 +102,27 @@ class Cli:
 
         # make sure this looks like the right directory
         if not os.path.isdir(self.code_dir):
-            msgs.append('Cannot locate stuntcat modules')
-        if not os.path.isdir('data'):
-            msgs.append('Cannot locate stuntcat data files')
+            msgs.append("Cannot locate stuntcat modules")
+        if not os.path.isdir("data"):
+            msgs.append("Cannot locate stuntcat data files")
 
         # first, we need python >= 2.7
         if sys.hexversion < 0x2070000:
-            self.errorbox('Requires Python-2.7 or Greater')
+            self.errorbox("Requires Python-2.7 or Greater")
 
         # is correct pg found?
-        if pg.ver < '1.9.4':
-            msgs.append('Requires pygame 1.9.4 or Greater, You Have ' + pg.ver)
+        if pg.ver < "1.9.4":
+            msgs.append("Requires pygame 1.9.4 or Greater, You Have " + pg.ver)
 
         # check that we have FONT and IMAGE
         if pg:
             if not pg.font:
-                msgs.append('pg requires the SDL_ttf library, not available')
+                msgs.append("pg requires the SDL_ttf library, not available")
             if not (pg.image and pg.image.get_extended()):
-                msgs.append('pg requires the SDL_image library, not available')
+                msgs.append("pg requires the SDL_image library, not available")
 
         if msgs:
-            msg = '\n'.join(msgs)
+            msg = "\n".join(msgs)
             self.errorbox(msg)
 
     # Pretty Error Handling Code...
@@ -149,6 +145,14 @@ class Cli:
 
     @staticmethod
     def __tkinterbox(title, message):
+        #pylint: disable=import-outside-toplevel, import-error
+        if sys.version_info[0] >= 3:
+            import tkinter as tk
+            from tkinter.messagebox import showerror
+        else:
+            import Tkinter as tk
+            from tkMessageBox import showerror
+
         tk.Tk().wm_withdraw()
         showerror(title, message)
 
@@ -162,7 +166,7 @@ class Cli:
             pg.display.set_caption(title)
             font = pg.font.Font(None, 18)
             foreg, backg, liteg = (0, 0, 0), (180, 180, 180), (210, 210, 210)
-            ok_surf = font.render('Ok', True, foreg, liteg)
+            ok_surf = font.render("Ok", True, foreg, liteg)
             ok_rect = ok_surf.get_rect().inflate(200, 10)
             ok_rect.centerx = screen.get_rect().centerx
             ok_rect.bottom = screen.get_rect().bottom - 10
@@ -170,7 +174,7 @@ class Cli:
             screen.fill(liteg, ok_rect)
             screen.blit(ok_surf, ok_rect.inflate(-200, -10))
             pos = [10, 10]
-            for text in message.split('\n'):
+            for text in message.split("\n"):
                 if text:
                     msg = font.render(text, True, foreg, backg)
                     screen.blit(msg, pos)
@@ -179,17 +183,22 @@ class Cli:
             stopkeys = pg.K_ESCAPE, pg.K_SPACE, pg.K_RETURN, pg.K_KP_ENTER
             while True:
                 event = pg.event.wait()
-                if event.type == pg.QUIT or \
-                        (event.type == pg.KEYDOWN and event.key in stopkeys) or \
-                        (event.type == pg.MOUSEBUTTONDOWN and ok_rect.collidepoint(event.pos)):
+                if (
+                    event.type == pg.QUIT
+                    or (event.type == pg.KEYDOWN and event.key in stopkeys)
+                    or (
+                        event.type == pg.MOUSEBUTTONDOWN
+                        and ok_rect.collidepoint(event.pos)
+                    )
+                ):
                     break
             pg.quit()
         except pg.error:
-            raise ImportError #pylint:disable=raise-missing-from
+            raise ImportError  # pylint:disable=raise-missing-from
 
     def __showerrorbox(self, message):
         title = os.path.splitext(os.path.split(sys.argv[0])[1])[0]
-        title = title.capitalize() + ' Error'
+        title = title.capitalize() + " Error"
         for handler in self.handlers:
             try:
                 handler(title, message)
@@ -205,9 +214,9 @@ class Cli:
         """
         message = str(message)
         if not message:
-            message = 'Error'
+            message = "Error"
         self.__showerrorbox(message)
-        sys.stderr.write('ERROR: ' + message + '\n')
+        sys.stderr.write("ERROR: " + message + "\n")
         raise SystemExit
 
     def exception_handler(self):
@@ -216,15 +225,20 @@ class Cli:
         """
         exception_type, info, trace = sys.exc_info()
         tracetop = traceback.extract_tb(trace)[-1]
-        tracetext = 'File %s, Line %d' % tracetop[:2]
-        if tracetop[2] != '?':
-            tracetext += ', Function %s' % tracetop[2]
+        tracetext = "File %s, Line %d" % tracetop[:2]
+        if tracetop[2] != "?":
+            tracetext += ", Function %s" % tracetop[2]
         exception_message = '%s:\n%s\n\n%s\n"%s"'
-        message = exception_message % (str(exception_type), str(info), tracetext, tracetop[3])
+        message = exception_message % (
+            str(exception_type),
+            str(info),
+            tracetext,
+            tracetop[3],
+        )
         if exception_type not in (KeyboardInterrupt, SystemExit):
             self.__showerrorbox(message)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli = Cli()
     cli.cli_main()

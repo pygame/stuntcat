@@ -41,6 +41,7 @@ class PlatformerScene(Scene):
     """
     Platformer Scene class.
     """
+
     def __init__(self, game):
         super().__init__(game)
         self.player = None
@@ -74,6 +75,7 @@ class PlatformerScene(Scene):
         """
         Load a scene in TMX format.
         """
+
         def box_vertices(box_x, box_y, width, height):
             top_left = box_x, box_y
             top_right = box_x + width, box_y
@@ -135,7 +137,7 @@ class PlatformerScene(Scene):
         """
         Tick the physics and game update loops.
         """
-        step_amount = (1 / 30.) / 30
+        step_amount = (1 / 30.0) / 30
         for _ in range(30):
             self.space.step(step_amount)
         self.sprites.update(time_delta=time_delta)

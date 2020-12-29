@@ -7,6 +7,7 @@ class Scene:
     """
     Scene class.
     """
+
     def __init__(self, game):
         self.active = False
 
