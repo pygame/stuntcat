@@ -12,8 +12,8 @@ from pygame.sprite import DirtySprite, LayeredDirty
 
 from stuntcat.resources import gfx, sfx, music, distance
 from stuntcat.scenes.scene import Scene
-from stuntcat.scenes.flying_objects import Fish, NotFish
-from stuntcat.scenes.elephant import Elephant
+from stuntcat.scenes.unisharklazer.flying_objects import Fish, NotFish
+from stuntcat.scenes.unisharklazer.elephant import Elephant
 
 
 class LayeredDirtyAppend(LayeredDirty):
