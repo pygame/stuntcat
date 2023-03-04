@@ -53,7 +53,7 @@ def make_hitbox(body, rect):
     return pymunk.Poly(body, vertices)
 
 
-def make_body(rect, moment=pymunk.inf):
+def make_body(rect, moment=float("inf")):
     # type: (pygame.Rect, float) -> Tuple[pymunk.Body, pymunk.Poly]
     """
     Make a pymunk body.
