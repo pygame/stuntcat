@@ -493,7 +493,7 @@ class CatUniScene(Scene):  # pylint:disable=too-many-instance-attributes
     def _collide_flying_objects(self):
         """object physics"""
         height = self.height
-        dt_scaled = self.dt_scaled
+        dt_scaled = self.dt_scaled * 0.25
 
         # move fish and not fish
         for fish in reversed(self.fish.sprites()):
